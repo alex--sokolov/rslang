@@ -16,8 +16,8 @@ export const getWordById = async (id: string): Promise<Word> => {
 // USERS
 
 //REGISTRATION NEW USER
-export const createUser = async (user: PostUser): Promise<ResponseUser> => {
-  const response: Response = await fetch(`${baseUrl}users`, {
+export const createUser = async (user: PostUser): Promise<Response> => {
+  return await fetch(`${baseUrl}users`, {
     method: 'POST',
     headers: {
       Accept: 'application/json',
@@ -25,7 +25,6 @@ export const createUser = async (user: PostUser): Promise<ResponseUser> => {
     },
     body: JSON.stringify(user),
   });
-  return await response.json();
 };
 
 //LOG IN - returns standard response for next status check
