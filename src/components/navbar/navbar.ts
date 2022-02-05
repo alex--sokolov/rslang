@@ -27,7 +27,7 @@ function openAuthModal() {
   }
 
   const authToggleBtn = document.getElementById('auth-toggle-btn') as HTMLButtonElement;
-  authToggleBtn.addEventListener('click', () => openAuthModal);
+  authToggleBtn.addEventListener('click', openAuthModal);
 }
 
 const NavBar = () => {
