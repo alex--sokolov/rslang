@@ -1,0 +1,35 @@
+@import './../../css/vars.scss';
+
+.page-title {
+  padding: 20px 0;
+}
+
+.chapter-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  text-align: center;
+  gap: 30px;
+
+  input {
+    display: none;
+  }
+
+  input:checked + label {
+    background-color: coral;
+  }
+}
+
+.chapter-label {
+  flex-grow: 1;
+  padding: 10px;
+  background-color: darkseagreen;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.chapter-words-nums {
+  font-size: 10px;
+}
+
+
