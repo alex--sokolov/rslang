@@ -1,3 +1,12 @@
 .active {
   color: $color-pink;
 }
+
+.navbar {
+  display: flex;
+  justify-content: space-around;
+}
+
+.navbar-item {
+  padding: 15px;
+}

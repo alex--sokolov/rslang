@@ -1,0 +1,26 @@
+@import "./../../css/vars.scss";
+
+.auth-form {
+  max-width: 500px;
+  padding: 50px;
+  background-color: aquamarine;
+  text-align: start;
+  // display: flex;
+  // flex-wrap: wrap;
+  // flex-direction: column;
+  // justify-content: flex-start;
+
+
+  label {
+    display: block;
+    margin-top: 20px;
+
+  }
+
+  input {
+    // display: block;
+    margin: 10px 0;
+    width: 100%;
+  }
+}
+
