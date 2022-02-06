@@ -1,4 +1,4 @@
-import { openAuthModal } from '../navbar/navbar';
+import { openAuthModal } from './authorization';
 
 function signOut() {
   const headerButton = document.querySelector('.navbar-auth') as HTMLFormElement;
