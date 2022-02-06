@@ -28,7 +28,7 @@ export const createUser = async (user: PostUser): Promise<Response> => {
 };
 
 //LOG IN - returns standard response for next status check
-export const signIn = async (form: SignInParam): Promise<Response> => {
+export const signInApi = async (form: SignInParam): Promise<Response> => {
   const param: FetchParam = {
     method: 'POST',
     headers: {
