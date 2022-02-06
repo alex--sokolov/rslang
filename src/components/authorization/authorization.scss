@@ -24,3 +24,11 @@
   }
 }
 
+.auth__warn {
+  color: red;
+  visibility: hidden;
+}
+.auth__warn.show {
+  visibility: visible;
+}
+
