@@ -1,0 +1,47 @@
+.audio-call-page {
+  height: 90vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+  .audio-call-page__caption {
+    font-size: 2rem;
+  }
+  .audio-call-page__desc {
+    font-size: 1.2rem;
+  }
+}
+
+.difficulty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  .difficulty__caption {
+    font-size: 1rem;
+  }
+  .difficulty__list {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    li {
+      width: 2.5rem;
+      height: 2.5rem;
+      border: 1px black solid;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    li.active {
+      color: red;
+      border: 1px red solid;
+    }
+  }
+  button {
+    padding: 3px 10px;
+    cursor: pointer;
+  }
+}
