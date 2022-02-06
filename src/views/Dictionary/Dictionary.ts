@@ -1,10 +1,8 @@
 import './Dictionary.scss';
 import { addElement, addTextElement } from '../../utils/add-element';
 
-export const Dictionary = (): HTMLElement => {
-  const page = addElement('main', 'dictionary-page') as HTMLElement;
-  const pageTitle = addTextElement('h1', 'page-title', 'Учебник') as HTMLElement;
-  const chapterList = addElement('div', 'chapter-list') as HTMLElement;
+const chapterParse = (): HTMLDivElement => {
+  const chapterList = addElement('div', 'chapter-list') as HTMLDivElement;
 
   for (let i = 0; i < 6; i++) {
     const chapterLabel = addElement('label', 'chapter-label') as HTMLLabelElement;
@@ -28,7 +26,39 @@ export const Dictionary = (): HTMLElement => {
     chapterList.append(chapterLabel);
   }
 
+  return chapterList;
+};
+
+const dictionaryPagination = (): HTMLUListElement => {
+  const pagination = addElement('ul', 'dictionary-pagination pagination') as HTMLUListElement;
+
+  for (let i = 0; i < 32; i++) {
+    const liElement = document.createElement('li') as HTMLLIElement;
+    const buttonElement = addElement('button', 'pagination__button') as HTMLButtonElement;
+
+    if (i === 0) {
+      buttonElement.innerHTML = '&lt;';
+    } else if (i === 31) {
+      buttonElement.innerHTML = '&gt;';
+    } else {
+      buttonElement.textContent = `${i}`;
+    }
+
+    liElement.append(buttonElement);
+    pagination.append(liElement);
+  }
+
+  return pagination;
+};
+
+export const Dictionary = (): HTMLElement => {
+  const page = addElement('main', 'dictionary-page') as HTMLElement;
+  const pageTitle = addTextElement('h1', 'page-title', 'Учебник') as HTMLElement;
+  const wordsTitle = addTextElement('h2', 'words-title', 'Слова') as HTMLElement;
+
   page.append(pageTitle);
-  page.append(chapterList);
+  page.append(chapterParse());
+  page.append(wordsTitle);
+  page.append(dictionaryPagination());
   return page;
 };

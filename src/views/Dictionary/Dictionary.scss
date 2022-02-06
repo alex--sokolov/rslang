@@ -1,7 +1,8 @@
-@import './../../css/vars.scss';
-
-.page-title {
+.page-title,
+.words-title {
   padding: 20px 0;
+  font-size: 32px;
+  font-weight: 700;
 }
 
 .chapter-list {
@@ -32,4 +33,23 @@
   font-size: 10px;
 }
 
+.pagination {
+  // display: flex;
+  list-style: none;
 
+  li {
+    display: inline-block;
+  }
+
+  &__button {
+    // padding: 10px;
+    height: 38px;
+    min-width: 38px;
+    cursor: pointer;
+    margin-right: 5px;
+
+    &:last-child {
+      margin: 0;
+    }
+  }
+}
