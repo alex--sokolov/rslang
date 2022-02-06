@@ -51,14 +51,43 @@ const dictionaryPagination = (): HTMLUListElement => {
   return pagination;
 };
 
+const wordCard = (): HTMLDivElement => {
+  const wordCardContainer = addElement('div', 'word-card card') as HTMLDivElement;
+  const cardImage = addElement('img', 'card__img') as HTMLImageElement;
+  cardImage.src = '';
+  cardImage.alt = 'Иллюстрация слова';
+  const cardWord = addTextElement('h3', 'card__word', `word`) as HTMLHeadingElement;
+  const cardTranscription = addTextElement('span', 'card__transcription', 'transcription') as HTMLSpanElement;
+  const cardVoiceBtn = addElement('button', 'card__voice-btn') as HTMLButtonElement;
+  const cardTranslate = addTextElement('h4', 'card__translate', 'translate') as HTMLParagraphElement;
+  const cardSubheading = addTextElement('h5', 'card__subheading', 'Значение') as HTMLHeadingElement;
+  const cardTextMeaning = addTextElement('p', 'card__text', 'textMeaning') as HTMLParagraphElement;
+  const cardTextMeaningTranslate = addTextElement('p', 'card__text', 'textMeaningTranslate') as HTMLParagraphElement;
+  const cardSubheading2 = addTextElement('h5', 'card__subheading', 'Пример') as HTMLHeadingElement;
+  const cardTextExample = addTextElement('p', 'card__text', 'textExample') as HTMLParagraphElement;
+  const cardTextExampleTranslate = addTextElement('p', 'card__text', 'textExampleTranslate') as HTMLParagraphElement;
+
+  wordCardContainer.append(
+    cardImage,
+    cardWord,
+    cardTranscription,
+    cardVoiceBtn,
+    cardTranslate,
+    cardSubheading,
+    cardTextMeaning,
+    cardTextMeaningTranslate,
+    cardSubheading2,
+    cardTextExample,
+    cardTextExampleTranslate
+  );
+  return wordCardContainer;
+};
+
 export const Dictionary = (): HTMLElement => {
   const page = addElement('main', 'dictionary-page') as HTMLElement;
   const pageTitle = addTextElement('h1', 'page-title', 'Учебник') as HTMLElement;
   const wordsTitle = addTextElement('h2', 'words-title', 'Слова') as HTMLElement;
 
-  page.append(pageTitle);
-  page.append(chapterParse());
-  page.append(wordsTitle);
-  page.append(dictionaryPagination());
+  page.append(pageTitle, chapterParse(), wordsTitle, wordCard(), dictionaryPagination());
   return page;
 };
