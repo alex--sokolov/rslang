@@ -1,10 +1,10 @@
 import { routes } from "./routes";
 import setActiveLink from "../utils/set-active-link";
 
-const router = async (route: string[] = routes['/']) => {
+const router = async (route: string[] = routes['/']): Promise<void> => {
   const currentView = await import(`../views/${route[0]}/${route[0]}`);
   const root = document.getElementById('root') as HTMLElement;
-  const pageContent = currentView[route[0]]();
+  const pageContent = await currentView[route[0]]();
   root.innerText = '';
   root.append(pageContent);
 }

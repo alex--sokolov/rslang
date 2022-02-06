@@ -1,7 +1,9 @@
 import './Dictionary.scss';
 import { addElement, addTextElement } from '../../utils/add-element';
+import { getWords, getWordById } from '../../components/api/api';
+import { Word } from '../../interfaces';
 
-const chapterParse = (): HTMLDivElement => {
+const chapterRender = (): HTMLDivElement => {
   const chapterList = addElement('div', 'chapter-list') as HTMLDivElement;
 
   for (let i = 0; i < 6; i++) {
@@ -29,6 +31,88 @@ const chapterParse = (): HTMLDivElement => {
   return chapterList;
 };
 
+const wordCardRender = (word: Word): HTMLDivElement => {
+  const wordCardContainer = addElement('div', 'word-card card') as HTMLDivElement;
+  const cardImage = addElement('img', 'card__img') as HTMLImageElement;
+  cardImage.src = `https://rs-lang-app-server.herokuapp.com/${word.image}`;
+  cardImage.alt = 'Иллюстрация слова';
+  const cardWord = addTextElement('h3', 'card__word', `${word.word}`) as HTMLHeadingElement;
+  const cardTranscription = addTextElement('span', 'card__transcription', `${word.transcription}`) as HTMLSpanElement;
+  const cardVoiceBtn = addElement('button', 'card__voice-btn') as HTMLButtonElement;
+  const cardTranslate = addTextElement('h4', 'card__translate', `${word.wordTranslate}`) as HTMLParagraphElement;
+  const cardSubheading = addTextElement('h5', 'card__subheading', 'Значение') as HTMLHeadingElement;
+  const cardTextMeaning = addTextElement('p', 'card__text', `${word.textMeaning}`) as HTMLParagraphElement;
+  const cardTextMeaningTranslate = addTextElement(
+    'p',
+    'card__text',
+    `${word.textMeaningTranslate}`
+  ) as HTMLParagraphElement;
+  const cardSubheading2 = addTextElement('h5', 'card__subheading', 'Пример') as HTMLHeadingElement;
+  const cardTextExample = addTextElement('p', 'card__text', `${word.textExample}`) as HTMLParagraphElement;
+  const cardTextExampleTranslate = addTextElement(
+    'p',
+    'card__text',
+    `${word.textExampleTranslate}`
+  ) as HTMLParagraphElement;
+
+  wordCardContainer.append(
+    cardImage,
+    cardWord,
+    cardTranscription,
+    cardVoiceBtn,
+    cardTranslate,
+    cardSubheading,
+    cardTextMeaning,
+    cardTextMeaningTranslate,
+    cardSubheading2,
+    cardTextExample,
+    cardTextExampleTranslate
+  );
+
+  // const wordHeading = document.querySelector('.word-title') as HTMLHeadingElement;
+  // wordHeading.after(wordCardContainer);
+  return wordCardContainer;
+};
+
+const wordListRender = async (page: string, chapter: string): Promise<HTMLDivElement> => {
+  const words = await getWords(page, chapter);
+  const wordListContainer = addElement('div', 'word-list') as HTMLDivElement;
+
+  console.log(words);
+
+  const activeWordIndex = 0;
+
+  words.forEach((word, i) => {
+    const wordButton = addElement('button', 'word-item') as HTMLButtonElement;
+    if (i === 0) {
+      wordButton.classList.add('word-item--active');
+    }
+    wordButton.setAttribute('data-word-id', word.id);
+    const wordEng = document.createElement('h3') as HTMLHeadingElement;
+    wordEng.textContent = word.word;
+    const wordTranslate = document.createElement('p') as HTMLParagraphElement;
+    wordTranslate.textContent = word.wordTranslate;
+
+    wordButton.append(wordEng, wordTranslate);
+    wordListContainer.append(wordButton);
+  });
+
+  const activeWordBtn = wordListContainer.querySelector('.word-item--active') as HTMLButtonElement;
+  const activeWordId = activeWordBtn.getAttribute('data-word-id') as string;
+  // setTimeout(() => console.log(wordCard), 1000);
+
+  const wordCard = wordCardRender(words[0]);
+  console.log(wordCard);
+
+  // const activeWord = await getWordById(activeWordId);
+  // wordCardParse(activeWord);
+
+
+  wordListContainer.before(wordCard);
+
+  return wordListContainer;
+};
+
 const dictionaryPagination = (): HTMLUListElement => {
   const pagination = addElement('ul', 'dictionary-pagination pagination') as HTMLUListElement;
 
@@ -51,43 +135,14 @@ const dictionaryPagination = (): HTMLUListElement => {
   return pagination;
 };
 
-const wordCard = (): HTMLDivElement => {
-  const wordCardContainer = addElement('div', 'word-card card') as HTMLDivElement;
-  const cardImage = addElement('img', 'card__img') as HTMLImageElement;
-  cardImage.src = '';
-  cardImage.alt = 'Иллюстрация слова';
-  const cardWord = addTextElement('h3', 'card__word', `word`) as HTMLHeadingElement;
-  const cardTranscription = addTextElement('span', 'card__transcription', 'transcription') as HTMLSpanElement;
-  const cardVoiceBtn = addElement('button', 'card__voice-btn') as HTMLButtonElement;
-  const cardTranslate = addTextElement('h4', 'card__translate', 'translate') as HTMLParagraphElement;
-  const cardSubheading = addTextElement('h5', 'card__subheading', 'Значение') as HTMLHeadingElement;
-  const cardTextMeaning = addTextElement('p', 'card__text', 'textMeaning') as HTMLParagraphElement;
-  const cardTextMeaningTranslate = addTextElement('p', 'card__text', 'textMeaningTranslate') as HTMLParagraphElement;
-  const cardSubheading2 = addTextElement('h5', 'card__subheading', 'Пример') as HTMLHeadingElement;
-  const cardTextExample = addTextElement('p', 'card__text', 'textExample') as HTMLParagraphElement;
-  const cardTextExampleTranslate = addTextElement('p', 'card__text', 'textExampleTranslate') as HTMLParagraphElement;
-
-  wordCardContainer.append(
-    cardImage,
-    cardWord,
-    cardTranscription,
-    cardVoiceBtn,
-    cardTranslate,
-    cardSubheading,
-    cardTextMeaning,
-    cardTextMeaningTranslate,
-    cardSubheading2,
-    cardTextExample,
-    cardTextExampleTranslate
-  );
-  return wordCardContainer;
-};
-
-export const Dictionary = (): HTMLElement => {
+export const Dictionary = async (): Promise<HTMLElement> => {
   const page = addElement('main', 'dictionary-page') as HTMLElement;
   const pageTitle = addTextElement('h1', 'page-title', 'Учебник') as HTMLElement;
   const wordsTitle = addTextElement('h2', 'words-title', 'Слова') as HTMLElement;
 
-  page.append(pageTitle, chapterParse(), wordsTitle, wordCard(), dictionaryPagination());
+  page.append(pageTitle, chapterRender(), wordsTitle, await wordListRender('0', '0'), dictionaryPagination());
+
+  // const wordListElement = document.querySelector('.word-list') as HTMLUListElement;
+  // wordListElement.before(await wordCardRender(words[0]))
   return page;
 };

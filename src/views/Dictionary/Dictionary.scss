@@ -33,6 +33,14 @@
   font-size: 10px;
 }
 
+.word-item {
+
+
+  &--active {
+    background-color: darkorange;
+  }
+}
+
 .pagination {
   // display: flex;
   list-style: none;
