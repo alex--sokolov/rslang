@@ -4,6 +4,7 @@ import { signIn } from './sign-in';
 import { registration } from './registration';
 import { signOut } from './sign-out';
 import { getToken, getUserId, getUserName } from '../../utils/local-storage-helpers';
+import { showModal } from '../../utils/show-modal';
 
 const authSingInHTML = `
   <h3 class="auth__title">Войдите в свой аккаунт!</h3>
@@ -33,7 +34,7 @@ const authRegisterHTML = `
 `;
 
 const Authorization = (type = 'signin') => {
-  const element = addElement('form', 'auth-form auth') as HTMLFormElement;
+  const element = addElement('form', 'auth-form auth', 'auth-form') as HTMLFormElement;
 
   if (type === 'signin') {
     element.innerHTML = authSingInHTML;
@@ -57,11 +58,10 @@ const AuthPanel = (): HTMLElement => {
 };
 
 function openAuthModal() {
-  const root = document.getElementById('root') as HTMLDivElement;
 
   if (!document.querySelector('.auth-form')) {
-    root.append(Authorization('signin'));
-    const authForm = document.querySelector('.auth-form') as HTMLFormElement;
+    showModal(Authorization('signin'));
+    const authForm = document.getElementById('auth-form') as HTMLFormElement;
     authForm.setAttribute('data-type', 'signin');
   } else {
     const authForm = document.querySelector('.auth-form') as HTMLFormElement;
@@ -69,11 +69,11 @@ function openAuthModal() {
 
     if (authFormType === 'signin') {
       authForm.remove();
-      root?.append(Authorization('register'));
+      showModal(Authorization('register'));
       document.querySelector('.auth-form')?.setAttribute('data-type', 'register');
     } else if (authFormType === 'register') {
       authForm.remove();
-      root?.append(Authorization('signin'));
+      showModal(Authorization('signin'));
       document.querySelector('.auth-form')?.setAttribute('data-type', 'signin');
     }
   }

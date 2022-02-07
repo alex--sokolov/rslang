@@ -1,10 +1,7 @@
 import './navbar.scss';
-import { addElement, addTextElement } from '../../utils/add-element';
+import { addElement } from '../../utils/add-element';
 import { routes } from '../../engine/routes';
 import setActiveLink from '../../utils/set-active-link';
-import { openAuthModal } from '../authorization/authorization';
-import { getToken, getUserId, getUserName } from '../../utils/local-storage-helpers';
-import { signOut } from '../authorization/sign-out';
 
 const NavBar = () => {
   const nav = addElement('nav', 'navbar');
@@ -16,8 +13,6 @@ const NavBar = () => {
     const linkName = document.createTextNode(routes[hash][1]);
     linkItem.appendChild(linkName);
     nav.appendChild(linkItem);
-    // linkItem.addEventListener('focus', () => linkItem.classList.add('active'));
-    // linkItem.addEventListener('blur', () => linkItem.classList.remove('active'));
     linkItem.addEventListener('click', setActiveLink.bind('', hash));
   }
 
