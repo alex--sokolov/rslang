@@ -28,6 +28,7 @@ export const AudioCall = (): HTMLElement => {
 
 function addListeners(element: HTMLElement) {
   const levelsArea = element.querySelector('#audio-call-level') as HTMLUListElement;
+  const startButton = element.querySelector('#start-audio-call') as HTMLButtonElement;
   const levels = element.querySelectorAll('.difficulty__item') as NodeListOf<HTMLElement>;
   const activeLevel = getGameLevel();
   levels.forEach((item: HTMLElement) => {
@@ -36,14 +37,22 @@ function addListeners(element: HTMLElement) {
     }
   });
   levelsArea.addEventListener('click', chooseLevel);
+  startButton.addEventListener('click', startAudioCall);
 
   function chooseLevel(event: MouseEvent) {
     const target = event.target as HTMLElement;
-    levels.forEach((item: HTMLElement) => item.classList.remove('active'));
 
     if (target.dataset.level) {
       setGameLevel(target.dataset.level);
+      levels.forEach((item: HTMLElement) => item.classList.remove('active'));
       target.classList.add('active');
+      startButton.disabled = false;
     }
   }
 }
+
+function startAudioCall() {
+  console.log('игра началась');
+}
+
+export { startAudioCall };
