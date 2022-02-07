@@ -1,4 +1,4 @@
-import { FetchParam, PostUser, ResponseUser, SignInParam, Tokens, Word } from '../../interfaces';
+import { PostUser, ResponseUser, SignInParam, Tokens, Word } from '../../interfaces';
 import { getToken, setTokens } from '../../utils/local-storage-helpers';
 
 export const baseUrl = 'https://rs-lang-app-server.herokuapp.com/';
