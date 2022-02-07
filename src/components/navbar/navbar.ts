@@ -21,14 +21,6 @@ const NavBar = () => {
     linkItem.addEventListener('click', setActiveLink.bind('', hash));
   }
 
-  const authUserName = addTextElement('span', 'navbar-name', getUserName());
-  nav.appendChild(authUserName);
-  const authLinkText = getToken() ? 'Выйти' : 'Войти';
-  const authLink = addTextElement('button', 'navbar-auth', authLinkText);
-  nav.appendChild(authLink);
-
-  authLink.removeEventListener('click', getUserId() ? openAuthModal : signOut);
-  authLink.addEventListener('click', getUserId() ? signOut : openAuthModal);
   return nav;
 };
 

@@ -30,7 +30,7 @@ function signIn(event: Event): void {
         response.json().then((response: AuthParam) => {
           const form = document.querySelector('.auth-form') as HTMLFormElement;
           const headerButton = document.querySelector('.navbar-auth') as HTMLFormElement;
-          const headerName = document.querySelector('.navbar .navbar-name') as HTMLSpanElement;
+          const headerName = document.querySelector('.navbar-name') as HTMLSpanElement;
           const tokens: Tokens = {
             token: response.token,
             refreshToken: response.refreshToken,

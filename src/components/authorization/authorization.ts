@@ -1,8 +1,9 @@
 import './authorization.scss';
-import { addElement } from '../../utils/add-element';
+import { addElement, addTextElement } from '../../utils/add-element';
 import { signIn } from './sign-in';
 import { registration } from './registration';
 import { signOut } from './sign-out';
+import { getToken, getUserId, getUserName } from '../../utils/local-storage-helpers';
 
 const authSingInHTML = `
   <h3 class="auth__title">Войдите в свой аккаунт!</h3>
@@ -42,6 +43,19 @@ const Authorization = (type = 'signin') => {
   return element;
 };
 
+const AuthPanel = (): HTMLElement => {
+  const authPanel = addElement('div', 'auth-panel-container');
+  const authUserName = addTextElement('span', 'navbar-name', getUserName());
+  const authLinkText = getToken() ? 'Выйти' : 'Войти';
+  const authLink = addTextElement('button', 'navbar-auth', authLinkText);
+  authPanel.appendChild(authUserName);
+  authPanel.appendChild(authLink);
+
+  authLink.removeEventListener('click', getUserId() ? openAuthModal : signOut);
+  authLink.addEventListener('click', getUserId() ? signOut : openAuthModal);
+  return authPanel;
+};
+
 function openAuthModal() {
   const root = document.getElementById('root') as HTMLDivElement;
 
@@ -79,4 +93,4 @@ function openAuthModal() {
   authToggleBtn.addEventListener('click', openAuthModal);
 }
 
-export { Authorization, openAuthModal };
+export { Authorization, openAuthModal, AuthPanel };
