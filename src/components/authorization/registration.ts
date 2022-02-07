@@ -24,10 +24,6 @@ function registration(event: Event): void {
           warn.classList.add('show');
           warn.innerText = 'Некорректный пароль или email';
           break;
-        /*case 404:
-          warn.classList.add('show');
-          warn.innerText = 'Пользователь не найден';
-          break;*/
         case 200:
           response.json().then((response: PostUser) => {
             const form = document.querySelector('.auth-form') as HTMLFormElement;
