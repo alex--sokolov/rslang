@@ -3,7 +3,8 @@ import { addElement, addTextElement } from '../../utils/add-element';
 import { routes } from '../../engine/routes';
 import setActiveLink from '../../utils/set-active-link';
 import { openAuthModal } from '../authorization/authorization';
-import { getToken, getUserName } from '../../utils/local-storage-helpers';
+import { getToken, getUserId, getUserName } from '../../utils/local-storage-helpers';
+import { signOut } from '../authorization/sign-out';
 
 const NavBar = () => {
   const nav = addElement('nav', 'navbar');
@@ -22,11 +23,12 @@ const NavBar = () => {
 
   const authUserName = addTextElement('span', 'navbar-name', getUserName());
   nav.appendChild(authUserName);
-  const authLinkText = getToken('main') ? 'Выйти' : 'Войти';
+  const authLinkText = getToken() ? 'Выйти' : 'Войти';
   const authLink = addTextElement('button', 'navbar-auth', authLinkText);
   nav.appendChild(authLink);
 
-  authLink.addEventListener('click', openAuthModal);
+  authLink.removeEventListener('click', getUserId() ? openAuthModal : signOut);
+  authLink.addEventListener('click', getUserId() ? signOut : openAuthModal);
   return nav;
 };
 

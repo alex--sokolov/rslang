@@ -18,7 +18,7 @@ export const setUserName = (name: string): void => {
   localStorage.setItem('username', name);
 };
 export const getUserId = (): string => {
-  return <string>localStorage.getItem('ig');
+  return <string>localStorage.getItem('id');
 };
 export const getGameLevel = (): string => {
   return <string>localStorage.getItem('gameLevel');

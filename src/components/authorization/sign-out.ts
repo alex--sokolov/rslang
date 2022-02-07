@@ -7,6 +7,7 @@ function signOut() {
   localStorage.clear();
   headerButton.innerText = 'Войти';
   headerName.innerText = '';
+  headerButton.removeEventListener('click', signOut);
   headerButton.addEventListener('click', openAuthModal);
 }
 

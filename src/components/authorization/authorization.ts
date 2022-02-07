@@ -2,6 +2,7 @@ import './authorization.scss';
 import { addElement } from '../../utils/add-element';
 import { signIn } from './sign-in';
 import { registration } from './registration';
+import { signOut } from './sign-out';
 
 const authSingInHTML = `
   <h3 class="auth__title">Войдите в свой аккаунт!</h3>
@@ -38,7 +39,6 @@ const Authorization = (type = 'signin') => {
   } else if (type === 'register') {
     element.innerHTML = authRegisterHTML;
   }
-
   return element;
 };
 
@@ -75,6 +75,7 @@ function openAuthModal() {
   }
 
   const authToggleBtn = document.getElementById('auth-toggle-btn') as HTMLButtonElement;
+  authToggleBtn.removeEventListener('click', signOut);
   authToggleBtn.addEventListener('click', openAuthModal);
 }
 
