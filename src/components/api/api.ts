@@ -1,11 +1,11 @@
 import {
   aggregatedWordsResponse,
-  FetchParam,
   PostUser,
-  ResponseUser,
   SignInParam,
-  Tokens, UserWord, UserWordWithIds,
-  Word
+  Tokens,
+  UserWord,
+  UserWordWithIds,
+  Word,
 } from '../../interfaces';
 import { getToken, setTokens } from '../../utils/local-storage-helpers';
 import { openAuthModal } from '../authorization/authorization';
@@ -251,7 +251,7 @@ export const getUserAggregatedWords = async (
   switch (response.status) {
     case 200:
       const res = await response.json();
-      return {wordsList: res[0].paginatedResults, totalWords: res[0].totalCount[0].count}
+      return { wordsList: res[0].paginatedResults, totalWords: res[0].totalCount[0].count };
     case 401:
       const status = await updateTokens(userId);
       if (status) return await getUserAggregatedWords(userId, group, page, wordsPerPage, filter);
@@ -260,7 +260,7 @@ export const getUserAggregatedWords = async (
     default:
       throw new Error('Something went wrong');
   }
-}
+};
 
 /* ------------- USERS/STATISTICS -------------- */
 // in this block every request below

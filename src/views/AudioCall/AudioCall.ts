@@ -1,6 +1,14 @@
 import './AudioCall.scss';
 import { addElement } from '../../utils/add-element';
 import { getGameLevel, setGameLevel } from '../../utils/local-storage-helpers';
+import { getWords } from '../../components/api/api';
+import { getRandom } from '../../utils/get-random';
+import { levelToGroup, shuffle } from '../../utils/micro-helpers';
+import { Word } from '../../interfaces';
+import { getSlide } from './game-slide';
+
+const AMOUNT_PAGES_OF_GROUP = 29;
+const AMOUNT_WORDS_IN_GAME = 10;
 
 export const AudioCall = (): HTMLElement => {
   const page = addElement('main', 'audio-call-page') as HTMLElement;
@@ -18,7 +26,7 @@ export const AudioCall = (): HTMLElement => {
         <li data-level="c1" class="difficulty__item">C1</li>
         <li data-level="c2" class="difficulty__item">C2</li>
       </ul>
-      <button class="difficulty__button">Начать</button>
+      <button ${getGameLevel() ? '' : 'disabled'} id="start-audio-call">Начать</button>
     </div>
   `;
 
@@ -37,7 +45,7 @@ function addListeners(element: HTMLElement) {
     }
   });
   levelsArea.addEventListener('click', chooseLevel);
-  startButton.addEventListener('click', startAudioCall);
+  startButton.addEventListener('click', startAudioCall.bind(null, '9', '2'));
 
   function chooseLevel(event: MouseEvent) {
     const target = event.target as HTMLElement;
@@ -51,8 +59,43 @@ function addListeners(element: HTMLElement) {
   }
 }
 
-function startAudioCall() {
-  console.log('игра началась');
+function startAudioCall(pageBook?: string, groupBook?: string) {
+  //if call from textbook >>> we need attributes!
+
+  const root = document.getElementById('root') as HTMLDivElement;
+  const page: string = pageBook || String(getRandom(0, AMOUNT_PAGES_OF_GROUP));
+  const group: string = groupBook || levelToGroup(getGameLevel());
+  let wordsAnswer: Array<string>;
+  let counter = 0;
+
+  //container for slides
+  const gameContainer = addElement('main', 'audio-call-game') as HTMLElement;
+
+  getWords(page, group).then((response: Array<Word>) => {
+    const tempArr: Array<Word> = [...response];
+    shuffle(tempArr);
+
+    const targetArr: Array<Word> = tempArr.slice(AMOUNT_WORDS_IN_GAME);
+    const firstSlide = getSlide(targetArr[counter]) as HTMLElement;
+    const ansArea = firstSlide.querySelector('.slide__answers') as HTMLDivElement;
+    ansArea.addEventListener('click', checkAns);
+
+    gameContainer.appendChild(firstSlide);
+
+    root.innerHTML = '';
+    root.appendChild(gameContainer);
+
+    function checkAns(event: MouseEvent): void {
+      const target = event.target as HTMLElement;
+      if (target.dataset) {
+        const slide = document.querySelector('.audio-call-slide') as HTMLElement;
+        const next = document.getElementById('audio-game-button') as HTMLButtonElement;
+        //logic to check right answer
+        slide.classList.add('done');
+        next.disabled = false;
+      }
+    }
+  });
 }
 
 export { startAudioCall };
