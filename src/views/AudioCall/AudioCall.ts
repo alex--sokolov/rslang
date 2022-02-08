@@ -3,8 +3,8 @@ import { addElement } from '../../utils/add-element';
 import { getGameLevel, setGameLevel } from '../../utils/local-storage-helpers';
 import { getWords } from '../../components/api/api';
 import { getRandom } from '../../utils/get-random';
-import { levelToGroup, shuffle } from '../../utils/micro-helpers';
 import { Word } from '../../interfaces';
+import { levelToGroup, shuffle } from '../../utils/micro-helpers';
 import { getEmptySlide, getSlide } from './game-slide';
 
 const AMOUNT_PAGES_OF_GROUP = 29;
@@ -13,7 +13,7 @@ const AMOUNT_ANS_IN_GAME = 6;
 let AMOUNT_WORDS_IN_CHUNK = 20;
 const AUDIO_DELAY = 800;
 
-export const AudioCall = (): HTMLElement => {
+const AudioCall = (): HTMLElement => {
   const page = addElement('main', 'audio-call-page') as HTMLElement;
 
   page.innerHTML = `
@@ -176,4 +176,4 @@ function startAudioCall(pageBook?: string, groupBook?: string) {
   });
 }
 
-export { startAudioCall };
+export { AudioCall, startAudioCall };
