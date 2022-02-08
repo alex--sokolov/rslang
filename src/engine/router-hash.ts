@@ -1,20 +1,23 @@
 import { routes } from './routes';
 import setActiveLink from '../utils/set-active-link';
-import { makeLogger } from 'ts-loader/dist/logger';
+import { parseUrl } from '../utils/parse-url';
 
-const router = async (route: string[] = routes['/']) => {
+const router = async (route: string[] = routes['/'], params?: URLSearchParams): Promise<void> => {
   const currentView = await import(`../views/${route[0]}/${route[0]}`);
   const root = document.getElementById('root') as HTMLElement;
-  const pageContent = await currentView[route[0]]();
+  const pageContent = await currentView[route[0]](params);
   root.innerText = '';
   root.append(pageContent);
 };
 
 const navigate = async () => {
-  let hash: string = location.hash === '' ? '/' : location.hash.substr(1);
+  const url = location.hash.slice(1) || '/';
+  const urlParsed = parseUrl(url);
+  let hash: string = urlParsed[0]? urlParsed[0] : '/';
   if (!routes.hasOwnProperty(hash)) hash = '404';
   setActiveLink(hash);
-  await router(routes[hash]);
+  if (urlParsed[1]) await router(routes[hash], urlParsed[1]);
+  else await router(routes[hash]);
 };
 
 export { router, navigate };
