@@ -49,7 +49,10 @@
 .audio-call-game {
   height: 90vh;
   width: 100%;
+  overflow: hidden;
+  position: relative;
 }
+
 .audio-call-slide.completed {
   transform: translateX(-100%);
   transition: all 0.8s;
@@ -73,6 +76,9 @@
   }
 }
 .audio-call-slide {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   display: flex;
@@ -80,6 +86,9 @@
   align-items: center;
   justify-content: space-evenly;
   transition: all 0.8s;
+  .slide__audio-element {
+    visibility: hidden;
+  }
   .slide__question {
     display: flex;
     flex-direction: column;
@@ -109,6 +118,7 @@
       img {
         width: 50px;
         height: 50px;
+        cursor: pointer;
       }
     }
   }
@@ -132,6 +142,12 @@
         padding: 5px 12px;
         border-radius: 3px;
         cursor: pointer;
+      }
+      .slide__answers__item.right {
+        background-color: rgba(19, 213, 50, 0.79);
+      }
+      .slide__answers__item.wrong {
+        background-color: #ff5f5f;
       }
     }
   }
