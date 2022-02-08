@@ -5,10 +5,13 @@ import { getWords } from '../../components/api/api';
 import { getRandom } from '../../utils/get-random';
 import { levelToGroup, shuffle } from '../../utils/micro-helpers';
 import { Word } from '../../interfaces';
-import { getSlide } from './game-slide';
+import { getEmptySlide, getSlide } from './game-slide';
 
 const AMOUNT_PAGES_OF_GROUP = 29;
 const AMOUNT_WORDS_IN_GAME = 10;
+const AMOUNT_ANS_IN_GAME = 6;
+let AMOUNT_WORDS_IN_CHUNK = 20;
+const AUDIO_DELAY = 800;
 
 export const AudioCall = (): HTMLElement => {
   const page = addElement('main', 'audio-call-page') as HTMLElement;
@@ -45,7 +48,7 @@ function addListeners(element: HTMLElement) {
     }
   });
   levelsArea.addEventListener('click', chooseLevel);
-  startButton.addEventListener('click', startAudioCall.bind(null, '9', '2'));
+  startButton.addEventListener('click', startAudioCall.bind(null, '8', '2'));
 
   function chooseLevel(event: MouseEvent) {
     const target = event.target as HTMLElement;
@@ -65,19 +68,31 @@ function startAudioCall(pageBook?: string, groupBook?: string) {
   const root = document.getElementById('root') as HTMLDivElement;
   const page: string = pageBook || String(getRandom(0, AMOUNT_PAGES_OF_GROUP));
   const group: string = groupBook || levelToGroup(getGameLevel());
-  let wordsAnswer: Array<string>;
+  const statistic: Array<boolean> = [];
   let counter = 0;
 
-  //container for slides
+  //create container for slides
   const gameContainer = addElement('main', 'audio-call-game') as HTMLElement;
 
+  //request needed words(depending page and group)
   getWords(page, group).then((response: Array<Word>) => {
+    if (response.length) AMOUNT_WORDS_IN_CHUNK = response.length;
+    //get shuffled array targetArr(10)
     const tempArr: Array<Word> = [...response];
     shuffle(tempArr);
+    const targetArr: Array<Word> = tempArr.slice(0, AMOUNT_WORDS_IN_GAME);
 
-    const targetArr: Array<Word> = tempArr.slice(AMOUNT_WORDS_IN_GAME);
-    const firstSlide = getSlide(targetArr[counter]) as HTMLElement;
+    //create array with word have to use in answers
+    const answers: Array<Word> = [...getAnswers(tempArr, counter)];
+
+    //create first slide >>> pass attr from our prepare array
+    const firstSlide = getSlide(targetArr[counter], answers) as HTMLElement;
     const ansArea = firstSlide.querySelector('.slide__answers') as HTMLDivElement;
+    const soundBut = firstSlide.querySelector('.audio-game-sound') as HTMLDivElement;
+    const audio = firstSlide.querySelector('.slide__audio-element') as HTMLAudioElement;
+
+    setTimeout(playSound.bind(null, audio), AUDIO_DELAY);
+    soundBut.addEventListener('click', playSound.bind(null, audio));
     ansArea.addEventListener('click', checkAns);
 
     gameContainer.appendChild(firstSlide);
@@ -87,13 +102,76 @@ function startAudioCall(pageBook?: string, groupBook?: string) {
 
     function checkAns(event: MouseEvent): void {
       const target = event.target as HTMLElement;
-      if (target.dataset) {
-        const slide = document.querySelector('.audio-call-slide') as HTMLElement;
-        const next = document.getElementById('audio-game-button') as HTMLButtonElement;
+      if (target.dataset.id) {
+        //find and delete previous slide if it exists
+        const completedSlide = document.querySelector('.audio-call-slide.completed') as HTMLElement;
+        completedSlide?.remove();
+
+        //clear unnecessary handler
+        const currentSlide = document.querySelector('.audio-call-slide') as HTMLElement;
+        const ansArea = currentSlide.querySelector('.slide__answers') as HTMLDivElement;
+        ansArea.removeEventListener('click', checkAns);
+
         //logic to check right answer
-        slide.classList.add('done');
-        next.disabled = false;
+        const currentAns: boolean = target.dataset.id === currentSlide.dataset.id;
+        const rightAns = currentSlide.querySelector(`[data-id='${currentSlide.dataset.id}']`) as HTMLSpanElement;
+        statistic.push(currentAns);
+        if (currentAns) {
+          target.classList.add('right');
+        } else {
+          target.classList.add('wrong');
+          rightAns.classList.add('right');
+        }
+
+        //adding next slide to game
+        counter = counter + 1;
+        insertNewSlide();
+
+        //change view after answer
+        currentSlide.classList.add('done');
+
+        const nextBut = document.querySelector('.audio-game-button') as HTMLButtonElement;
+        nextBut.disabled = false;
+        nextBut.addEventListener('click', switchSlide);
       }
+
+      function insertNewSlide() {
+        if (counter !== 10) {
+          const answers: Array<Word> = getAnswers(tempArr, counter);
+          const newSlide = getSlide(targetArr[counter], answers, 'hide') as HTMLElement;
+          const audio = newSlide.querySelector('.slide__audio-element') as HTMLAudioElement;
+          const ansArea = newSlide.querySelector('.slide__answers') as HTMLDivElement;
+          const soundBut = newSlide.querySelector('.audio-game-sound') as HTMLDivElement;
+
+          soundBut.addEventListener('click', playSound.bind(null, audio));
+          ansArea.addEventListener('click', checkAns);
+          gameContainer.appendChild(newSlide);
+        } else {
+          gameContainer.appendChild(getEmptySlide());
+        }
+      }
+    }
+    function getAnswers(arr: Array<Word>, counter: number): Array<Word> {
+      const pos: Array<number> = [counter];
+      while (pos.length < AMOUNT_ANS_IN_GAME) {
+        const newNum: number = getRandom(0, AMOUNT_WORDS_IN_CHUNK - 1);
+        if (!pos.includes(newNum)) pos.push(newNum);
+      }
+      const output = pos.map((pos: number): Word => arr[pos]);
+      shuffle(output);
+      return output;
+    }
+    function switchSlide() {
+      const currentSlide = document.querySelector('.audio-call-slide.done') as HTMLElement;
+      const nextSlide = document.querySelector('.audio-call-slide.hide') as HTMLElement;
+      const audio = nextSlide.querySelector('.slide__audio-element') as HTMLAudioElement;
+      setTimeout(playSound.bind(null, audio), AUDIO_DELAY);
+
+      currentSlide?.classList.add('completed');
+      nextSlide?.classList.remove('hide');
+    }
+    function playSound(element: HTMLAudioElement) {
+      element?.play();
     }
   });
 }
