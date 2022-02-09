@@ -87,3 +87,11 @@ export interface FetchParam {
   };
   body?: string;
 }
+export interface AudioCallVars {
+  AMOUNT_PAGES_OF_GROUP: number;
+  AMOUNT_WORDS_IN_GAME: number;
+  AMOUNT_ANS_IN_GAME: number;
+  AMOUNT_WORDS_IN_CHUNK: number;
+  AUDIO_DELAY: number;
+  statistic: Array<boolean>;
+}

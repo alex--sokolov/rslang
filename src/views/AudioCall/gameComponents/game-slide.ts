@@ -1,7 +1,7 @@
-import { addElement } from '../../utils/add-element';
-import { Word } from '../../interfaces';
-import { baseUrl } from '../../components/api/api';
-import soundIcon from '../../assets/img/sound.svg';
+import { addElement } from '../../../utils/add-element';
+import { Word } from '../../../interfaces';
+import { baseUrl } from '../../../components/api/api';
+import soundIcon from '../../../assets/img/sound.svg';
 
 function getSlide(param: Word, ans: Array<Word>, type?: string): HTMLElement {
   const slide = addElement('div', 'audio-call-slide slide') as HTMLDivElement;
