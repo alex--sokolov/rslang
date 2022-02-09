@@ -4,8 +4,52 @@ import { getWords, getWordById } from '../../components/api/api';
 import { Word } from '../../interfaces';
 import { wordCardRender } from './wordRender';
 import chapterRender from './chapterRender';
-import paginationRender from './pagination';
 import wordListRender from './wordListRender';
+import Pagination from 'tui-pagination';
+import { PaginationEvent } from '../../types';
+import './tui-pagination.scss';
+
+export let pagination: Pagination;
+
+const paginationOptions = {
+  totalItems: 30,
+  itemsPerPage: 1,
+  visiblePages: 5,
+  page: 1,
+  centerAlign: true,
+  firstItemClassName: 'tui-first-child',
+  lastItemClassName: 'tui-last-child',
+  template: {
+    page: '<button class="tui-page-btn">{{page}}</button>',
+    currentPage: '<strong class="tui-page-btn tui-is-selected">{{page}}</strong>',
+    moveButton:
+      '<button class="tui-page-btn tui-{{type}}">' + '<span class="tui-ico-{{type}}">{{type}}</span>' + '</button>',
+    disabledMoveButton:
+      '<span class="tui-page-btn tui-is-disabled tui-{{type}}">' +
+      '<span class="tui-ico-{{type}}">{{type}}</span>' +
+      '</span>',
+    moreButton:
+      '<button class="tui-page-btn tui-{{type}}-is-ellip">' + '<span class="tui-ico-ellip">...</span>' + '</button>',
+  },
+};
+
+async function paginationListener(event: PaginationEvent) {
+  const currentPage = event.page - 1;
+
+  const wordListWrapper = document.querySelector('.word-list-wrapper') as HTMLDivElement;
+  const wordCardWrapper = document.querySelector('.word-card-wrapper') as HTMLDivElement;
+  const chapterListElement = document.querySelector('.chapter-list') as HTMLUListElement;
+  const chapterCheckedElement = chapterListElement.querySelector('input[type="radio"]:checked') as HTMLInputElement;
+
+  const chapterId = (chapterCheckedElement.getAttribute('id') as string).slice(-1);
+  const wordsArr = await getWords(`${currentPage}`, chapterId);
+
+  wordListWrapper.innerHTML = '';
+  wordListWrapper.append(wordListRender(wordsArr));
+
+  wordCardWrapper.innerHTML = '';
+  wordCardWrapper.append(wordCardRender(wordsArr[0]));
+}
 
 let wordsArr: Word[] = [];
 
@@ -26,8 +70,14 @@ export const Dictionary = async (): Promise<HTMLElement> => {
   wordListWrapper.append(wordList);
   mainContentContainer.append(wordCardWrapper, wordListWrapper);
 
+  const paginationElement = addElement('div', 'tui-pagination') as HTMLDivElement;
+  paginationElement.id = 'pagination'; // TODO: после rebase develop удалить и вставить id выше
 
-  page.append(pageTitle, chapterRender(), wordsTitle, mainContentContainer, paginationRender());
+  page.append(pageTitle, chapterRender(), wordsTitle, mainContentContainer, paginationElement);
+
+  pagination = new Pagination(paginationElement, paginationOptions);
+  pagination.on('afterMove', async (event) => paginationListener(event));
 
   return page;
 };
+

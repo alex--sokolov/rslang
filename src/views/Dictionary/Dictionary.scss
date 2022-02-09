@@ -66,30 +66,6 @@ b {
   }
 }
 
-
-
-.pagination {
-  // display: flex;
-  list-style: none;
-
-  li {
-    display: inline-block;
-  }
-
-  .page__btn {
-    // padding: 10px;
-    height: 38px;
-    min-width: 38px;
-    cursor: pointer;
-    margin-right: 5px;
-
-    &:last-child {
-      margin: 0;
-    }
-
-    &_active {
-      background-color: gray;
-    }
-  }
+.tui-pagination {
+  margin-bottom: 30px;
 }
-

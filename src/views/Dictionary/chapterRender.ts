@@ -2,6 +2,7 @@ import { addElement } from '../../utils/add-element';
 import wordListRender from './wordListRender';
 import { getWords } from '../../components/api/api';
 import { wordCardRender } from './wordRender';
+import { pagination } from './Dictionary';
 
 async function chapterListener(i: number) {
   const wordsArr = await getWords('0', `${i}`);
@@ -13,6 +14,8 @@ async function chapterListener(i: number) {
 
   wordCardWrapper.innerHTML = '';
   wordCardWrapper.append(wordCardRender(wordsArr[0]));
+
+  pagination.reset(30);
 }
 
 const chapterRender = (): HTMLDivElement => {

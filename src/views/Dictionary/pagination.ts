@@ -1,3 +1,5 @@
+// old pagination, we'll delete it later
+
 import { addElement } from '../../utils/add-element';
 import { getWords } from '../../components/api/api';
 import wordListRender from './wordListRender';
