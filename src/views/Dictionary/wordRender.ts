@@ -11,14 +11,16 @@ export const wordCardRender = (word: Word): HTMLDivElement => {
   const cardVoiceBtn = addElement('button', 'card__voice-btn') as HTMLButtonElement;
   const cardTranslate = addTextElement('h4', 'card__translate', `${word.wordTranslate}`) as HTMLParagraphElement;
   const cardSubheading = addTextElement('h5', 'card__subheading', 'Значение') as HTMLHeadingElement;
-  const cardTextMeaning = addTextElement('p', 'card__text', `${word.textMeaning}`) as HTMLParagraphElement;
+  const cardTextMeaning = addElement('p', 'card__text') as HTMLParagraphElement;
+  cardTextMeaning.insertAdjacentHTML('beforeend', word.textMeaning);
   const cardTextMeaningTranslate = addTextElement(
     'p',
     'card__text',
     `${word.textMeaningTranslate}`
   ) as HTMLParagraphElement;
   const cardSubheading2 = addTextElement('h5', 'card__subheading', 'Пример') as HTMLHeadingElement;
-  const cardTextExample = addTextElement('p', 'card__text', `${word.textExample}`) as HTMLParagraphElement;
+  const cardTextExample = addElement('p', 'card__text') as HTMLParagraphElement;
+  cardTextExample.insertAdjacentHTML('beforeend', word.textExample);
   const cardTextExampleTranslate = addTextElement(
     'p',
     'card__text',
