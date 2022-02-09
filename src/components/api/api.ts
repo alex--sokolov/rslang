@@ -1,4 +1,12 @@
-import { FetchParam, PostUser, ResponseUser, SignInParam, Tokens, Word } from '../../interfaces';
+import {
+  aggregatedWordsResponse,
+  FetchParam,
+  PostUser,
+  ResponseUser,
+  SignInParam,
+  Tokens,
+  Word
+} from '../../interfaces';
 import { getToken, setTokens } from '../../utils/local-storage-helpers';
 
 export const baseUrl = 'https://rs-lang-app-server.herokuapp.com/';
@@ -157,6 +165,43 @@ export const deleteUserWordById = async (userId: string, wordId: string): Promis
   };
   const response = await fetch(`${baseUrl}users/${userId}/words/${wordId}`, param);
   return response.ok;
+};
+
+
+
+/* ------------- Users/AggregatedWords -------------- */
+// in this block every request below
+// if status===401 we need to update tokens
+// Example for field filter:
+// {"$and":[{"group":1}, {"page":25}, {"userWord.difficulty":"easy"}]}
+// {"$or":[{"$and":[{"userWord.difficulty":"easy", "userWord.optional.new":true}]},{"userWord":null}]}
+export const getUserAggregatedWords = async (
+  userId: string,
+  group?: string,
+  page?: string,
+  wordsPerPage?: string,
+  filter?: string
+): Promise<aggregatedWordsResponse> => {
+  let params = [];
+  if (group) params.push(`group=${group}`);
+  if (page && !filter) params.push(`page=${page}`);
+  if (wordsPerPage) params.push(`wordsPerPage=${wordsPerPage}`);
+  if (filter) params.push(`filter=${filter}`);
+  let filterQuery: string = params.join('&');
+  filterQuery = filterQuery ? `?${filterQuery}` : '';
+  const param = {
+    method: 'GET',
+    withCredentials: true,
+    headers: {
+      Authorization: `Bearer ${getToken()}`,
+      Accept: 'application/json',
+    },
+  };
+  const response: Response = await fetch(`${baseUrl}users/${userId}/aggregatedWords${filterQuery}`, param);
+  if (response?.status === 200){
+    const res = await response.json();
+    return {wordsList: res[0].paginatedResults, totalWords: res[0].totalCount[0].count}
+  } else return {wordsList:[], totalWords: 0}
 };
 
 /* ------------- USERS/STATISTICS -------------- */

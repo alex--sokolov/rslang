@@ -14,6 +14,38 @@ export interface Word {
   textMeaningTranslate: string;
   wordTranslate: string;
 }
+
+export interface GameWordStat {
+  right: number;
+  wrong: number;
+}
+
+export interface GamesWordStat {
+  sprint?: GameWordStat;
+  audioCall?: GameWordStat;
+  correctAnswerSeries?: number;
+}
+
+export interface WordOptional {
+  addTime: number;
+  new: boolean;
+  games?: GamesWordStat;
+}
+
+export interface UserWord {
+  difficulty: "easy" | "hard" | "learned";
+  optional?: WordOptional;
+}
+
+export interface WordExtended extends Word {
+  userWord: UserWord;
+}
+
+export interface aggregatedWordsResponse {
+  wordsList: WordExtended[];
+  totalWords: number;
+}
+
 export interface SignInParam {
   email: string;
   password: string;
