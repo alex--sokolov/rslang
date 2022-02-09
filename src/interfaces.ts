@@ -37,6 +37,11 @@ export interface UserWord {
   optional?: WordOptional;
 }
 
+export interface UserWordWithIds extends UserWord {
+  id: string;
+  wordId: string;
+}
+
 export interface WordExtended extends Word {
   userWord: UserWord;
 }

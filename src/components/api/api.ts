@@ -4,10 +4,11 @@ import {
   PostUser,
   ResponseUser,
   SignInParam,
-  Tokens,
+  Tokens, UserWord, UserWordWithIds,
   Word
 } from '../../interfaces';
 import { getToken, setTokens } from '../../utils/local-storage-helpers';
+import { openAuthModal } from '../authorization/authorization';
 
 export const baseUrl = 'https://rs-lang-app-server.herokuapp.com/';
 
@@ -100,9 +101,8 @@ export const deleteUser = async (userId: string): Promise<boolean> => {
 };
 
 /* ------------- USERS/WORDS -------------- */
-// in this block every request below
-// if status===401 we need to update tokens
-export const getUserWords = async (userId: string): Promise<Response> => {
+
+export const getUserWords = async (userId: string): Promise<UserWordWithIds | void> => {
   const param = {
     method: 'GET',
     withCredentials: true,
@@ -111,12 +111,23 @@ export const getUserWords = async (userId: string): Promise<Response> => {
       Accept: 'application/json',
     },
   };
-  return await fetch(`${baseUrl}users/${userId}/words`, param);
+  const response: Response = await fetch(`${baseUrl}users/${userId}/words`, param);
+  switch (response.status) {
+    case 200:
+      const res = await response.json();
+      return res;
+    case 401:
+      const status = await updateTokens(userId);
+      if (status) return await getUserWords(userId);
+      else openAuthModal();
+      break;
+    default:
+      throw new Error('Something went wrong');
+  }
 };
 
-//TODO: define word type!!! The response type is based on word type.
-export const addToUserWords = async (userId: string, wordId: string, word: any): Promise<Response> => {
-  return await fetch(`${baseUrl}users/${userId}/words/${wordId}`, {
+export const createUserWord = async (userId: string, wordId: string, word: UserWord): Promise<Response | void> => {
+  const response: Response = await fetch(`${baseUrl}users/${userId}/words/${wordId}`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${getToken()}`,
@@ -125,9 +136,20 @@ export const addToUserWords = async (userId: string, wordId: string, word: any):
     },
     body: JSON.stringify(word),
   });
+  switch (response.status) {
+    case 200:
+      return response;
+    case 401:
+      const status = await updateTokens(userId);
+      if (status) return await createUserWord(userId, wordId, word);
+      else openAuthModal();
+      break;
+    default:
+      throw new Error('Something went wrong');
+  }
 };
 
-export const getUserWordById = async (userId: string, wordId: string): Promise<Response> => {
+export const getUserWord = async (userId: string, wordId: string): Promise<UserWordWithIds | void> => {
   const param = {
     method: 'GET',
     withCredentials: true,
@@ -136,11 +158,22 @@ export const getUserWordById = async (userId: string, wordId: string): Promise<R
       Accept: 'application/json',
     },
   };
-  return await fetch(`${baseUrl}users/${userId}/words/${wordId}`, param);
+  const response: Response = await fetch(`${baseUrl}users/${userId}/words/${wordId}`, param);
+  switch (response.status) {
+    case 200:
+      const res = await response.json();
+      return res;
+    case 401:
+      const status = await updateTokens(userId);
+      if (status) return await getUserWord(userId, wordId);
+      else openAuthModal();
+      break;
+    default:
+      throw new Error('Something went wrong');
+  }
 };
 
-//TODO: define word type!!! The response type is based on word type.
-export const putUserWordById = async (userId: string, wordId: string, word: any): Promise<Response> => {
+export const updateUserWord = async (userId: string, wordId: string, word: UserWord): Promise<Response | void> => {
   const param = {
     method: 'PUT',
     withCredentials: true,
@@ -151,10 +184,21 @@ export const putUserWordById = async (userId: string, wordId: string, word: any)
     },
     body: JSON.stringify(word),
   };
-  return await fetch(`${baseUrl}users/${userId}/words/${wordId}`, param);
+  const response: Response = await fetch(`${baseUrl}users/${userId}/words/${wordId}`, param);
+  switch (response.status) {
+    case 200:
+      return response;
+    case 401:
+      const status = await updateTokens(userId);
+      if (status) return await updateUserWord(userId, wordId, word);
+      else openAuthModal();
+      break;
+    default:
+      throw new Error('Something went wrong');
+  }
 };
 
-export const deleteUserWordById = async (userId: string, wordId: string): Promise<boolean> => {
+export const deleteUserWord = async (userId: string, wordId: string): Promise<Response | void> => {
   const param = {
     method: 'DELETE',
     withCredentials: true,
@@ -163,15 +207,21 @@ export const deleteUserWordById = async (userId: string, wordId: string): Promis
       Accept: '*/*',
     },
   };
-  const response = await fetch(`${baseUrl}users/${userId}/words/${wordId}`, param);
-  return response.ok;
+  const response: Response = await fetch(`${baseUrl}users/${userId}/words/${wordId}`, param);
+  switch (response.status) {
+    case 200:
+      return response;
+    case 401:
+      const status = await updateTokens(userId);
+      if (status) return await deleteUserWord(userId, wordId);
+      else openAuthModal();
+      break;
+    default:
+      throw new Error('Something went wrong');
+  }
 };
 
-
-
 /* ------------- Users/AggregatedWords -------------- */
-// in this block every request below
-// if status===401 we need to update tokens
 // Example for field filter:
 // {"$and":[{"group":1}, {"page":25}, {"userWord.difficulty":"easy"}]}
 // {"$or":[{"$and":[{"userWord.difficulty":"easy", "userWord.optional.new":true}]},{"userWord":null}]}
@@ -181,7 +231,7 @@ export const getUserAggregatedWords = async (
   page?: string,
   wordsPerPage?: string,
   filter?: string
-): Promise<aggregatedWordsResponse> => {
+): Promise<aggregatedWordsResponse | void> => {
   let params = [];
   if (group) params.push(`group=${group}`);
   if (page && !filter) params.push(`page=${page}`);
@@ -198,11 +248,19 @@ export const getUserAggregatedWords = async (
     },
   };
   const response: Response = await fetch(`${baseUrl}users/${userId}/aggregatedWords${filterQuery}`, param);
-  if (response?.status === 200){
-    const res = await response.json();
-    return {wordsList: res[0].paginatedResults, totalWords: res[0].totalCount[0].count}
-  } else return {wordsList:[], totalWords: 0}
-};
+  switch (response.status) {
+    case 200:
+      const res = await response.json();
+      return {wordsList: res[0].paginatedResults, totalWords: res[0].totalCount[0].count}
+    case 401:
+      const status = await updateTokens(userId);
+      if (status) return await getUserAggregatedWords(userId, group, page, wordsPerPage, filter);
+      else openAuthModal();
+      break;
+    default:
+      throw new Error('Something went wrong');
+  }
+}
 
 /* ------------- USERS/STATISTICS -------------- */
 // in this block every request below

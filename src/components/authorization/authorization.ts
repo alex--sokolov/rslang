@@ -57,8 +57,7 @@ const AuthPanel = (): HTMLElement => {
   return authPanel;
 };
 
-function openAuthModal() {
-
+const openAuthModal = () => {
   if (!document.querySelector('.auth-form')) {
     showModal(Authorization('signin'));
     const authForm = document.getElementById('auth-form') as HTMLFormElement;
@@ -87,7 +86,6 @@ function openAuthModal() {
     submitForm.removeEventListener('click', registration);
     submitForm.addEventListener('click', signIn);
   }
-
   const authToggleBtn = document.getElementById('auth-toggle-btn') as HTMLButtonElement;
   authToggleBtn.removeEventListener('click', signOut);
   authToggleBtn.addEventListener('click', openAuthModal);

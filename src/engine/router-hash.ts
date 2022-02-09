@@ -6,8 +6,10 @@ const router = async (route: string[] = routes['/'], params?: URLSearchParams): 
   const currentView = await import(`../views/${route[0]}/${route[0]}`);
   const root = document.getElementById('root') as HTMLElement;
   const pageContent = await currentView[route[0]](params);
-  root.innerText = '';
-  root.append(pageContent);
+  if (pageContent){
+    root.innerText = '';
+    root.append(pageContent);
+  }
 };
 
 const navigate = async () => {
