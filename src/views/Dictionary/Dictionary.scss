@@ -1,0 +1,71 @@
+i {
+  font-style: italic;
+}
+
+b {
+  font-weight: bold;
+}
+
+.page-title,
+.words-title {
+  padding: 20px 0;
+  font-size: 32px;
+  font-weight: 700;
+}
+
+.chapter-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  text-align: center;
+  gap: 30px;
+
+  input {
+    display: none;
+  }
+
+  input:checked + label {
+    background-color: coral;
+  }
+}
+
+.chapter-label {
+  flex-grow: 1;
+  padding: 10px;
+  background-color: darkseagreen;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.chapter-words-nums {
+  font-size: 10px;
+}
+
+.dictionary-words-container {
+  display: flex;
+  // flex-wrap: wrap;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.word-card-wrapper {
+  width: 400px;
+}
+
+.word-list {
+  display: flex;
+  flex-wrap: wrap;
+  row-gap: 20px;
+}
+
+.word-item {
+  width: 100px;
+
+  &--active {
+    background-color: darkorange;
+  }
+}
+
+.tui-pagination {
+  margin-bottom: 30px;
+}
