@@ -1,9 +1,17 @@
 @import "./../../css/vars.scss";
 
+.auth-panel-container {
+  display: flex;
+  gap: 10px;
+  .navbar-name {
+    min-width: 60px;
+    text-align: end;
+  }
+}
+
 .auth-form {
   max-width: 500px;
   padding: 50px;
-  background-color: aquamarine;
   text-align: start;
   // display: flex;
   // flex-wrap: wrap;
@@ -23,7 +31,6 @@
     width: 100%;
   }
 }
-
 .auth__warn {
   color: red;
   visibility: hidden;
@@ -31,4 +38,5 @@
 .auth__warn.show {
   visibility: visible;
 }
+
 

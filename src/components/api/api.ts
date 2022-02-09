@@ -1,4 +1,12 @@
-import { FetchParam, PostUser, ResponseUser, SignInParam, Tokens, Word } from '../../interfaces';
+import {
+  aggregatedWordsResponse,
+  FetchParam,
+  PostUser,
+  ResponseUser,
+  SignInParam,
+  Tokens,
+  Word
+} from '../../interfaces';
 import { getToken, setTokens } from '../../utils/local-storage-helpers';
 
 export const baseUrl = 'https://rs-lang-app-server.herokuapp.com/';
@@ -29,7 +37,7 @@ export const createUser = async (user: PostUser): Promise<Response> => {
 
 //LOG IN - returns standard response for next status check
 export const signInApi = async (form: SignInParam): Promise<Response> => {
-  const param: FetchParam = {
+  const param = {
     method: 'POST',
     headers: {
       Accept: 'application/json',
@@ -53,11 +61,11 @@ export const updateTokens = async (userId: string): Promise<boolean> => {
 
 // if status===401 we need update tokens
 export const getUserById = async (userId: string): Promise<Response> => {
-  const param: FetchParam = {
+  const param = {
     method: 'GET',
     withCredentials: true,
     headers: {
-      Authorization: `Bearer ${getToken('main')}`,
+      Authorization: `Bearer ${getToken()}`,
       Accept: 'application/json',
     },
   };
@@ -65,11 +73,11 @@ export const getUserById = async (userId: string): Promise<Response> => {
 };
 
 export const putUser = async (userId: string, form: SignInParam): Promise<Response> => {
-  const param: FetchParam = {
+  const param = {
     method: 'PUT',
     withCredentials: true,
     headers: {
-      Authorization: `Bearer ${getToken('main')}`,
+      Authorization: `Bearer ${getToken()}`,
       Accept: 'application/json',
       'Content-Type': 'application/json',
     },
@@ -79,7 +87,7 @@ export const putUser = async (userId: string, form: SignInParam): Promise<Respon
 };
 
 export const deleteUser = async (userId: string): Promise<boolean> => {
-  const param: FetchParam = {
+  const param = {
     method: 'DELETE',
     withCredentials: true,
     headers: {
@@ -89,4 +97,139 @@ export const deleteUser = async (userId: string): Promise<boolean> => {
   };
   const response = await fetch(`${baseUrl}users/${userId}`, param);
   return response.ok;
+};
+
+/* ------------- USERS/WORDS -------------- */
+// in this block every request below
+// if status===401 we need to update tokens
+export const getUserWords = async (userId: string): Promise<Response> => {
+  const param = {
+    method: 'GET',
+    withCredentials: true,
+    headers: {
+      Authorization: `Bearer ${getToken()}`,
+      Accept: 'application/json',
+    },
+  };
+  return await fetch(`${baseUrl}users/${userId}/words`, param);
+};
+
+//TODO: define word type!!! The response type is based on word type.
+export const addToUserWords = async (userId: string, wordId: string, word: any): Promise<Response> => {
+  return await fetch(`${baseUrl}users/${userId}/words/${wordId}`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${getToken()}`,
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(word),
+  });
+};
+
+export const getUserWordById = async (userId: string, wordId: string): Promise<Response> => {
+  const param = {
+    method: 'GET',
+    withCredentials: true,
+    headers: {
+      Authorization: `Bearer ${getToken()}`,
+      Accept: 'application/json',
+    },
+  };
+  return await fetch(`${baseUrl}users/${userId}/words/${wordId}`, param);
+};
+
+//TODO: define word type!!! The response type is based on word type.
+export const putUserWordById = async (userId: string, wordId: string, word: any): Promise<Response> => {
+  const param = {
+    method: 'PUT',
+    withCredentials: true,
+    headers: {
+      Authorization: `Bearer ${getToken()}`,
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(word),
+  };
+  return await fetch(`${baseUrl}users/${userId}/words/${wordId}`, param);
+};
+
+export const deleteUserWordById = async (userId: string, wordId: string): Promise<boolean> => {
+  const param = {
+    method: 'DELETE',
+    withCredentials: true,
+    headers: {
+      Authorization: `Bearer ${getToken('main')}`,
+      Accept: '*/*',
+    },
+  };
+  const response = await fetch(`${baseUrl}users/${userId}/words/${wordId}`, param);
+  return response.ok;
+};
+
+
+
+/* ------------- Users/AggregatedWords -------------- */
+// in this block every request below
+// if status===401 we need to update tokens
+// Example for field filter:
+// {"$and":[{"group":1}, {"page":25}, {"userWord.difficulty":"easy"}]}
+// {"$or":[{"$and":[{"userWord.difficulty":"easy", "userWord.optional.new":true}]},{"userWord":null}]}
+export const getUserAggregatedWords = async (
+  userId: string,
+  group?: string,
+  page?: string,
+  wordsPerPage?: string,
+  filter?: string
+): Promise<aggregatedWordsResponse> => {
+  let params = [];
+  if (group) params.push(`group=${group}`);
+  if (page && !filter) params.push(`page=${page}`);
+  if (wordsPerPage) params.push(`wordsPerPage=${wordsPerPage}`);
+  if (filter) params.push(`filter=${filter}`);
+  let filterQuery: string = params.join('&');
+  filterQuery = filterQuery ? `?${filterQuery}` : '';
+  const param = {
+    method: 'GET',
+    withCredentials: true,
+    headers: {
+      Authorization: `Bearer ${getToken()}`,
+      Accept: 'application/json',
+    },
+  };
+  const response: Response = await fetch(`${baseUrl}users/${userId}/aggregatedWords${filterQuery}`, param);
+  if (response?.status === 200){
+    const res = await response.json();
+    return {wordsList: res[0].paginatedResults, totalWords: res[0].totalCount[0].count}
+  } else return {wordsList:[], totalWords: 0}
+};
+
+/* ------------- USERS/STATISTICS -------------- */
+// in this block every request below
+// if status===401 we need to update tokens
+export const getUserStat = async (userId: string): Promise<Response> => {
+  const param = {
+    method: 'GET',
+    withCredentials: true,
+    headers: {
+      Authorization: `Bearer ${getToken()}`,
+      Accept: 'application/json',
+    },
+  };
+  return await fetch(`${baseUrl}users/${userId}/statistics`, param);
+};
+
+//TODO: define stat type!!!
+export const putUserStat = async (userId: string, stat: any): Promise<Response> => {
+  const param = {
+    method: 'PUT',
+    withCredentials: true,
+    headers: {
+      Authorization: `Bearer ${getToken()}`,
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(stat),
+  };
+  return await fetch(`${baseUrl}users/${userId}/statistics`, param);
 };

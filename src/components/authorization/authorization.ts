@@ -1,5 +1,10 @@
 import './authorization.scss';
-import { addElement } from '../../utils/add-element';
+import { addElement, addTextElement } from '../../utils/add-element';
+import { signIn } from './sign-in';
+import { registration } from './registration';
+import { signOut } from './sign-out';
+import { getToken, getUserId, getUserName } from '../../utils/local-storage-helpers';
+import { showModal } from '../../utils/show-modal';
 
 const authSingInHTML = `
   <h3 class="auth__title">Войдите в свой аккаунт!</h3>
@@ -29,15 +34,63 @@ const authRegisterHTML = `
 `;
 
 const Authorization = (type = 'signin') => {
-  const element = addElement('form', 'auth-form auth') as HTMLFormElement;
+  const element = addElement('form', 'auth-form auth', 'auth-form') as HTMLFormElement;
 
   if (type === 'signin') {
     element.innerHTML = authSingInHTML;
   } else if (type === 'register') {
     element.innerHTML = authRegisterHTML;
   }
-
   return element;
 };
 
-export default Authorization;
+const AuthPanel = (): HTMLElement => {
+  const authPanel = addElement('div', 'auth-panel-container');
+  const authUserName = addTextElement('span', 'navbar-name', getUserName());
+  const authLinkText = getToken() ? 'Выйти' : 'Войти';
+  const authLink = addTextElement('button', 'navbar-auth', authLinkText);
+  authPanel.appendChild(authUserName);
+  authPanel.appendChild(authLink);
+
+  authLink.removeEventListener('click', getUserId() ? openAuthModal : signOut);
+  authLink.addEventListener('click', getUserId() ? signOut : openAuthModal);
+  return authPanel;
+};
+
+function openAuthModal() {
+
+  if (!document.querySelector('.auth-form')) {
+    showModal(Authorization('signin'));
+    const authForm = document.getElementById('auth-form') as HTMLFormElement;
+    authForm.setAttribute('data-type', 'signin');
+  } else {
+    const authForm = document.querySelector('.auth-form') as HTMLFormElement;
+    const authFormType = authForm.getAttribute('data-type');
+
+    if (authFormType === 'signin') {
+      authForm.remove();
+      showModal(Authorization('register'));
+      document.querySelector('.auth-form')?.setAttribute('data-type', 'register');
+    } else if (authFormType === 'register') {
+      authForm.remove();
+      showModal(Authorization('signin'));
+      document.querySelector('.auth-form')?.setAttribute('data-type', 'signin');
+    }
+  }
+
+  const submitForm = document.querySelector('.auth-form [type="submit"]') as HTMLInputElement;
+  if (submitForm.dataset.mode === 'register') {
+    submitForm.removeEventListener('click', signIn);
+    submitForm.addEventListener('click', registration);
+  }
+  if (submitForm.dataset.mode === 'signin') {
+    submitForm.removeEventListener('click', registration);
+    submitForm.addEventListener('click', signIn);
+  }
+
+  const authToggleBtn = document.getElementById('auth-toggle-btn') as HTMLButtonElement;
+  authToggleBtn.removeEventListener('click', signOut);
+  authToggleBtn.addEventListener('click', openAuthModal);
+}
+
+export { Authorization, openAuthModal, AuthPanel };

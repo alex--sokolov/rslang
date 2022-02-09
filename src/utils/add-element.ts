@@ -1,6 +1,7 @@
-export const addElement = (tagType: string, className: string): HTMLElement => {
+export const addElement = (tagType: string, className: string, id?: string): HTMLElement => {
   const element = document.createElement(tagType);
   if(className != '') element.setAttribute('class', className);
+  if(id) element.id = id;
   return element;
 }
 

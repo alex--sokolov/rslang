@@ -1,8 +1,8 @@
 import { AuthParam, SignInParam, Tokens } from '../../interfaces';
 import { signInApi } from '../api/api';
 import { setTokens, setUserId, setUserName } from '../../utils/local-storage-helpers';
-import { openAuthModal } from '../navbar/navbar';
 import { signOut } from './sign-out';
+import { openAuthModal } from './authorization';
 
 function signIn(event: Event): void {
   event.preventDefault();
@@ -30,7 +30,7 @@ function signIn(event: Event): void {
         response.json().then((response: AuthParam) => {
           const form = document.querySelector('.auth-form') as HTMLFormElement;
           const headerButton = document.querySelector('.navbar-auth') as HTMLFormElement;
-          const headerName = document.querySelector('.navbar .navbar-name') as HTMLSpanElement;
+          const headerName = document.querySelector('.navbar-name') as HTMLSpanElement;
           const tokens: Tokens = {
             token: response.token,
             refreshToken: response.refreshToken,

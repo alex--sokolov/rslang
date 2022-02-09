@@ -70,8 +70,7 @@ export const Dictionary = async (): Promise<HTMLElement> => {
   wordListWrapper.append(wordList);
   mainContentContainer.append(wordCardWrapper, wordListWrapper);
 
-  const paginationElement = addElement('div', 'tui-pagination') as HTMLDivElement;
-  paginationElement.id = 'pagination'; // TODO: после rebase develop удалить и вставить id выше
+  const paginationElement = addElement('div', 'tui-pagination', 'pagination') as HTMLDivElement;
 
   page.append(pageTitle, chapterRender(), wordsTitle, mainContentContainer, paginationElement);
 
