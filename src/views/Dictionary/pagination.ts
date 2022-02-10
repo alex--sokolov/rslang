@@ -19,6 +19,8 @@ async function pageListener(i: number) {
 
   wordCardWrapper.innerHTML = '';
   wordCardWrapper.append(wordCardRender(wordsArr[0]));
+
+  
 }
 
 const paginationRender = (): HTMLUListElement => {
