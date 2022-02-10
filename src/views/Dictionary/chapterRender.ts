@@ -21,10 +21,10 @@ async function chapterListener(i: number) {
 const chapterRender = (): HTMLDivElement => {
   const chapterList = addElement('div', 'chapter-list') as HTMLDivElement;
 
-  for (let i = 0; i < 6; i++) {
-    const chapterLabel = addElement('label', 'chapter-label') as HTMLLabelElement;
+  for (let i = 0; i < 7; i++) {
+    const chapterLabel = addElement('label', `chapter-label chapter-label_${i}`) as HTMLLabelElement;
     chapterLabel.setAttribute('for', `group-${i}`);
-    chapterLabel.textContent = `Часть ${i + 1}`;
+    chapterLabel.textContent = i < 6 ? `Раздел ${i + 1}` : 'Сложные слова';
 
     const chapterRadio = document.createElement('input');
     chapterRadio.type = 'radio';
@@ -38,7 +38,7 @@ const chapterRender = (): HTMLDivElement => {
     const chapterWordsNums = addElement('p', 'chapter-words-nums') as HTMLSpanElement;
     chapterWordsNums.textContent = `${i * 600 + 1}-${(i + 1) * 600}`;
 
-    chapterLabel.append(chapterWordsNums);
+    if (i < 6) chapterLabel.append(chapterWordsNums);
     chapterList.append(chapterRadio);
     chapterList.append(chapterLabel);
 

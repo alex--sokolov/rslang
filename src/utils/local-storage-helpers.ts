@@ -26,3 +26,16 @@ export const getGameLevel = (): string => {
 export const getUserName = (): string => {
   return <string>localStorage.getItem('username');
 };
+
+export const setCurrentPage = (page: string): void => {
+  localStorage.setItem('page', JSON.stringify(page));
+};
+export const setCurrentChapter = (chapter: string): void => {
+  localStorage.setItem('chapter', JSON.stringify(chapter));
+};
+export const getCurrentPage = (): string => {
+  return <string>localStorage.getItem('page');
+};
+export const getCurrentChapter = (): string => {
+  return <string>localStorage.getItem('chapter');
+};
