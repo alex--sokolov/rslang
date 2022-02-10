@@ -2,6 +2,8 @@
   margin: 0 auto;
   padding: 0;
   box-sizing: border-box;
+  transition: all 0.3s ease-in-out;
+  font-family: "Neucha";
 }
 
 html, body, div, span, applet, object, iframe,
@@ -20,7 +22,7 @@ time, mark, audio, video {
   margin: 0;
   padding: 0;
   border: 0;
-  font-family: 'Roboto';
+  // font-family: 'Roboto';
   font-style: normal;
   font-weight: 400;
   font-size: 100%;
@@ -69,14 +71,30 @@ h1 {
   font-size: 2rem;
 }
 
+h1, h2, h3, h4, h5 {
+  letter-spacing: 1px;
+}
+
+button {
+  cursor: pointer;
+}
+
 .container {
   max-width: 1440px;
   margin: 0 auto;
   padding: 0 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.16);
+
 }
 
 #root {
   padding-bottom: 30px;
-  background-color: lightgray;
+  color: $color-main;
+  background: $color-bg;
+  min-height: calc(100vh - 120px);
 }
 
+
+a {
+  font-family: "Neucha";
+}
