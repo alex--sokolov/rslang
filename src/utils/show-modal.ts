@@ -1,14 +1,16 @@
 import './show-modal.scss';
 import { addElement, addTextElement } from './add-element';
+import { navigate } from '../engine/router-hash';
 
 export const showModal = (element: HTMLElement): void => {
 
   const overlay = document.querySelector('.overlay') as HTMLElement;
   const overlayFadeInClass = 'overlay-fadeIn';
-  const removeModal = (modalEl: HTMLElement, overlayListener?: void) => {
+  const removeModal = async (modalEl: HTMLElement, overlayListener?: void) => {
     modalEl.remove();
     if (overlay.classList.contains(overlayFadeInClass)) overlay.classList.remove(overlayFadeInClass);
-    if (overlayListener) overlay.removeEventListener('click', overlayListener)
+    if (overlayListener) overlay.removeEventListener('click', overlayListener);
+    await navigate();
   }
   const modalClass = 'modal-window';
   const modalOld = document.getElementById(modalClass);
@@ -34,5 +36,4 @@ export const showModal = (element: HTMLElement): void => {
   modal.append(element);
   modal.append(closeModal);
   root.append(modal);
-
 };

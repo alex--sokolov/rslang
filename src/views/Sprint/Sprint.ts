@@ -1,8 +1,8 @@
 import './Sprint.scss';
 import { addElement, addTextElement } from '../../utils/add-element';
-import { getUserAggregatedWords } from '../../components/api/api';
+import { getUserAggregatedWords, getUserWord, getUserWords } from '../../components/api/api';
 
-export const Sprint = async (params?: URLSearchParams): Promise <HTMLElement> => {
+export const Sprint = async (params?: URLSearchParams): Promise <HTMLElement | void> => {
   console.log(params);
   console.log(params?.get('group'));
   console.log(params?.get('page'));
@@ -13,11 +13,17 @@ export const Sprint = async (params?: URLSearchParams): Promise <HTMLElement> =>
     const pageTitle =  addTextElement('h1', 'page-title', 'Sprint Page') as HTMLElement;
     page.append(pageTitle);
 
-    const { wordsList, totalWords } = await getUserAggregatedWords('6200fc9bf7ac1400169f2d52', '1', '25','','{"userWord.difficulty":"easy"}');
-    console.log(wordsList);
-    console.log(totalWords);
+    const res = await getUserWords('6200fc9bf7ac1400169f2d52');
+    console.log(res);
 
-    return page;
+    // const res = await getUserAggregatedWords('6200fc9bf7ac1400169f2d52', '1', '25','','{"userWord.difficulty":"easy"}');
+    //
+    // const wordsList = res?.wordsList;
+    // const totalWords = res?.totalWords;
+    // console.log(wordsList);
+    // console.log(totalWords);
+
+    if (res) return page;
   }
 
 
