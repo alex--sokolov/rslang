@@ -17,12 +17,6 @@ export const setGameLevel = (level: string): void => {
 export const setUserName = (name: string): void => {
   localStorage.setItem('username', name);
 };
-export const setPage = (page: string): void => {
-  localStorage.setItem('page', page);
-};
-export const setGroup = (group: string): void => {
-  localStorage.setItem('group', group);
-};
 export const getUserId = (): string => {
   return <string>localStorage.getItem('id');
 };
@@ -32,9 +26,16 @@ export const getGameLevel = (): string => {
 export const getUserName = (): string => {
   return <string>localStorage.getItem('username');
 };
+
+export const setPage = (page: string): void => {
+  localStorage.setItem('page', page);
+};
+export const setChapter = (chapter: string): void => {
+  localStorage.setItem('chapter', chapter);
+};
 export const getPage = (): string => {
   return <string>localStorage.getItem('page');
 };
-export const getGroup = (): string => {
-  return <string>localStorage.getItem('group');
+export const getChapter = (): string => {
+  return <string>localStorage.getItem('chapter');
 };
