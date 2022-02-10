@@ -1,10 +1,10 @@
 import {StringsObject} from "../types";
 
 export const routes: StringsObject = {
-  '/' : ['Home', 'Home'],
+  '/' : ['Home', 'Домой'],
   '404': ['Error404', '404'],
-  'gameAudioCall' : ['AudioCall', 'Audio call'],
-  'gameSprint' : ['Sprint', 'Sprint'],
-  'dictionary' : ['Dictionary', 'Dictionary'],
-  'team' : ['Team', 'DreamTeam']
+  'dictionary' : ['Dictionary', 'Учебник'],
+  'gameSprint' : ['Sprint', 'Спринт'],
+  'gameAudioCall' : ['AudioCall', 'Аудиовызов'],
+  'team' : ['Team', 'Разработчики']
 };

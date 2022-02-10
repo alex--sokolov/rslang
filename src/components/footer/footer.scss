@@ -1,0 +1,59 @@
+.footer {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  align-items: center;
+  gap: 20px;
+  padding: 20px;
+  background: $color-bg-3;
+  // background-color: #44b8c3;
+  color: $color-main;
+
+  a {
+    font-weight: bold;
+    color: $color-main;
+    text-decoration: none;
+  }
+
+  &__authors-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  &__github {
+    position: relative;
+    padding-left: 30px;
+  }
+
+  &__github::before {
+    position: absolute;
+    content: '';
+    top: -3px;
+    left: 0;
+    width: 25px;
+    height: 25px;
+    background: url('../../assets/svg/github.svg') no-repeat center center;
+    background-size: contain;
+  }
+
+  &__github:hover {
+    color: $color-hover;
+    transition: 0.3s;
+  }
+
+  &__year {
+    justify-self: center;
+  }
+
+  &__rsschool {
+    justify-self: end;
+
+    img {
+      width: 80px;
+    }
+  }
+
+  &__rsschool:hover {
+
+  }
+}

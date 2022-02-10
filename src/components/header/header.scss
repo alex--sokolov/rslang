@@ -1,6 +1,22 @@
 header {
-  background-color: blanchedalmond;
+  background: $color-bg-2;
   display: flex;
   align-items: center;
-  justify-content: space-evenly;
+  justify-content: space-between;
+  // box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+  button {
+    font-size: 1em;
+    line-height: 60px;
+    font-weight: bold;
+    color: $color-main;
+    background-color: transparent;
+    border: none;
+  }
+
+  button:hover {
+    color: $color-hover;
+  }
 }
+
+
