@@ -26,9 +26,9 @@ const wordListRender = (words: Word[]): HTMLDivElement => {
       activeWordBtn.classList.remove('word-item--active');
       wordButton.classList.add('word-item--active');
 
-      const wordCardWrapper = document.querySelector('.word-card-wrapper') as HTMLDivElement;
-      wordCardWrapper.innerHTML = '';
-      wordCardWrapper.append(wordCardRender(word));
+      const wordsContainerElement = document.querySelector('.dictionary-words-container') as HTMLDivElement;
+      (wordsContainerElement.firstElementChild as HTMLDivElement).innerHTML = '';
+      wordsContainerElement.prepend(wordCardRender(word));
     });
   });
 

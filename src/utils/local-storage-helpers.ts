@@ -28,10 +28,10 @@ export const getUserName = (): string => {
 };
 
 export const setCurrentPage = (page: string): void => {
-  localStorage.setItem('page', JSON.stringify(page));
+  localStorage.setItem('page', page);
 };
 export const setCurrentChapter = (chapter: string): void => {
-  localStorage.setItem('chapter', JSON.stringify(chapter));
+  localStorage.setItem('chapter', chapter);
 };
 export const getCurrentPage = (): string => {
   return <string>localStorage.getItem('page');
