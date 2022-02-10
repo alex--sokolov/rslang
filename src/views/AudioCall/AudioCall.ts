@@ -13,6 +13,13 @@ import gameVars from './gameComponents/game-vars';
 import { showModal } from '../../utils/show-modal';
 import { AudioCallResult } from './gameComponents/AudioCall-result';
 
+//for button on dictionary page >>>
+/*BUTTON_ON_DICTIONARY_PAGE.addEventListener('click', () => {
+  const root = document.getElementById('root') as HTMLElement;
+  root.innerHTML = '';
+  root.appendChild(AudioCall('fromBook'));
+});*/
+
 function startAudioCall(callPlace?: string) {
   //if call from textbook >>> we need attributes!
 

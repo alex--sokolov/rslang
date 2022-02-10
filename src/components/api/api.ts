@@ -15,18 +15,18 @@ export const baseUrl = 'https://rs-lang-app-server.herokuapp.com/';
 //TEXTBOOK
 export const getWords = async (page: string, group: string): Promise<Array<Word>> => {
   const response: Response = await fetch(`${baseUrl}words?group=${group}&page=${page}`);
-  return await response.json();
+  return response.json();
 };
 export const getWordById = async (id: string): Promise<Word> => {
   const response: Response = await fetch(`${baseUrl}words/${id}`);
-  return await response.json();
+  return response.json();
 };
 
 // USERS
 
 //REGISTRATION NEW USER
 export const createUser = async (user: PostUser): Promise<Response> => {
-  return await fetch(`${baseUrl}users`, {
+  return fetch(`${baseUrl}users`, {
     method: 'POST',
     headers: {
       Accept: 'application/json',
@@ -46,12 +46,20 @@ export const signInApi = async (form: SignInParam): Promise<Response> => {
     },
     body: JSON.stringify(form),
   };
-  return await fetch(`${baseUrl}signin`, param);
+  return fetch(`${baseUrl}signin`, param);
 };
 
 //returns boolean value for check successfully updating
 export const updateTokens = async (userId: string): Promise<boolean> => {
-  const response = await fetch(`${baseUrl}users/${userId}/tokens`);
+  const param = {
+    method: 'GET',
+    withCredentials: true,
+    headers: {
+      Authorization: `Bearer ${getToken('refresh')}`,
+      Accept: 'application/json',
+    },
+  };
+  const response = await fetch(`${baseUrl}users/${userId}/tokens`, param);
   if (response.ok) {
     response.json().then((resp: Tokens) => {
       setTokens(resp);
@@ -70,7 +78,7 @@ export const getUserById = async (userId: string): Promise<Response> => {
       Accept: 'application/json',
     },
   };
-  return await fetch(`${baseUrl}users/${userId}`, param);
+  return fetch(`${baseUrl}users/${userId}`, param);
 };
 
 export const putUser = async (userId: string, form: SignInParam): Promise<Response> => {
@@ -84,7 +92,7 @@ export const putUser = async (userId: string, form: SignInParam): Promise<Respon
     },
     body: JSON.stringify({ email: form.email, password: form.password }),
   };
-  return await fetch(`${baseUrl}users/${userId}`, param);
+  return fetch(`${baseUrl}users/${userId}`, param);
 };
 
 export const deleteUser = async (userId: string): Promise<boolean> => {
@@ -274,7 +282,7 @@ export const getUserStat = async (userId: string): Promise<Response> => {
       Accept: 'application/json',
     },
   };
-  return await fetch(`${baseUrl}users/${userId}/statistics`, param);
+  return fetch(`${baseUrl}users/${userId}/statistics`, param);
 };
 
 //TODO: define stat type!!!
@@ -289,5 +297,5 @@ export const putUserStat = async (userId: string, stat: any): Promise<Response> 
     },
     body: JSON.stringify(stat),
   };
-  return await fetch(`${baseUrl}users/${userId}/statistics`, param);
+  return fetch(`${baseUrl}users/${userId}/statistics`, param);
 };
