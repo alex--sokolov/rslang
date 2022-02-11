@@ -77,7 +77,7 @@ const getActiveChapter = () => {
 };
 
 export const Dictionary = async (): Promise<HTMLElement> => {
-  const page = addElement('main', 'dictionary-page') as HTMLElement;
+  const page = addElement('main', 'dictionary-page container') as HTMLElement;
   const pageTitle = addTextElement('h1', 'page-title', 'Учебник') as HTMLHeadingElement;
   const wordsTitle = addTextElement('h2', 'words-title', 'Слова') as HTMLHeadingElement;
   const mainContentContainer = addElement('div', 'dictionary-words-container') as HTMLDivElement;
