@@ -1,1 +1,275 @@
+.sprint-page {
+  height: 90vh;
+  color: #fff;
+  background-color: darkcyan;
+  overflow: hidden;
+}
 
+.sprint-page-title {
+  padding-top: 80px;
+  font-size: 3rem;
+  color: #fff;
+  text-align: center;
+}
+
+.sprint-description {
+  padding-top: 80px;
+  font-size: 2rem;
+  color: #fff;
+  text-align: center;
+}
+
+.sprint-level-notes {
+  padding-top: 80px;
+  font-size: 1.6rem;
+  color: goldenrod;
+  text-align: center;
+}
+
+.sprint-start-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 200px;
+  height: 50px;
+  margin: 75px auto;
+  background-color: goldenrod;
+  font-size: 28px;
+  color: #fff;
+  text-transform: uppercase;
+  outline: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 1250ms cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.sprint-start-button:hover {
+  outline-color: rgba(255, 255, 255, 0);
+  outline-offset: 15px;
+  transition: 1s;
+}
+.sprint-levels {
+  display: flex;
+  justify-content: space-evenly;
+  margin: 60px auto;
+  width: 500px;
+}
+
+.sprint-level {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 60px;
+  height: 60px;
+  font-size: 1.6rem;
+  background-color: goldenrod;
+  color: #fff;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 3px solid orange;
+  transition: 0.25s;
+}
+
+.sprint-level:disabled {
+  pointer-events: none;
+  cursor: inherit;
+}
+
+.sprint-level:hover {
+  font-size: 1.8rem;
+  font-weight: bold;
+  border: 2px solid #fff;
+  box-shadow: 0 0 10px #fff;
+  transition: 0.25s;
+}
+
+.sprint-level {
+  &.active {
+    font-size: 1.8rem;
+    font-weight: bold;
+    background-color: $color-main;
+    border: 0;
+    box-shadow: 0 0 7px 5px #fff;
+    pointer-events: none;
+    cursor: inherit;
+    transition: 0.25s;
+  }
+}
+
+.sprint-start-button:disabled {
+  background-color: #333333;
+  pointer-events: none;
+  cursor: inherit;
+}
+
+.sprint-start-button:focus,
+.sprint-start-button:active {
+  background-color: $color-main;
+  border: 0;
+  box-shadow: 0 0 7px 5px #fff;
+  transition: 0.25s;
+}
+
+
+@keyframes outLeft {
+  0% {
+    transform: translateX(0);
+  }
+  30% {
+    transform: translateX(-50%);
+  }
+  60% {
+    transform: translateX(50%);
+  }
+  80% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes outRight {
+  0% {
+    transform: translateX(0);
+  }
+  30% {
+    transform: translateX(50%);
+  }
+  60% {
+    transform: translateX(-50%);
+  }
+  80% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes outDown {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(1200%);
+  }
+  100% {
+    transform: translateY(-2000%);
+  }
+}
+
+@keyframes outLevel0 {
+  0% {
+    transform: translate(0, 0);
+  }
+  90% {
+    transform: translate(1000%, -1000%);
+  }
+  100% {
+    transform: translate(4000%, -4000%);
+  }
+}
+
+@keyframes outLevel1 {
+  0% {
+    transform: translate(0, 0);
+  }
+  90% {
+    transform: translate(-1000%, -1000%);
+  }
+  100% {
+    transform: translate(-4000%, -4000%);
+  }
+}
+
+@keyframes outLevelActive {
+  0% {
+    position: absolute;
+    transform: translate(0, 0);
+    transform: scale(1)
+  }
+  80% {
+    position: absolute;
+    transform: translate(50vw, 50vh);
+    transform: scale(4)
+  }
+  100% {
+    position: absolute;
+    transform: scale(0)
+  }
+}
+
+
+
+.out-left {
+  animation: outLeft 1s linear;
+  -webkit-animation: outLeft 1s linear;
+  -moz-animation: outLeft 1s linear;
+  -o-animation: outLeft 1s linear;
+  animation-fill-mode: forwards;
+  -webkit-animation-fill-mode: forwards;
+  -moz-animation-fill-mode: forwards;
+  -o-animation-fill-mode: forwards;
+  -ms-animation-fill-mode: forwards;
+}
+
+.out-right {
+  animation: outRight 1s linear;
+  -webkit-animation: outRight 1s linear;
+  -moz-animation: outRight 1s linear;
+  -o-animation: outRight 1s linear;
+  animation-fill-mode: forwards;
+  -webkit-animation-fill-mode: forwards;
+  -moz-animation-fill-mode: forwards;
+  -o-animation-fill-mode: forwards;
+  -ms-animation-fill-mode: forwards;
+}
+
+.out-down {
+  animation: outDown 1s ease-in-out;
+  -webkit-animation: outDown 1s ease-in-out;
+  -moz-animation: outDown 1s ease-in-out;
+  -o-animation: outDown 1s ease-in-out;
+  animation-fill-mode: forwards;
+  -webkit-animation-fill-mode: forwards;
+  -moz-animation-fill-mode: forwards;
+  -o-animation-fill-mode: forwards;
+  -ms-animation-fill-mode: forwards;
+}
+
+.out-level-0 {
+  animation: outLevel10 1s;
+  -webkit-animation: outLevel0 1.6s;
+  -moz-animation: outLevel0 1s;
+  -o-animation: outLevel0 1s;
+  animation-fill-mode: forwards;
+  -webkit-animation-fill-mode: forwards;
+  -moz-animation-fill-mode: forwards;
+  -o-animation-fill-mode: forwards;
+  -ms-animation-fill-mode: forwards;
+}
+
+.out-level-1 {
+  animation: outLevel1 1s;
+  -webkit-animation: outLevel1 1.6s;
+  -moz-animation: outLevel1 1s;
+  -o-animation: outLevel1 1s;
+  animation-fill-mode: forwards;
+  -webkit-animation-fill-mode: forwards;
+  -moz-animation-fill-mode: forwards;
+  -o-animation-fill-mode: forwards;
+  -ms-animation-fill-mode: forwards;
+}
+
+.out-active {
+  animation: outLevelActive 1s;
+  -webkit-animation: outLevelActive 2s;
+  -moz-animation: outLevelActive 1s;
+  -o-animation: outLevelActive 1s;
+  animation-fill-mode: forwards;
+  -webkit-animation-fill-mode: forwards;
+  -moz-animation-fill-mode: forwards;
+  -o-animation-fill-mode: forwards;
+  -ms-animation-fill-mode: forwards;
+}

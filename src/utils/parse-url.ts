@@ -9,3 +9,8 @@ export const parseUrl = (url: string): [string, URLSearchParams?] => {
   }
   return urlArr;
 };
+
+export const clearLocationHashParams = (url:string) => {
+  const urlArr = parseUrl(url);
+  return urlArr[0];
+}

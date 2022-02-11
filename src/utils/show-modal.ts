@@ -2,7 +2,7 @@ import './show-modal.scss';
 import { addElement, addTextElement } from './add-element';
 import { navigate } from '../engine/router-hash';
 
-export const showModal = (element: HTMLElement): void => {
+export const showModal = async (element: HTMLElement): Promise<void> => {
   const overlay = document.querySelector('.overlay') as HTMLElement;
   const overlayFadeInClass = 'overlay-fadeIn';
   const modalClass = 'modal-window';
@@ -21,23 +21,17 @@ export const showModal = (element: HTMLElement): void => {
     //await navigate();
   };
 
-  if (modalOld) removeModal(modalOld);
+  if (modalOld) await removeModal(modalOld);
 
-  closeModal.addEventListener(
-    'click',
-    async () => {
-      removeModal(modal);
+  closeModal.addEventListener('click', async () => {
+      await removeModal(modal);
       await navigate();
-    },
-    { once: true }
+    },{ once: true }
   );
 
-  const overlayListener = overlay.addEventListener(
-    'click',
-    () => {
-      removeModal(modal, overlayListener);
-    },
-    { once: true }
+  const overlayListener = overlay.addEventListener('click', async () => {
+      await removeModal(modal, overlayListener);
+    },{ once: true }
   );
 
   const root = document.getElementById('root') as HTMLDivElement;

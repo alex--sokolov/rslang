@@ -10,3 +10,11 @@ export const addTextElement = (tagType: string, className: string, text: string)
   element.textContent = text;
   return element;
 }
+
+export const setDisabled = (el: HTMLButtonElement): void => {
+  if (!el.disabled) el.setAttribute('disabled', 'true');
+}
+
+export const removeDisabled = (el: HTMLButtonElement): void => {
+  if (el.disabled) el.removeAttribute('disabled');
+}
