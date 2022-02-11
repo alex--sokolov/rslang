@@ -83,18 +83,54 @@ button {
   max-width: 1440px;
   margin: 0 auto;
   padding: 0 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.16);
+  // box-shadow: 0 2px 8px rgba(0, 0, 0, 0.16);
 
 }
-
-#root {
-  padding-bottom: 30px;
-  color: $color-main;
-  background: $color-bg;
-  min-height: calc(100vh - 120px);
-}
-
 
 a {
   font-family: "Neucha";
 }
+
+main {
+  min-height: calc(100vh - 120px);
+
+}
+
+#root {
+  box-shadow: 0px 0px 10px 4px rgba(34, 60, 80, 0.2) inset;
+  color: $color-main;
+  // background: $color-bg;
+}
+
+#root {
+  background: linear-gradient(180deg, #f3eac4, #b3ffdc);
+  background-size: 400% 400%;
+
+  -webkit-animation: MainBGAmin 15s ease infinite;
+  -moz-animation: MainBGAmin 15s ease infinite;
+  -o-animation: MainBGAmin 15s ease infinite;
+  animation: MainBGAmin 15s ease infinite;
+}
+
+@-webkit-keyframes MainBGAmin {
+  0%{background-position:50% 0%}
+  50%{background-position:51% 100%}
+  100%{background-position:50% 0%}
+}
+@-moz-keyframes MainBGAmin {
+  0%{background-position:50% 0%}
+  50%{background-position:51% 100%}
+  100%{background-position:50% 0%}
+}
+@-o-keyframes MainBGAmin {
+  0%{background-position:50% 0%}
+  50%{background-position:51% 100%}
+  100%{background-position:50% 0%}
+}
+@keyframes MainBGAmin {
+  0%{background-position:50% 0%}
+  50%{background-position:51% 100%}
+  100%{background-position:50% 0%}
+}
+
+

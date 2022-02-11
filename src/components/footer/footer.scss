@@ -1,14 +1,17 @@
-.footer {
+.footer .container {
   display: grid;
   grid-template-columns: 2fr 1fr 1fr;
   align-items: center;
   gap: 20px;
   padding: 10px;
   min-height: 60px;
-  background: $color-bg-3;
-  // background-color: #44b8c3;
   color: $color-main;
+}
 
+.footer {
+
+  // background: $color-bg-3;
+  // background-color: #44b8c3;
   a {
     font-weight: bold;
     color: $color-main;
@@ -57,4 +60,36 @@
   &__rsschool:hover {
 
   }
+}
+
+
+.footer {
+  background: linear-gradient(90deg, #b3ffdc, #8ec6f0);
+  background-size: 400% 400%;
+
+  -webkit-animation: FooterAnim 15s ease infinite;
+  -moz-animation: FooterAnim 15s ease infinite;
+  -o-animation: FooterAnim 15s ease infinite;
+  animation: FooterAnim 15s ease infinite;
+}
+
+@-webkit-keyframes FooterAnim {
+  0%{background-position:0% 50%}
+  50%{background-position:100% 51%}
+  100%{background-position:0% 50%}
+}
+@-moz-keyframes FooterAnim {
+  0%{background-position:0% 50%}
+  50%{background-position:100% 51%}
+  100%{background-position:0% 50%}
+}
+@-o-keyframes FooterAnim {
+  0%{background-position:0% 50%}
+  50%{background-position:100% 51%}
+  100%{background-position:0% 50%}
+}
+@keyframes FooterAnim {
+  0%{background-position:0% 50%}
+  50%{background-position:100% 51%}
+  100%{background-position:0% 50%}
 }
