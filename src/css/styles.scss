@@ -92,7 +92,7 @@ a {
 }
 
 main {
-  min-height: calc(100vh - 120px);
+  min-height: calc(100vh - 150px);
 
 }
 
@@ -100,6 +100,7 @@ main {
   box-shadow: 0px 0px 10px 4px rgba(34, 60, 80, 0.2) inset;
   color: $color-main;
   // background: $color-bg;
+  padding-bottom: 30px;
 }
 
 #root {
