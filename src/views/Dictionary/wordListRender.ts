@@ -1,13 +1,14 @@
 import { addElement } from '../../utils/add-element';
 import { Word } from '../../interfaces';
 import { wordCardRender } from './wordRender';
+import { getCurrentChapter } from '../../utils/local-storage-helpers';
 
 const wordListRender = (words: Word[]): HTMLDivElement => {
   const wordListContainer = addElement('div', 'word-list') as HTMLDivElement;
+  const currentChapter = getCurrentChapter();
 
   words.forEach((word, i) => {
-    const wordButton = addElement('button', 'word-item') as HTMLButtonElement;
-
+    const wordButton = addElement('button', `word-item color-chapter-${currentChapter}`) as HTMLButtonElement;
     if (i === 0) {
       wordButton.classList.add('word-item--active');
     }
@@ -27,7 +28,8 @@ const wordListRender = (words: Word[]): HTMLDivElement => {
       wordButton.classList.add('word-item--active');
 
       const wordsContainerElement = document.querySelector('.dictionary-words-container') as HTMLDivElement;
-      (wordsContainerElement.firstElementChild as HTMLDivElement).innerHTML = '';
+      const wordCardElement = wordsContainerElement.firstElementChild as HTMLDivElement;
+      wordCardElement.remove();
       wordsContainerElement.prepend(wordCardRender(word));
     });
   });

@@ -7,23 +7,22 @@ import { setCurrentPage, setCurrentChapter } from '../../utils/local-storage-hel
 
 async function chapterListener(i: number) {
   const wordsArr = await getWords('0', `${i}`);
-
   const wordsContainerElement = document.querySelector('.dictionary-words-container') as HTMLDivElement;
+
+  setCurrentPage('0');
+  setCurrentChapter(`${i}`);
 
   wordsContainerElement.innerHTML = '';
   wordsContainerElement.append(wordCardRender(wordsArr[0]), wordListRender(wordsArr));
 
   pagination.reset(30);
-
-  setCurrentPage('0');
-  setCurrentChapter(`${i}`);
 }
 
 const chapterRender = (): HTMLDivElement => {
   const chapterList = addElement('div', 'chapter-list') as HTMLDivElement;
 
   for (let i = 0; i < 7; i++) {
-    const chapterLabel = addElement('label', `chapter-label chapter-label_${i}`) as HTMLLabelElement;
+    const chapterLabel = addElement('label', `chapter-label color-chapter-${i}`) as HTMLLabelElement;
     chapterLabel.setAttribute('for', `chapter-${i}`);
     chapterLabel.textContent = i < 6 ? `Раздел ${i + 1}` : 'Сложные слова';
 
