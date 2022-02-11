@@ -25,20 +25,24 @@ b {
   }
 
   input:checked + label {
-    background-color: coral;
+    color: white;
   }
+
 }
 
 .chapter-label {
   flex-grow: 1;
   padding: 10px;
-  background-color: darkseagreen;
+  font-size: 20px;
+  background-color: #dad1c9;
   border-radius: 10px;
   cursor: pointer;
+  transition: 0.3s ease-in-out;
 }
 
 .chapter-words-nums {
   font-size: 10px;
+  transition: none;
 }
 
 .dictionary-words-container {
@@ -50,6 +54,9 @@ b {
   display: grid;
   grid-template-columns: 1fr 3fr;
   gap: 20px;
+  padding: 10px;
+  border: 2px solid white;
+  border-radius: 5px;
 
   &__left-side {
     width: 100%;
@@ -63,25 +70,100 @@ b {
   &__word {
     width: max-content;
     margin: 0;
-    font-size: 1.5em;
+    font-size: 1.7em;
     color: $color-special;
+    font-weight: bold;
+  }
+
+  &__transcription {
+    font-size: 1.1em;
+  }
+
+  &__translate {
+    font-size: 1.3em;
+    font-weight: bold;
+  }
+
+  &__subheading {
+    margin-top: 10px;
+    margin-bottom: 5px;
+    font-size: 1.3em;
+    font-weight: bold;
   }
 
   &__btns-container {
     position: absolute;
-    top: 0;
-    right: 0;
+    top: 15px;
+    right: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.3em;
   }
 
   &__voice-btn {
     width: 30px;
     height: 30px;
-    background: transparent url('../../assets/svg/audio.svg') no-repeat center center;
-    background-size: contain;
+    object-fit: contain;
+    background-color: transparent;
     border: none;
     cursor: pointer;
   }
+
+  &__voice-icon {
+    width: 100%;
+  }
+  &__voice-icon path {
+    fill: $color-chapter-1;
+  }
+
+  &__checkbox-wrapper {
+    padding: 0 8px;
+    color: $color-second;
+    border-radius: 15px;
+  }
+
+  &__checkbox {
+    display: none;
+  }
+
+  &__label {
+    position: relative;
+    padding-left: 30px;
+    line-height: 30px;
+    cursor: pointer;
+  }
+
+  &__label::before {
+    position: absolute;
+    content: '';
+    top: 3px;
+    left: 0;
+    width: 15px;
+    height: 15px;
+    border: 2px solid $color-second;
+    border-radius: 50%;
+  }
+
+  &__checkbox:checked + .card__label::before {
+    content: "\2713";
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, .2);
+    font-size: 15px;
+    line-height: 15px;
+    font-weight: bold;
+    color: $color-second;
+    text-align: center;
+    transition: 0.3s;
+  }
 }
+
+.card--chapter-0 { background: linear-gradient(180deg, #ffffff54,#fc775f94); }
+.card--chapter-1 { background: linear-gradient(180deg, #ffffff54,#fca65f94); }
+.card--chapter-2 { background: linear-gradient(180deg, #ffffff54,#fcdf5f94); }
+.card--chapter-3 { background: linear-gradient(180deg, #ffffff54,#b3fc5f94); }
+.card--chapter-4 { background: linear-gradient(180deg, #ffffff54,#4baec794); }
+.card--chapter-5 { background: linear-gradient(180deg, #ffffff54,#5fa8fc94); }
+.card--chapter-6 { background: linear-gradient(180deg, #ffffff54,#cf5ffc94); }
 
 .word-list {
   display: flex;
@@ -96,26 +178,60 @@ b {
   padding: 5px;
   color: $color-main;
   background-color: transparent;
-  border: 2px solid white;
+  border: 2px solid $color-second;
   border-radius: 10px;
 
+  h3 {
+    font-size: 20px;
+    transition: none;
+  }
+
+  p {
+    transition: none;
+  }
 
   &--learned {
     background-color: lightgreen;
   }
-
   &--hard {
     background-color: lightcoral;
   }
-
   &--active {
-    background-color: rgba(255,255,255,0.5);
-  }
-
-  h3 {
-    font-size: 20px;
+    color: $color-second;
   }
 }
+
+.color-chapter-0:hover { background-color: $color-chapter-light-1; }
+.color-chapter-1:hover { background-color: $color-chapter-light-2; }
+.color-chapter-2:hover { background-color: $color-chapter-light-3; }
+.color-chapter-3:hover { background-color: $color-chapter-light-4; }
+.color-chapter-4:hover { background-color: $color-chapter-light-5; }
+.color-chapter-5:hover { background-color: $color-chapter-light-6; }
+.color-chapter-6:hover { background-color: $color-chapter-light-7; }
+
+input:checked + .color-chapter-0,
+.word-item--active.color-chapter-0,
+.card__checkbox-wrapper.color-chapter-0 { background-color: $color-chapter-1; }
+input:checked + .color-chapter-1,
+.word-item--active.color-chapter-1,
+.card__checkbox-wrapper.color-chapter-1 { background-color: $color-chapter-2; }
+input:checked + .color-chapter-2,
+.word-item--active.color-chapter-2,
+.card__checkbox-wrapper.color-chapter-2 { background-color: $color-chapter-3; }
+input:checked + .color-chapter-3,
+.word-item--active.color-chapter-3,
+.card__checkbox-wrapper.color-chapter-3 { background-color: $color-chapter-4; }
+input:checked + .color-chapter-4,
+.word-item--active.color-chapter-4,
+.card__checkbox-wrapper.color-chapter-4 { background-color: $color-chapter-5; }
+input:checked + .color-chapter-5,
+.word-item--active.color-chapter-5,
+.card__checkbox-wrapper.color-chapter-5 { background-color: $color-chapter-6; }
+input:checked + .color-chapter-6,
+.word-item--active.color-chapter-6,
+.card__checkbox-wrapper.color-chapter-6 { background-color: $color-chapter-7; }
+
+
 
 
 .tui-pagination {

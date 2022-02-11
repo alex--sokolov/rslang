@@ -1,5 +1,6 @@
 import './footer.scss';
 import { addElement } from '../../utils/add-element';
+import rsicon from '../../assets/svg/rss.svg';
 
 const Footer = () => {
   const footer = addElement('footer', 'footer container');
@@ -11,7 +12,7 @@ const Footer = () => {
     </div>
     <p class="footer__year">&#169; 2022</p>
     <a class="footer__rsschool" href="https://rs.school/js/" target="_blank">
-      <img src="../../assets/svg/rss.svg" alt="RS School" />
+      <img src=${rsicon} alt="RS School" />
     </a>
   `;
   footer.insertAdjacentHTML('afterbegin', HTMLCode);

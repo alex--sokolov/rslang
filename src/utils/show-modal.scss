@@ -25,7 +25,9 @@
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  background-color: rgba(31, 112, 127, 0.5);
+  font-family: "Neucha";
+  color: #3a2c24;
+  background: $color-bg-modal ;
   backdrop-filter: blur(4px);
   border: 1px solid #fff;
   border-radius: 50px;

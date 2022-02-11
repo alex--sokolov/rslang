@@ -3,7 +3,8 @@
   grid-template-columns: 2fr 1fr 1fr;
   align-items: center;
   gap: 20px;
-  padding: 20px;
+  padding: 10px;
+  min-height: 60px;
   background: $color-bg-3;
   // background-color: #44b8c3;
   color: $color-main;

@@ -14,7 +14,6 @@ const authSingInHTML = `
   <input type="password" name="password" id="password">
   <input type="submit" data-mode="signin" value="Войти">
   <p>Нет аккаунта? Тогда <button id="auth-toggle-btn" class="auth__toggle">зарегистрируйся!</button></p>
-  <button class="auth__close-btn"></button>
   <p id="auth__warn" class="auth__warn"></p>
 `;
 const authRegisterHTML = `
@@ -29,7 +28,6 @@ const authRegisterHTML = `
   <input type="password" name="password-2" id="password-2">
   <input type="submit" data-mode="register" value="Зарегистрироваться">
   <p>Уже есть аккаунт? <button id="auth-toggle-btn" class="auth__toggle">Войти!</button></p>
-  <button class="auth__close-btn"></button>
   <p id="auth__warn" class="auth__warn"></p>
 `;
 

@@ -1,17 +1,19 @@
 import { addElement, addTextElement } from '../../utils/add-element';
 import { Word } from '../../interfaces';
-import { getUserId } from '../../utils/local-storage-helpers';
+import { getCurrentChapter, getUserId } from '../../utils/local-storage-helpers';
+import voiceIco from '../../assets/svg/audio.svg';
 
 export const wordCardRender = (word: Word): HTMLDivElement => {
-  const wordCardContainer = addElement('div', 'word-card card') as HTMLDivElement;
+  const currentChapter = getCurrentChapter();
+  const wordCardContainer = addElement('div', `word-card card card--chapter-${currentChapter}`) as HTMLDivElement;
   const wordCardLeftSide = addElement('div', 'card__left-side') as HTMLDivElement;
   const wordCardRightSide = addElement('div', 'card__right-side') as HTMLDivElement;
   const btnsContainer = addElement('div', 'card__btns-container') as HTMLDivElement;
 
   const image =`<img src="https://rs-lang-app-server.herokuapp.com/${word.image}" class="card__img" alt="Иллюстрация слова">`;
-  const wordEng = addTextElement('h3', 'card__word', `${word.word} - `) as HTMLHeadingElement;
-  const transcription = addTextElement('span', 'card__transcription', `${word.transcription}`) as HTMLSpanElement;
-  const translate = addTextElement('h4', 'card__translate', `${word.wordTranslate}`) as HTMLParagraphElement;
+  const wordEng = addTextElement('strong', 'card__word', `${word.word} - `) as HTMLHeadingElement;
+  const transcription = addTextElement('span', 'card__transcription', `${word.transcription} - `) as HTMLSpanElement;
+  const translate = addTextElement('span', 'card__translate', `${word.wordTranslate}`) as HTMLParagraphElement;
   const subheading = addTextElement('h5', 'card__subheading', 'Значение') as HTMLHeadingElement;
   const textMeaning = addElement('p', 'card__text') as HTMLParagraphElement;
   textMeaning.insertAdjacentHTML('beforeend', word.textMeaning);
@@ -29,12 +31,20 @@ export const wordCardRender = (word: Word): HTMLDivElement => {
     `${word.textExampleTranslate}`
   ) as HTMLParagraphElement;
   const voiceBtn = addElement('button', 'card__voice-btn') as HTMLButtonElement;
+  const voiceIcon = addElement('img', 'card__voice-icon') as HTMLImageElement;
+  voiceIcon.src = voiceIco;
+
+  voiceBtn.append(voiceIcon);
 
   const wordCheckboxes = `
-    <input type="checkbox" name="hard-word" id="hard-word-checkbox" class="card__checkbox">
-    <label for="hard-word-checkbox" class="card__label">Сложное</label>
-    <input type="checkbox" name="learned-word" id="learned-word-checkbox" class="card__checkbox">
-    <label for="learned-word-checkbox" class="card__label">Изученное</label>
+    <div class="card__checkbox-wrapper color-chapter-${currentChapter}">
+      <input type="checkbox" name="hard-word" id="hard-word-checkbox" class="card__checkbox">
+      <label for="hard-word-checkbox" class="card__label">Сложное</label>
+    </div>
+    <div class="card__checkbox-wrapper color-chapter-${currentChapter}">
+      <input type="checkbox" name="learned-word" id="learned-word-checkbox" class="card__checkbox">
+      <label for="learned-word-checkbox" class="card__label">Изученное</label>
+    </div>
   `;
 
   wordCardRightSide.append(
