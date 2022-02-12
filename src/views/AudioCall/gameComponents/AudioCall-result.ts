@@ -3,6 +3,7 @@ import { Word } from '../../../interfaces';
 import { baseUrl } from '../../../components/api/api';
 import sound from '../../../assets/img/sound.svg';
 import './AudioCall-results.scss';
+import playSound from './play-sound';
 
 export const AudioCallResult = (results: Array<boolean>, words: Array<Word>): HTMLElement => {
   const resWrapper = addElement('div', 'result-wrapper');
@@ -28,6 +29,9 @@ export const AudioCallResult = (results: Array<boolean>, words: Array<Word>): HT
     audio.src = baseUrl + word.audio;
     const text = addTextElement('span', 'results-box__item__text', `${word.word} - ${word.wordTranslate}`);
     const itemPos = addTextElement('span', 'results-box__item__pos', `${index + 1}.`);
+    imgSound.addEventListener('click', () => {
+      playSound(audio);
+    });
     resItem.appendChild(itemPos);
     resItem.appendChild(text);
     resItem.appendChild(audio);

@@ -16,8 +16,8 @@ export interface Word {
 }
 
 export interface GameWordStat {
-  right: number;
-  wrong: number;
+  right?: number;
+  wrong?: number;
 }
 
 export interface GamesWordStat {
@@ -27,13 +27,13 @@ export interface GamesWordStat {
 }
 
 export interface WordOptional {
-  addTime: number;
-  new: boolean;
+  addTime?: number;
+  new?: boolean;
   games?: GamesWordStat;
 }
 
 export interface UserWord {
-  difficulty: "easy" | "hard" | "learned";
+  difficulty?: string;
   optional?: WordOptional;
 }
 
@@ -94,4 +94,8 @@ export interface AudioCallVars {
   AMOUNT_WORDS_IN_CHUNK: number;
   AUDIO_DELAY: number;
   statistic: Array<boolean>;
+  approved_KK: Array<number>;
+  mainKeys: Array<number>;
+  numKeys: Array<number>;
+  diffTimeNewWord: number;
 }

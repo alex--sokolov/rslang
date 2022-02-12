@@ -1,17 +1,17 @@
 import './AudioCall.scss';
 import { addElement, addTextElement } from '../../utils/add-element';
 import { getGameLevel, getGroup, getPage, setGameLevel } from '../../utils/local-storage-helpers';
-import { getWords } from '../../components/api/api';
+import { getWords, updateTokens } from '../../components/api/api';
 import { getRandom } from '../../utils/get-random';
-import { Word } from '../../interfaces';
+import { UserWord, Word, WordExtended } from '../../interfaces';
 import { levelToGroup, shuffle } from '../../utils/micro-helpers';
 import { getEmptySlide, getSlide } from './gameComponents/game-slide';
 import playSound from './gameComponents/play-sound';
-import switchSlide from './gameComponents/switch-slide';
 import getAnswers from './gameComponents/answers-list';
 import gameVars from './gameComponents/game-vars';
 import { showModal } from '../../utils/show-modal';
 import { AudioCallResult } from './gameComponents/AudioCall-result';
+import updateWord from './gameComponents/update-word';
 
 //for button on dictionary page >>>
 /*BUTTON_ON_DICTIONARY_PAGE.addEventListener('click', () => {
@@ -22,7 +22,6 @@ import { AudioCallResult } from './gameComponents/AudioCall-result';
 
 function startAudioCall(callPlace?: string) {
   //if call from textbook >>> we need attributes!
-
   const root = document.getElementById('root') as HTMLDivElement;
   const page: string = callPlace === 'fromBook' ? getPage() : String(getRandom(0, gameVars.AMOUNT_PAGES_OF_GROUP));
   const group: string = callPlace === 'fromBook' ? getGroup() : levelToGroup(getGameLevel());
@@ -34,13 +33,13 @@ function startAudioCall(callPlace?: string) {
   const gameContainer = addElement('main', 'audio-call-game') as HTMLElement;
 
   //request needed words(depending page and group)
-  getWords(page, group).then((response: Array<Word>) => {
+  getWords(group, page).then((response: Array<WordExtended>) => {
     if (response.length) gameVars.AMOUNT_WORDS_IN_CHUNK = response.length;
 
     //get shuffled array targetArr(10)
-    const tempArr: Array<Word> = [...response];
+    const tempArr: Array<WordExtended> = [...response];
     shuffle(tempArr);
-    const targetArr: Array<Word> = tempArr.slice(0, gameVars.AMOUNT_WORDS_IN_GAME);
+    const targetArr: Array<WordExtended> = tempArr.slice(0, gameVars.AMOUNT_WORDS_IN_GAME);
 
     function insertSlide(type?: string) {
       if (counter !== 10) {
@@ -54,7 +53,7 @@ function startAudioCall(callPlace?: string) {
         const soundBut = slide.querySelector('.audio-game-sound') as HTMLDivElement;
 
         soundBut.addEventListener('click', playSound.bind(null, audio));
-        ansArea.addEventListener('click', checkAns);
+        ansArea.addEventListener('click', checkMouseAns);
         gameContainer.appendChild(slide);
         if (counter === 0) {
           setTimeout(playSound.bind(null, audio), gameVars.AUDIO_DELAY);
@@ -64,55 +63,89 @@ function startAudioCall(callPlace?: string) {
       }
     }
 
+    function switchSlide() {
+      const currentSlide = document.querySelector('.audio-call-slide.done') as HTMLElement;
+      const nextSlide = document.querySelector('.audio-call-slide.hide') as HTMLElement;
+      const audio = nextSlide.querySelector('.slide__audio-element') as HTMLAudioElement;
+      setTimeout(playSound.bind(null, audio), gameVars.AUDIO_DELAY);
+
+      currentSlide?.classList.add('completed');
+      nextSlide?.classList.remove('hide');
+      document.addEventListener('keydown', checkKeyboardAns);
+      document.removeEventListener('keydown', switchSlide);
+    }
+    function delCompletedSlide() {
+      //find and delete previous slide if it exists
+      const completedSlide = document.querySelector('.audio-call-slide.completed') as HTMLElement;
+      completedSlide?.remove();
+    }
+
     insertSlide();
     root.innerHTML = '';
     root.appendChild(gameContainer);
+    document.addEventListener('keydown', checkKeyboardAns);
 
-    function checkAns(event: MouseEvent): void {
+    function checkAnsBasicLogic(target: HTMLElement) {
+      //clear unnecessary handler
+      const currentSlide = document.querySelector('.audio-call-slide') as HTMLElement;
+      const ansArea = currentSlide.querySelector('.slide__answers') as HTMLDivElement;
+      ansArea.removeEventListener('click', checkMouseAns);
+      document.removeEventListener('keydown', checkKeyboardAns);
+
+      //check optional field
+      //if it empty >>> new word
+      //else
+
+      //adding next slide to game
+      counter = counter + 1;
+      insertSlide('hide');
+
+      //logic to check right answer
+      const currentAns: boolean = target.dataset.id === currentSlide.dataset.id;
+      const rightAns = currentSlide.querySelector(`[data-id='${currentSlide.dataset.id}']`) as HTMLSpanElement;
+      updateWord(targetArr[counter - 1], currentAns);
+
+      gameVars.statistic.push(currentAns);
+      if (currentAns) {
+        target.classList.add('right');
+      } else {
+        target.classList.add('wrong');
+        rightAns.classList.add('right');
+      }
+
+      //change view after answer
+      currentSlide.classList.add('done');
+      const nextBut = document.querySelector('.audio-game-button') as HTMLButtonElement;
+      nextBut.disabled = false;
+      if (counter === 10) {
+        nextBut.innerText = 'Результаты';
+        nextBut.addEventListener('click', () => {
+          switchSlide();
+          showModal(AudioCallResult(gameVars.statistic, targetArr));
+        });
+        document.addEventListener('keydown', () => {
+          switchSlide();
+          showModal(AudioCallResult(gameVars.statistic, targetArr));
+        });
+      } else {
+        nextBut.addEventListener('click', switchSlide);
+        document.addEventListener('keydown', switchSlide);
+      }
+    }
+    function checkMouseAns(event: MouseEvent): void {
+      delCompletedSlide();
       const target = event.target as HTMLElement;
-      if (target.dataset.id) {
-        //find and delete previous slide if it exists
-        const completedSlide = document.querySelector('.audio-call-slide.completed') as HTMLElement;
-        completedSlide?.remove();
-
-        // @ts-ignore
-        const gogogo = new CircularProgressBar('pie');
-        gogogo.initial();
-
-        //clear unnecessary handler
-        const currentSlide = document.querySelector('.audio-call-slide') as HTMLElement;
-        const ansArea = currentSlide.querySelector('.slide__answers') as HTMLDivElement;
-        ansArea.removeEventListener('click', checkAns);
-
-        //logic to check right answer
-        const currentAns: boolean = target.dataset.id === currentSlide.dataset.id;
-        const rightAns = currentSlide.querySelector(`[data-id='${currentSlide.dataset.id}']`) as HTMLSpanElement;
-        gameVars.statistic.push(currentAns);
-        if (currentAns) {
-          target.classList.add('right');
-        } else {
-          target.classList.add('wrong');
-          rightAns.classList.add('right');
-        }
-
-        //adding next slide to game
-        counter = counter + 1;
-        insertSlide('hide');
-
-        //change view after answer
-        currentSlide.classList.add('done');
-
-        const nextBut = document.querySelector('.audio-game-button') as HTMLButtonElement;
-        nextBut.disabled = false;
-        if (counter === 10) {
-          nextBut.innerText = 'Результаты';
-          nextBut.addEventListener('click', () => {
-            switchSlide();
-            showModal(AudioCallResult(gameVars.statistic, targetArr));
-          });
-        } else {
-          nextBut.addEventListener('click', switchSlide);
-        }
+      if (target.dataset.id) checkAnsBasicLogic(target);
+    }
+    function checkKeyboardAns(event: KeyboardEvent): void {
+      delCompletedSlide();
+      if (gameVars.approved_KK.includes(event.keyCode)) {
+        //check keyCode for separate pressing the main key from pressing the side keyboard
+        const target =
+          event.keyCode > 90
+            ? (document.querySelector(`[data-num='${event.keyCode}']`) as HTMLElement)
+            : (document.querySelector(`[data-key='${event.keyCode}']`) as HTMLElement);
+        checkAnsBasicLogic(target);
       }
     }
   });

@@ -5,7 +5,7 @@ import {
   Tokens,
   UserWord,
   UserWordWithIds,
-  Word,
+  WordExtended,
 } from '../../interfaces';
 import { getToken, setTokens } from '../../utils/local-storage-helpers';
 import { openAuthModal } from '../authorization/authorization';
@@ -13,11 +13,11 @@ import { openAuthModal } from '../authorization/authorization';
 export const baseUrl = 'https://rs-lang-app-server.herokuapp.com/';
 
 //TEXTBOOK
-export const getWords = async (page: string, group: string): Promise<Array<Word>> => {
+export const getWords = async (group: string, page: string): Promise<Array<WordExtended>> => {
   const response: Response = await fetch(`${baseUrl}words?group=${group}&page=${page}`);
   return response.json();
 };
-export const getWordById = async (id: string): Promise<Word> => {
+export const getWordById = async (id: string): Promise<WordExtended> => {
   const response: Response = await fetch(`${baseUrl}words/${id}`);
   return response.json();
 };
@@ -126,7 +126,7 @@ export const getUserWords = async (userId: string): Promise<UserWordWithIds | vo
       return res;
     case 401:
       const status = await updateTokens(userId);
-      if (status) return await getUserWords(userId);
+      if (status) return getUserWords(userId);
       else openAuthModal();
       break;
     default:
@@ -149,9 +149,11 @@ export const createUserWord = async (userId: string, wordId: string, word: UserW
       return response;
     case 401:
       const status = await updateTokens(userId);
-      if (status) return await createUserWord(userId, wordId, word);
+      if (status) return createUserWord(userId, wordId, word);
       else openAuthModal();
       break;
+    case 417:
+      return response;
     default:
       throw new Error('Something went wrong');
   }
@@ -173,7 +175,7 @@ export const getUserWord = async (userId: string, wordId: string): Promise<UserW
       return res;
     case 401:
       const status = await updateTokens(userId);
-      if (status) return await getUserWord(userId, wordId);
+      if (status) return getUserWord(userId, wordId);
       else openAuthModal();
       break;
     default:
@@ -198,7 +200,7 @@ export const updateUserWord = async (userId: string, wordId: string, word: UserW
       return response;
     case 401:
       const status = await updateTokens(userId);
-      if (status) return await updateUserWord(userId, wordId, word);
+      if (status) return updateUserWord(userId, wordId, word);
       else openAuthModal();
       break;
     default:
@@ -221,7 +223,7 @@ export const deleteUserWord = async (userId: string, wordId: string): Promise<Re
       return response;
     case 401:
       const status = await updateTokens(userId);
-      if (status) return await deleteUserWord(userId, wordId);
+      if (status) return deleteUserWord(userId, wordId);
       else openAuthModal();
       break;
     default:
@@ -240,7 +242,7 @@ export const getUserAggregatedWords = async (
   wordsPerPage?: string,
   filter?: string
 ): Promise<aggregatedWordsResponse | void> => {
-  let params = [];
+  const params = [];
   if (group) params.push(`group=${group}`);
   if (page && !filter) params.push(`page=${page}`);
   if (wordsPerPage) params.push(`wordsPerPage=${wordsPerPage}`);
@@ -262,7 +264,7 @@ export const getUserAggregatedWords = async (
       return { wordsList: res[0].paginatedResults, totalWords: res[0].totalCount[0].count };
     case 401:
       const status = await updateTokens(userId);
-      if (status) return await getUserAggregatedWords(userId, group, page, wordsPerPage, filter);
+      if (status) return getUserAggregatedWords(userId, group, page, wordsPerPage, filter);
       else openAuthModal();
       break;
     default:
