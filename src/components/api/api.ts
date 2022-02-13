@@ -13,7 +13,7 @@ import { openAuthModal } from '../authorization/authorization';
 export const baseUrl = 'https://rs-lang-app-server.herokuapp.com/';
 
 //TEXTBOOK
-export const getWords = async (page: string, group: string): Promise<Array<Word>> => {
+export const getWords = async (group: string, page: string): Promise<Array<Word>> => {
   const response: Response = await fetch(`${baseUrl}words?group=${group}&page=${page}`);
   return await response.json();
 };

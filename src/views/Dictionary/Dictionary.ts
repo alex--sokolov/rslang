@@ -1,13 +1,14 @@
 import './Dictionary.scss';
 import { addElement, addTextElement } from '../../utils/add-element';
 import {
+  getUserId,
   getCurrentPage,
   getCurrentChapter,
   setCurrentPage,
   setCurrentChapter,
 } from '../../utils/local-storage-helpers';
-import { getWords, getWordById } from '../../components/api/api';
-import { Word } from '../../interfaces';
+import { getWords, getWordById, getUserAggregatedWords } from '../../components/api/api';
+import { aggregatedWordsResponse, Word } from '../../interfaces';
 import { wordCardRender } from './wordRender';
 import chapterRender from './chapterRender';
 import wordListRender from './wordListRender';
@@ -40,28 +41,6 @@ const paginationOptions = {
   },
 };
 
-async function paginationListener(event: PaginationEvent) {
-  const currentPage = event.page - 1;
-
-  const chapterListElement = document.querySelector('.chapter-list') as HTMLUListElement;
-  const chapterCheckedElement = chapterListElement.querySelector('input[type="radio"]:checked') as HTMLInputElement;
-
-  const chapterId = (chapterCheckedElement.getAttribute('id') as string).slice(-1);
-  wordsArr = await getWords(`${currentPage}`, chapterId);
-
-  const wordsContainerElement = document.querySelector('.dictionary-words-container') as HTMLDivElement;
-
-  wordsContainerElement.innerHTML = '';
-  wordsContainerElement.append(wordCardRender(wordsArr[0]), wordListRender(wordsArr));
-
-  setCurrentPage(`${currentPage}`);
-  if (!getCurrentChapter()) setCurrentChapter('0');
-}
-
-export const getWordsFunc = async (page: string, chapter: string) => {
-  wordsArr = await getWords(page, chapter);
-};
-
 const getPage = (): string => {
   if (getCurrentPage()) {
     paginationOptions.page = +getCurrentPage() + 1;
@@ -76,6 +55,33 @@ const getActiveChapter = () => {
   targetRadioElement.checked = true;
 };
 
+export const getWordsFunc = async (chapter: string, page: string) => {
+  if (getUserId()) {
+    const aggregatedWords = (await getUserAggregatedWords(getUserId(), chapter, page, '20')) as aggregatedWordsResponse;
+    return (wordsArr = aggregatedWords.wordsList);
+  } else {
+    return (wordsArr = await getWords(chapter, page));
+  }
+};
+
+async function paginationListener(event: PaginationEvent) {
+  const currentPage = event.page - 1;
+
+  const chapterListElement = document.querySelector('.chapter-list') as HTMLUListElement;
+  const chapterCheckedElement = chapterListElement.querySelector('input[type="radio"]:checked') as HTMLInputElement;
+
+  const chapterId = (chapterCheckedElement.getAttribute('id') as string).slice(-1);
+  wordsArr = await getWordsFunc(chapterId, `${currentPage}`);
+
+  const wordsContainerElement = document.querySelector('.dictionary-words-container') as HTMLDivElement;
+
+  wordsContainerElement.innerHTML = '';
+  wordsContainerElement.append(wordCardRender(wordsArr[0]), wordListRender(wordsArr));
+
+  setCurrentPage(`${currentPage}`);
+  if (!getCurrentChapter()) setCurrentChapter('0');
+}
+
 export const Dictionary = async (): Promise<HTMLElement> => {
   const page = addElement('main', 'dictionary-page container') as HTMLElement;
   const pageTitle = addTextElement('h1', 'page-title', 'Учебник') as HTMLHeadingElement;
@@ -88,7 +94,7 @@ export const Dictionary = async (): Promise<HTMLElement> => {
   const currentPage = getPage();
   const currentChapter = getCurrentChapter() ? getCurrentChapter() : '0';
 
-  await getWordsFunc(currentPage, currentChapter);
+  await getWordsFunc(currentChapter, currentPage);
 
   mainContentContainer.append(wordCardRender(wordsArr[0]));
   const wordList = wordListRender(wordsArr);

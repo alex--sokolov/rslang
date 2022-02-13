@@ -59,6 +59,30 @@ b {
   border-radius: 5px;
   box-shadow: 0px 5px 8px 2px rgba(0, 0, 0, 0.2);
 
+  &::after {
+    display: none;
+    position: absolute;
+    content: '';
+    bottom: 15px;
+    right: 15px;
+    width: 45px;
+    height: 45px;
+    background: url('../../assets/svg/head.svg') no-repeat center center;
+    background-size: contain;
+  }
+
+  &.easy::after {
+    display: block;
+  }
+  &.hard::after {
+    display: block;
+    background-image: url('../../assets/svg/head-red.svg');
+  }
+  &.learned::after {
+    display: block;
+    background-image: url('../../assets/svg/head-green.svg');
+  }
+
 
   &__left-side {
     width: 100%;
@@ -104,18 +128,15 @@ b {
   }
 
   &__voice-btn {
-    width: 30px;
-    height: 30px;
+    width: 34px;
+    height: 34px;
     object-fit: contain;
     border: none;
     outline: none;
     cursor: pointer;
     border-radius: 50%;
     transition: 0.1s;
-  }
-
-  .card__voice-btn:active {
-    transform: scale(1.1);
+    border: 2px solid $color-second;
   }
 
   &__voice-icon {
@@ -123,46 +144,25 @@ b {
     vertical-align: middle;
   }
 
-  &__checkbox-wrapper {
+  &__btn {
     padding: 0 8px;
     color: $color-second;
-    border-radius: 15px;
-  }
-
-  &__checkbox {
-    display: none;
-  }
-
-  &__label {
+    font-size: 1em;
+    border-radius: 16px;
     position: relative;
-    padding-left: 30px;
     line-height: 30px;
     cursor: pointer;
-  }
-
-  &__label::before {
-    position: absolute;
-    content: '';
-    top: 3px;
-    left: 0;
-    width: 15px;
-    height: 15px;
     border: 2px solid $color-second;
-    border-radius: 50%;
   }
 
-  &__checkbox:checked + .card__label::before {
-    content: "\2713";
-    text-shadow: 1px 1px 1px rgba(0, 0, 0, .2);
-    font-size: 15px;
-    line-height: 15px;
-    font-weight: bold;
-    color: $color-second;
-    text-align: center;
-    transition: 0.3s;
+  &__voice-btn:active,
+  &__btn:active {
+    transform: scale(1.1);
   }
+
 }
 
+// Фоновый градент для карточки слова в зависимости от активного раздела
 .card--chapter-0 { background: linear-gradient(180deg, #ffffff54,#fc775f94); }
 .card--chapter-1 { background: linear-gradient(180deg, #ffffff54,#fca65f94); }
 .card--chapter-2 { background: linear-gradient(180deg, #ffffff54,#fcdf5f94); }
@@ -179,6 +179,7 @@ b {
 }
 
 .word-item {
+  position: relative;
   width: 180px;
   flex-grow: 1;
   padding: 5px;
@@ -196,13 +197,30 @@ b {
     transition: none;
   }
 
-  &--learned {
-    background-color: lightgreen;
+  &::after {
+    display: none;
+    position: absolute;
+    content: '';
+    bottom: 10px;
+    right: 10px;
+    width: 30px;
+    height: 30px;
+    background: url('../../assets/svg/head.svg') no-repeat center center;
+    background-size: contain;
   }
-  &--hard {
-    background-color: lightcoral;
+
+  &_easy::after {
+    display: block;
   }
-  &--active {
+  &_hard::after {
+    display: block;
+    background-image: url('../../assets/svg/head-red.svg');
+  }
+  &_learned::after {
+    display: block;
+    background-image: url('../../assets/svg/head-green.svg');
+  }
+  &_active {
     color: $color-second;
   }
 }
@@ -217,32 +235,47 @@ b {
 
 input:checked + .color-chapter-0,
 .word-item--active.color-chapter-0,
-.card__checkbox-wrapper.color-chapter-0,
+.card__btn.color-chapter-0,
 .card__voice-btn.color-chapter-0 { background-color: $color-chapter-1; }
 input:checked + .color-chapter-1,
 .word-item--active.color-chapter-1,
-.card__checkbox-wrapper.color-chapter-1,
+.card__btn.color-chapter-1,
 .card__voice-btn.color-chapter-1 { background-color: $color-chapter-2; }
 input:checked + .color-chapter-2,
 .word-item--active.color-chapter-2,
-.card__checkbox-wrapper.color-chapter-2,
+.card__btn.color-chapter-2,
 .card__voice-btn.color-chapter-2 { background-color: $color-chapter-3; }
 input:checked + .color-chapter-3,
 .word-item--active.color-chapter-3,
-.card__checkbox-wrapper.color-chapter-3,
+.card__btn.color-chapter-3,
 .card__voice-btn.color-chapter-3 { background-color: $color-chapter-4; }
 input:checked + .color-chapter-4,
 .word-item--active.color-chapter-4,
-.card__checkbox-wrapper.color-chapter-4,
+.card__btn.color-chapter-4,
 .card__voice-btn.color-chapter-4 { background-color: $color-chapter-5; }
 input:checked + .color-chapter-5,
 .word-item--active.color-chapter-5,
-.card__checkbox-wrapper.color-chapter-5,
+.card__btn.color-chapter-5,
 .card__voice-btn.color-chapter-5 { background-color: $color-chapter-6; }
 input:checked + .color-chapter-6,
 .word-item--active.color-chapter-6,
-.card__checkbox-wrapper.color-chapter-6,
+.card__btn.color-chapter-6,
 .card__voice-btn.color-chapter-6 { background-color: $color-chapter-7; }
+
+.card__voice-btn.color-chapter-0:hover,
+.card__btn.color-chapter-0:hover { border-color: $color-chapter-1; }
+.card__voice-btn.color-chapter-1:hover,
+.card__btn.color-chapter-1:hover { border-color: $color-chapter-2; }
+.card__voice-btn.color-chapter-2:hover,
+.card__btn.color-chapter-2:hover { border-color: $color-chapter-3; }
+.card__voice-btn.color-chapter-3:hover,
+.card__btn.color-chapter-3:hover { border-color: $color-chapter-4; }
+.card__voice-btn.color-chapter-4:hover,
+.card__btn.color-chapter-4:hover { border-color: $color-chapter-5; }
+.card__voice-btn.color-chapter-5:hover,
+.card__btn.color-chapter-5:hover { border-color: $color-chapter-6; }
+.card__voice-btn.color-chapter-6:hover,
+.card__btn.color-chapter-6:hover { border-color: $color-chapter-7; }
 
 .tui-pagination {
   margin-bottom: 30px;
