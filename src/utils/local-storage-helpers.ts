@@ -38,18 +38,3 @@ export const getPage = (): string => {
 export const getGroup = (): string => {
   return <string>localStorage.getItem('chapter');
 };
-export const isPlayingAC = (status?: string): boolean | null | void => {
-  if (status) {
-    localStorage.setItem('isPlayingAC', status);
-  } else {
-    const res: string = <string>localStorage.getItem('isPlayingAC');
-    switch (res) {
-      case 'true':
-        return true;
-      case 'false':
-        return false;
-      default:
-        return null;
-    }
-  }
-};
