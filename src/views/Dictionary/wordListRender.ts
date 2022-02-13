@@ -1,16 +1,18 @@
 import { addElement } from '../../utils/add-element';
-import { Word } from '../../interfaces';
+import { Word, WordExtended } from '../../interfaces';
 import { wordCardRender } from './wordRender';
 import { getCurrentChapter } from '../../utils/local-storage-helpers';
 
-const wordListRender = (words: Word[]): HTMLDivElement => {
+const wordListRender = (words: Word[] | WordExtended[]): HTMLDivElement => {
+  console.log(words);
+
   const wordListContainer = addElement('div', 'word-list') as HTMLDivElement;
   const currentChapter = getCurrentChapter();
 
   words.forEach((word, i) => {
     const wordButton = addElement('button', `word-item color-chapter-${currentChapter}`) as HTMLButtonElement;
     if (i === 0) {
-      wordButton.classList.add('word-item--active');
+      wordButton.classList.add('word-item_active');
     }
 
     wordButton.setAttribute('data-word-id', word.id);
@@ -18,6 +20,10 @@ const wordListRender = (words: Word[]): HTMLDivElement => {
     wordEng.textContent = word.word;
     const wordTranslate = document.createElement('p') as HTMLParagraphElement;
     wordTranslate.textContent = word.wordTranslate;
+
+    if (word.userWord) {
+      wordButton.classList.add(`word-item_${word.userWord.difficulty}`);
+    }
 
     wordButton.append(wordEng, wordTranslate);
     wordListContainer.append(wordButton);

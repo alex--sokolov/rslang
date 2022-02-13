@@ -1,11 +1,12 @@
 import { addElement, addTextElement } from '../../utils/add-element';
-import { Word } from '../../interfaces';
+import { Word, WordExtended } from '../../interfaces';
 import { getCurrentChapter, getUserId } from '../../utils/local-storage-helpers';
 import voiceIco from '../../assets/svg/audio.svg';
+import { lestenCheckboxes } from './learnedAndDifficult';
 
 let isAudioPlaying = false;
 
-function playAudioTrigger(word: Word): void {
+function playAudioTrigger(word: Word | WordExtended): void {
   const audioArr = [
     `https://rs-lang-app-server.herokuapp.com/${word.audio}`,
     `https://rs-lang-app-server.herokuapp.com/${word.audioMeaning}`,
@@ -34,8 +35,9 @@ function playAudioTrigger(word: Word): void {
   playAudio(0);
 }
 
-export const wordCardRender = (word: Word): HTMLDivElement => {
+export const wordCardRender = (word: WordExtended): HTMLDivElement => {
   const currentChapter = getCurrentChapter();
+
   const wordCardContainer = addElement('div', `word-card card card--chapter-${currentChapter}`) as HTMLDivElement;
   const wordCardLeftSide = addElement('div', 'card__left-side') as HTMLDivElement;
   const wordCardRightSide = addElement('div', 'card__right-side') as HTMLDivElement;
@@ -64,19 +66,40 @@ export const wordCardRender = (word: Word): HTMLDivElement => {
   const voiceBtn = addElement('button', `card__voice-btn color-chapter-${currentChapter}`) as HTMLButtonElement;
   const voiceIcon = addElement('img', 'card__voice-icon') as HTMLImageElement;
   voiceIcon.src = voiceIco;
-
   voiceBtn.append(voiceIcon);
 
-  const wordCheckboxes = `
-    <div class="card__checkbox-wrapper color-chapter-${currentChapter}">
-      <input type="checkbox" name="hard-word" id="hard-word-checkbox" class="card__checkbox">
-      <label for="hard-word-checkbox" class="card__label">Сложное</label>
-    </div>
-    <div class="card__checkbox-wrapper color-chapter-${currentChapter}">
-      <input type="checkbox" name="learned-word" id="learned-word-checkbox" class="card__checkbox">
-      <label for="learned-word-checkbox" class="card__label">Изученное</label>
-    </div>
-  `;
+  // const checkboxHardWrapper = addElement(
+  //   'div',
+  //   `card__checkbox-wrapper color-chapter-${currentChapter}`
+  // ) as HTMLDivElement;
+  // const checkboxHard = addElement('input', 'card__checkbox', 'hard-word-checkbox') as HTMLInputElement;
+  // checkboxHard.type = 'radio';
+  // checkboxHard.name = 'word-difficulty';
+  // const labelHard = addTextElement('label', 'card__label', 'Сложное') as HTMLLabelElement;
+  // labelHard.setAttribute('for', 'hard-word-checkbox');
+  // checkboxHardWrapper.append(checkboxHard, labelHard);
+
+  // const checkboxLearnedWrapper = addElement(
+  //   'div',
+  //   `card__checkbox-wrapper color-chapter-${currentChapter}`
+  // ) as HTMLDivElement;
+  // const checkboxLearned = addElement('input', 'card__checkbox', 'learned-word-checkbox') as HTMLInputElement;
+  // checkboxLearned.type = 'radio';
+  // checkboxLearned.name = 'word-difficulty';
+  // const labelLearned = addTextElement('label', 'card__label', 'Изученное') as HTMLLabelElement;
+  // labelLearned.setAttribute('for', 'learned-word-checkbox');
+  // checkboxLearnedWrapper.append(checkboxLearned, labelLearned);
+
+  const hardButtun = addTextElement(
+    'button',
+    `card__btn card__btn_hard color-chapter-${currentChapter}`,
+    'Сложное'
+  ) as HTMLButtonElement;
+  const learnedButtun = addTextElement(
+    'button',
+    `card__btn card__btn_learned color-chapter-${currentChapter}`,
+    'Изученное'
+  ) as HTMLButtonElement;
 
   wordCardRightSide.append(
     wordEng,
@@ -94,13 +117,22 @@ export const wordCardRender = (word: Word): HTMLDivElement => {
   wordCardLeftSide.insertAdjacentHTML('afterbegin', image);
   btnsContainer.append(voiceBtn);
   // if (getUserId()) // TODO: Turn on
-  btnsContainer.insertAdjacentHTML('beforeend', wordCheckboxes);
+  btnsContainer.append(hardButtun, learnedButtun);
 
   wordCardContainer.append(wordCardLeftSide, wordCardRightSide);
+
+  if (word.userWord) {
+    wordCardContainer.classList.add(word.userWord.difficulty);
+  } else {
+    // wordCardContainer.classList.remove('easy');
+  }
 
   voiceBtn.addEventListener('click', () => {
     playAudioTrigger(word);
   });
+
+  hardButtun.addEventListener('click', (e) => lestenCheckboxes(e, word.id, { difficulty: 'hard' }));
+  learnedButtun.addEventListener('click', (e) => lestenCheckboxes(e, word.id, { difficulty: 'learned' }));
 
   return wordCardContainer;
 };

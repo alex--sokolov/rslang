@@ -2,11 +2,11 @@ import { addElement } from '../../utils/add-element';
 import wordListRender from './wordListRender';
 import { getWords } from '../../components/api/api';
 import { wordCardRender } from './wordRender';
-import { pagination } from './Dictionary';
+import { getWordsFunc, pagination } from './Dictionary';
 import { setCurrentPage, setCurrentChapter } from '../../utils/local-storage-helpers';
 
 async function chapterListener(i: number) {
-  const wordsArr = await getWords('0', `${i}`);
+  const wordsArr = await getWordsFunc(`${i}`, '0');
   const wordsContainerElement = document.querySelector('.dictionary-words-container') as HTMLDivElement;
 
   setCurrentPage('0');
