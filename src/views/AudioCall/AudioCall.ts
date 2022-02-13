@@ -1,6 +1,6 @@
 import './AudioCall.scss';
 import { addElement, addTextElement } from '../../utils/add-element';
-import { getGameLevel, getGroup, getPage, getUserId, setGameLevel } from '../../utils/local-storage-helpers';
+import { getGameLevel, getChapter, getPage, getUserId, setGameLevel } from '../../utils/local-storage-helpers';
 import { getWords } from '../../components/api/api';
 import { getRandom } from '../../utils/get-random';
 import { Word, WordExtended } from '../../interfaces';
@@ -24,7 +24,7 @@ function startAudioCall(callPlace?: string) {
   //if call from textbook >>> we need attributes!
   const root = document.getElementById('root') as HTMLDivElement;
   const page: string = callPlace === 'fromBook' ? getPage() : String(getRandom(0, gameVars.AMOUNT_PAGES_OF_GROUP));
-  const group: string = callPlace === 'fromBook' ? getGroup() : levelToGroup(getGameLevel());
+  const group: string = callPlace === 'fromBook' ? getChapter() : levelToGroup(getGameLevel());
 
   gameVars.statistic.length = 0;
   let counter = 0;

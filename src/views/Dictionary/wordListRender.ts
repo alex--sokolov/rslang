@@ -1,13 +1,13 @@
 import { addElement } from '../../utils/add-element';
 import { Word, WordExtended } from '../../interfaces';
 import { wordCardRender } from './wordRender';
-import { getCurrentChapter } from '../../utils/local-storage-helpers';
+import { getChapter } from '../../utils/local-storage-helpers';
 
-const wordListRender = (words: Word[] | WordExtended[]): HTMLDivElement => {
+const wordListRender = (words: WordExtended[]): HTMLDivElement => {
   console.log(words);
 
   const wordListContainer = addElement('div', 'word-list') as HTMLDivElement;
-  const currentChapter = getCurrentChapter();
+  const currentChapter = getChapter();
 
   words.forEach((word, i) => {
     const wordButton = addElement('button', `word-item color-chapter-${currentChapter}`) as HTMLButtonElement;
@@ -29,9 +29,9 @@ const wordListRender = (words: Word[] | WordExtended[]): HTMLDivElement => {
     wordListContainer.append(wordButton);
 
     wordButton.addEventListener('click', () => {
-      const activeWordBtn = wordListContainer.querySelector('.word-item--active') as HTMLButtonElement;
-      activeWordBtn.classList.remove('word-item--active');
-      wordButton.classList.add('word-item--active');
+      const activeWordBtn = wordListContainer.querySelector('.word-item_active') as HTMLButtonElement;
+      activeWordBtn.classList.remove('word-item_active');
+      wordButton.classList.add('word-item_active');
 
       const wordsContainerElement = document.querySelector('.dictionary-words-container') as HTMLDivElement;
       const wordCardElement = wordsContainerElement.firstElementChild as HTMLDivElement;

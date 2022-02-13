@@ -5,28 +5,29 @@ import { UserWord } from '../../interfaces';
 
 const userId = getUserId();
 
-export function lestenCheckboxes(e: Event, wordId: string, wordState: UserWord) {
-  const targetState = wordState.difficulty;
-  const radioElement = e.currentTarget as HTMLButtonElement;
-  const cardElement = radioElement.parentElement?.parentElement?.parentElement as HTMLDivElement;
+export function lestenStateBtns(e: Event, wordId: string, wordState: UserWord) {
+  const targetState = wordState.difficulty as string;
+  const btnElement = e.currentTarget as HTMLButtonElement;
+  const cardElement = btnElement.parentElement?.parentElement?.parentElement as HTMLDivElement;
 
   const isHardActive = cardElement.classList.contains('hard') && targetState === 'hard';
   const isLearnedActive = cardElement.classList.contains('learned') && targetState === 'learned';
 
 
   function createWord() {
-    console.log('create word');
+    // console.log('create word');
+    // console.log(userId, wordId, wordState);
     createUserWord(userId, wordId, wordState);
   }
 
   function updateWord() {
-    console.log('update word');
+    // console.log('update word');
     updateUserWord(userId, wordId, wordState);
-    console.log(getUserWords(userId));
+    // console.log(getUserWords(userId));
   }
 
   function setDefaultWordState() {
-    console.log('update word default');
+    // console.log('update word default');
     updateUserWord(userId, wordId, { difficulty: 'easy' });
     cardElement.classList.toggle(targetState);
   }

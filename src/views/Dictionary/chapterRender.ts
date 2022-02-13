@@ -3,14 +3,14 @@ import wordListRender from './wordListRender';
 import { getWords } from '../../components/api/api';
 import { wordCardRender } from './wordRender';
 import { getWordsFunc, pagination } from './Dictionary';
-import { setCurrentPage, setCurrentChapter } from '../../utils/local-storage-helpers';
+import { setPage, setChapter } from '../../utils/local-storage-helpers';
 
 async function chapterListener(i: number) {
   const wordsArr = await getWordsFunc(`${i}`, '0');
   const wordsContainerElement = document.querySelector('.dictionary-words-container') as HTMLDivElement;
 
-  setCurrentPage('0');
-  setCurrentChapter(`${i}`);
+  setPage('0');
+  setChapter(`${i}`);
 
   wordsContainerElement.innerHTML = '';
   wordsContainerElement.append(wordCardRender(wordsArr[0]), wordListRender(wordsArr));

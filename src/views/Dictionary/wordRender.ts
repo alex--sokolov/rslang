@@ -1,8 +1,8 @@
 import { addElement, addTextElement } from '../../utils/add-element';
 import { Word, WordExtended } from '../../interfaces';
-import { getCurrentChapter, getUserId } from '../../utils/local-storage-helpers';
+import { getChapter, getUserId } from '../../utils/local-storage-helpers';
 import voiceIco from '../../assets/svg/audio.svg';
-import { lestenCheckboxes } from './learnedAndDifficult';
+import { lestenStateBtns } from './learnedAndDifficult';
 
 let isAudioPlaying = false;
 
@@ -36,7 +36,8 @@ function playAudioTrigger(word: Word | WordExtended): void {
 }
 
 export const wordCardRender = (word: WordExtended): HTMLDivElement => {
-  const currentChapter = getCurrentChapter();
+  const currentChapter = getChapter();
+  const wordId = word.id ? word.id : word._id;
 
   const wordCardContainer = addElement('div', `word-card card card--chapter-${currentChapter}`) as HTMLDivElement;
   const wordCardLeftSide = addElement('div', 'card__left-side') as HTMLDivElement;
@@ -68,34 +69,12 @@ export const wordCardRender = (word: WordExtended): HTMLDivElement => {
   voiceIcon.src = voiceIco;
   voiceBtn.append(voiceIcon);
 
-  // const checkboxHardWrapper = addElement(
-  //   'div',
-  //   `card__checkbox-wrapper color-chapter-${currentChapter}`
-  // ) as HTMLDivElement;
-  // const checkboxHard = addElement('input', 'card__checkbox', 'hard-word-checkbox') as HTMLInputElement;
-  // checkboxHard.type = 'radio';
-  // checkboxHard.name = 'word-difficulty';
-  // const labelHard = addTextElement('label', 'card__label', 'Сложное') as HTMLLabelElement;
-  // labelHard.setAttribute('for', 'hard-word-checkbox');
-  // checkboxHardWrapper.append(checkboxHard, labelHard);
-
-  // const checkboxLearnedWrapper = addElement(
-  //   'div',
-  //   `card__checkbox-wrapper color-chapter-${currentChapter}`
-  // ) as HTMLDivElement;
-  // const checkboxLearned = addElement('input', 'card__checkbox', 'learned-word-checkbox') as HTMLInputElement;
-  // checkboxLearned.type = 'radio';
-  // checkboxLearned.name = 'word-difficulty';
-  // const labelLearned = addTextElement('label', 'card__label', 'Изученное') as HTMLLabelElement;
-  // labelLearned.setAttribute('for', 'learned-word-checkbox');
-  // checkboxLearnedWrapper.append(checkboxLearned, labelLearned);
-
-  const hardButtun = addTextElement(
+  const hardBtn = addTextElement(
     'button',
     `card__btn card__btn_hard color-chapter-${currentChapter}`,
     'Сложное'
   ) as HTMLButtonElement;
-  const learnedButtun = addTextElement(
+  const learnedBtn = addTextElement(
     'button',
     `card__btn card__btn_learned color-chapter-${currentChapter}`,
     'Изученное'
@@ -117,12 +96,12 @@ export const wordCardRender = (word: WordExtended): HTMLDivElement => {
   wordCardLeftSide.insertAdjacentHTML('afterbegin', image);
   btnsContainer.append(voiceBtn);
   // if (getUserId()) // TODO: Turn on
-  btnsContainer.append(hardButtun, learnedButtun);
+  btnsContainer.append(hardBtn, learnedBtn);
 
   wordCardContainer.append(wordCardLeftSide, wordCardRightSide);
 
   if (word.userWord) {
-    wordCardContainer.classList.add(word.userWord.difficulty);
+    wordCardContainer.classList.add(word.userWord.difficulty as string);
   } else {
     // wordCardContainer.classList.remove('easy');
   }
@@ -131,8 +110,8 @@ export const wordCardRender = (word: WordExtended): HTMLDivElement => {
     playAudioTrigger(word);
   });
 
-  hardButtun.addEventListener('click', (e) => lestenCheckboxes(e, word.id, { difficulty: 'hard' }));
-  learnedButtun.addEventListener('click', (e) => lestenCheckboxes(e, word.id, { difficulty: 'learned' }));
+  hardBtn.addEventListener('click', (e) => lestenStateBtns(e, wordId, { difficulty: 'hard' }));
+  learnedBtn.addEventListener('click', (e) => lestenStateBtns(e, wordId, { difficulty: 'learned' }));
 
   return wordCardContainer;
 };

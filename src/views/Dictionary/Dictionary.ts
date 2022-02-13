@@ -1,14 +1,8 @@
 import './Dictionary.scss';
 import { addElement, addTextElement } from '../../utils/add-element';
-import {
-  getUserId,
-  getCurrentPage,
-  getCurrentChapter,
-  setCurrentPage,
-  setCurrentChapter,
-} from '../../utils/local-storage-helpers';
+import { getUserId, getPage, getChapter, setPage, setChapter } from '../../utils/local-storage-helpers';
 import { getWords, getWordById, getUserAggregatedWords } from '../../components/api/api';
-import { aggregatedWordsResponse, Word } from '../../interfaces';
+import { aggregatedWordsResponse, Word, WordExtended } from '../../interfaces';
 import { wordCardRender } from './wordRender';
 import chapterRender from './chapterRender';
 import wordListRender from './wordListRender';
@@ -16,7 +10,7 @@ import Pagination from 'tui-pagination';
 import { PaginationEvent } from '../../types';
 import './tui-pagination.scss';
 
-let wordsArr: Word[] = [];
+let wordsArr: WordExtended[] = [];
 export let pagination: Pagination;
 
 const paginationOptions = {
@@ -41,16 +35,16 @@ const paginationOptions = {
   },
 };
 
-const getPage = (): string => {
-  if (getCurrentPage()) {
-    paginationOptions.page = +getCurrentPage() + 1;
-    return getCurrentPage();
+const getCurrPage = (): string => {
+  if (getPage()) {
+    paginationOptions.page = +getPage() + 1;
+    return getPage();
   }
   return '0';
 };
 
 const getActiveChapter = () => {
-  const currentChapter = getCurrentChapter();
+  const currentChapter = getChapter();
   const targetRadioElement = document.getElementById(`chapter-${currentChapter}`) as HTMLInputElement;
   targetRadioElement.checked = true;
 };
@@ -78,8 +72,8 @@ async function paginationListener(event: PaginationEvent) {
   wordsContainerElement.innerHTML = '';
   wordsContainerElement.append(wordCardRender(wordsArr[0]), wordListRender(wordsArr));
 
-  setCurrentPage(`${currentPage}`);
-  if (!getCurrentChapter()) setCurrentChapter('0');
+  setPage(`${currentPage}`);
+  if (!getChapter()) setChapter('0');
 }
 
 export const Dictionary = async (): Promise<HTMLElement> => {
@@ -92,7 +86,7 @@ export const Dictionary = async (): Promise<HTMLElement> => {
   page.append(pageTitle, chapterRender(), wordsTitle, mainContentContainer, paginationElement);
 
   const currentPage = getPage();
-  const currentChapter = getCurrentChapter() ? getCurrentChapter() : '0';
+  const currentChapter = getChapter() ? getChapter() : '0';
 
   await getWordsFunc(currentChapter, currentPage);
 
