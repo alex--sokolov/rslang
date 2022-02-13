@@ -9,6 +9,6 @@ const start = () => {
   root.after(Footer());
   window.addEventListener('load', navigate);
   window.addEventListener('hashchange', navigate);
-}
+};
 
 start();

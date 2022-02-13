@@ -34,8 +34,23 @@ export const setChapter = (chapter: string): void => {
   localStorage.setItem('chapter', chapter);
 };
 export const getPage = (): string => {
-  return <string>localStorage.getItem('page');
+  return <string>localStorage.getItem('chapter');
 };
 export const getChapter = (): string => {
   return <string>localStorage.getItem('chapter');
+};
+export const isPlayingAC = (status?: string): boolean | null | void => {
+  if (status) {
+    localStorage.setItem('isPlayingAC', status);
+  } else {
+    const res: string = <string>localStorage.getItem('isPlayingAC');
+    switch (res) {
+      case 'true':
+        return true;
+      case 'false':
+        return false;
+      default:
+        return null;
+    }
+  }
 };

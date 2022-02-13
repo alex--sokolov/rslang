@@ -13,7 +13,7 @@ const authSingInHTML = `
   <label for="password">Пароль:</label>
   <input type="password" name="password" id="password" class="auth__input-field">
   <input type="submit" data-mode="signin" value="Войти">
-  <p>Нет аккаунта? Тогда <button type="button" id="auth-toggle-btn" class="auth__toggle">зарегистрируйся!</button></p>
+  <p>Нет аккаунта? Тогда <button id="auth-toggle-btn" class="auth__toggle">зарегистрируйся!</button></p>
   <p id="auth__warn" class="auth__warn"></p>
 `;
 const authRegisterHTML = `
@@ -27,7 +27,7 @@ const authRegisterHTML = `
   <label for="password-2">Повторите пароль:</label>
   <input type="password" name="password-2" id="password-2" class="auth__input-field">
   <input type="submit" data-mode="register" value="Зарегистрироваться">
-  <p>Уже есть аккаунт? <button type="button" id="auth-toggle-btn" class="auth__toggle">Войти!</button></p>
+  <p>Уже есть аккаунт? <button id="auth-toggle-btn" class="auth__toggle">Войти!</button></p>
   <p id="auth__warn" class="auth__warn"></p>
 `;
 
@@ -87,6 +87,6 @@ const openAuthModal = () => {
   const authToggleBtn = document.getElementById('auth-toggle-btn') as HTMLButtonElement;
   authToggleBtn.removeEventListener('click', signOut);
   authToggleBtn.addEventListener('click', openAuthModal);
-}
+};
 
 export { Authorization, openAuthModal, AuthPanel };

@@ -1,6 +1,5 @@
 import './AudioCall.scss';
 import { addElement, addTextElement } from '../../utils/add-element';
-import { getGameLevel, getChapter, getPage, getUserId, setGameLevel } from '../../utils/local-storage-helpers';
 import { getWords } from '../../components/api/api';
 import { getRandom } from '../../utils/get-random';
 import { Word, WordExtended } from '../../interfaces';
@@ -8,9 +7,17 @@ import playSound from './gameComponents/play-sound';
 import getAnswers from './gameComponents/answers-list';
 import { showModal } from '../../utils/show-modal';
 import { AudioCallResult } from './gameComponents/AudioCall-result';
+import { getEmptySlide, getSlide } from './gameComponents/game-slide';
+import {
+  getChapter,
+  getGameLevel,
+  getPage,
+  getUserId,
+  isPlayingAC,
+  setGameLevel,
+} from '../../utils/local-storage-helpers';
 import gameVars from './gameComponents/game-vars';
 import { levelToGroup, shuffle } from '../../utils/micro-helpers';
-import { getEmptySlide, getSlide } from './gameComponents/game-slide';
 import updateWord from './gameComponents/update-word';
 
 //for button on dictionary page >>>
@@ -26,6 +33,7 @@ function startAudioCall(callPlace?: string) {
   const page: string = callPlace === 'fromBook' ? getPage() : String(getRandom(0, gameVars.AMOUNT_PAGES_OF_GROUP));
   const group: string = callPlace === 'fromBook' ? getChapter() : levelToGroup(getGameLevel());
 
+  isPlayingAC('true');
   gameVars.statistic.length = 0;
   let counter = 0;
 
@@ -78,6 +86,7 @@ function startAudioCall(callPlace?: string) {
     function switchSlideFinal() {
       switchSlide();
       showModal(AudioCallResult(gameVars.statistic, targetArr));
+      isPlayingAC('false');
     }
     function delCompletedSlide() {
       //find and delete previous slide if it exists
@@ -170,6 +179,7 @@ function addListeners(element: HTMLElement, callPlace?: string) {
   startButton.addEventListener('click', startAudioCall.bind(null, callPlace));
 }
 
+//запуск страницы с игрой
 const AudioCall = (callPlace?: string): HTMLElement => {
   const page = addElement('main', 'audio-call-page') as HTMLElement;
 
