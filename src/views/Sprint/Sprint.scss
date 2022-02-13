@@ -200,7 +200,55 @@
   }
 }
 
+@keyframes appearBigScaleTimeIsUp {
+  0% {
+    transform: scale(2)
+    rotate(0);
+  }
+  50% {
+    transform: scale(4)
+    rotate(-3deg);
+  }
+  100% {
+    transform: scale(1)
+    rotate(-5deg);
+  }
+}
 
+@keyframes appearBigScaleStar {
+  0% {
+    transform: scale(5)
+  }
+  50% {
+    transform: scale(10)
+  }
+  100% {
+    transform: scale(1)
+  }
+}
+
+@keyframes blinkStar {
+  0% {
+    background: goldenrod;
+  }
+  50% {
+    background: red;
+  }
+  100% {
+    background: goldenrod;
+  }
+}
+
+@keyframes starFadeOut {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+}
 
 .out-left {
   animation: outLeft 1s linear;
@@ -263,13 +311,176 @@
 }
 
 .out-active {
-  animation: outLevelActive 1s;
+  animation: outLevelActive 2s;
   -webkit-animation: outLevelActive 2s;
-  -moz-animation: outLevelActive 1s;
-  -o-animation: outLevelActive 1s;
+  -moz-animation: outLevelActive 2s;
+  -o-animation: outLevelActive 2s;
   animation-fill-mode: forwards;
   -webkit-animation-fill-mode: forwards;
   -moz-animation-fill-mode: forwards;
   -o-animation-fill-mode: forwards;
   -ms-animation-fill-mode: forwards;
+}
+
+.timer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 40px auto 0;
+  text-align: center;
+  font-size: 10rem;
+  height: 150px;
+  width: 500px;
+}
+
+.time-is-up {
+  animation: appearBigScaleTimeIsUp 500ms;
+  padding-top: 4px;
+  font-size: 2rem;
+  height: 50px;
+  width: 250px;
+  background-color: #333333;
+  border-radius: 4px;
+  color: goldenrod;
+  box-shadow: 0 0 15px 10px orange;
+  transform: rotate(-5deg);
+}
+
+.sprint-score-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 4rem;
+  color: #fff;
+}
+
+.sprint-score {
+  margin-left: 15px;
+  font-size: 8rem;
+  color: goldenrod;
+}
+
+.sprint-sequence-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 15px auto;
+  height: 30px;
+  width: 450px;
+  border-radius: 5px;
+  background-color: #333333;
+
+}
+
+.sprint-star {
+  animation: appearBigScaleStar 250ms;
+}
+
+.sprint-star::before {
+  content:'';
+  display: block;
+  width: 20px;
+  height: 20px;
+  background: goldenrod;
+  mask: url('../../assets/img/star.svg') no-repeat;
+  -webkit-mask: url('../../assets/img/star.svg') no-repeat;
+  mask-size: contain;
+  -webkit-mask-size: contain;
+  mask-position: center;
+  -webkit-mask-position: center;
+
+}
+
+.sprint-question-container{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  text-align: center;
+}
+
+.sprint-question {
+  font-size: 4rem;
+}
+
+.sprint-question-equality {
+  padding: 30px;
+}
+
+.sprint-question-answer {
+  font-size: 4rem;
+}
+
+.sprint-question-mark {
+  font-size: 4rem;
+  color: crimson;
+  padding-left: 30px;
+}
+
+.btns-answers-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 500px;
+  margin: 50px auto;
+}
+
+.btn-yes,
+.btn-no {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 200px;
+  height: 50px;
+  margin: auto;
+  font-size: 28px;
+  color: #fff;
+  text-transform: uppercase;
+  outline: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 1250ms cubic-bezier(0.19, 1, 0.22, 1);
+}
+.btn-yes {
+  background-color: green;
+}
+
+.btn-no {
+  background-color: crimson;
+}
+
+.btn-yes:hover,
+.btn-no:hover {
+  outline-color: rgba(255, 255, 255, 0);
+  outline-offset: 15px;
+  transition: 1s;
+}
+
+.sprint-levelInGame-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2rem;
+  color: goldenrod;
+}
+
+.sprint-levelInGame {
+  margin-left: 15px;
+  font-weight: bold;
+  color: goldenrod;
+}
+
+.sprint-score-level {
+  margin-left: 10px;
+}
+
+
+.sprint-mult-increase::before {
+  content:"";
+  display: block;
+  animation: blinkStar 500ms backwards ease-in-out;
+}
+
+.sprint-mult-delete::before {
+  animation: starFadeOut 250ms forwards ease-in-out;
 }

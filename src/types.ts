@@ -8,4 +8,4 @@ export type PaginationEvent = {
   page: number;
 };
 
-export type WordsList = Word[] | WordExtended[] | undefined
+export type WordsList = Array<Word | WordExtended>;

@@ -1,3 +1,5 @@
+import { WordsList } from './types';
+
 export interface Word {
   id: string;
   group: number;
@@ -88,6 +90,7 @@ export interface FetchParam {
   };
   body?: string;
 }
+
 export interface AudioCallVars {
   AMOUNT_PAGES_OF_GROUP: number;
   AMOUNT_WORDS_IN_GAME: number;
@@ -99,4 +102,22 @@ export interface AudioCallVars {
   mainKeys: Array<number>;
   numKeys: Array<number>;
   diffTimeNewWord: number;
+}
+
+export interface SprintGameSettings {
+  userId: string;
+  questionNumber: number;
+  score: number;
+  scoreMultiplier: number;
+  correctSequence: number;
+  rightOrWrong: boolean;
+  group: string;
+  page: string;
+  isFromDictionary: boolean;
+  wordsList: WordsList;
+  wordsListPlayed: WordExtended[];
+  answersList: string[];
+  question: string;
+  rightAnswer: string;
+  wrongAnswer: string;
 }
