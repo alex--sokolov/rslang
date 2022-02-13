@@ -1,15 +1,18 @@
 import { addElement } from '../../utils/add-element';
-import { Word } from '../../interfaces';
+import { Word, WordExtended } from '../../interfaces';
 import { wordCardRender } from './wordRender';
+import { getChapter } from '../../utils/local-storage-helpers';
 
-const wordListRender = (words: Word[]): HTMLDivElement => {
+const wordListRender = (words: WordExtended[]): HTMLDivElement => {
+  console.log(words);
+
   const wordListContainer = addElement('div', 'word-list') as HTMLDivElement;
+  const currentChapter = getChapter();
 
   words.forEach((word, i) => {
-    const wordButton = addElement('button', 'word-item') as HTMLButtonElement;
-
+    const wordButton = addElement('button', `word-item color-chapter-${currentChapter}`) as HTMLButtonElement;
     if (i === 0) {
-      wordButton.classList.add('word-item--active');
+      wordButton.classList.add('word-item_active');
     }
 
     wordButton.setAttribute('data-word-id', word.id);
@@ -18,17 +21,22 @@ const wordListRender = (words: Word[]): HTMLDivElement => {
     const wordTranslate = document.createElement('p') as HTMLParagraphElement;
     wordTranslate.textContent = word.wordTranslate;
 
+    if (word.userWord) {
+      wordButton.classList.add(`word-item_${word.userWord.difficulty}`);
+    }
+
     wordButton.append(wordEng, wordTranslate);
     wordListContainer.append(wordButton);
 
     wordButton.addEventListener('click', () => {
-      const activeWordBtn = wordListContainer.querySelector('.word-item--active') as HTMLButtonElement;
-      activeWordBtn.classList.remove('word-item--active');
-      wordButton.classList.add('word-item--active');
+      const activeWordBtn = wordListContainer.querySelector('.word-item_active') as HTMLButtonElement;
+      activeWordBtn.classList.remove('word-item_active');
+      wordButton.classList.add('word-item_active');
 
-      const wordCardWrapper = document.querySelector('.word-card-wrapper') as HTMLDivElement;
-      wordCardWrapper.innerHTML = '';
-      wordCardWrapper.append(wordCardRender(word));
+      const wordsContainerElement = document.querySelector('.dictionary-words-container') as HTMLDivElement;
+      const wordCardElement = wordsContainerElement.firstElementChild as HTMLDivElement;
+      wordCardElement.remove();
+      wordsContainerElement.prepend(wordCardRender(word));
     });
   });
 

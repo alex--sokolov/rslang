@@ -7,29 +7,27 @@ import { getToken, getUserId, getUserName } from '../../utils/local-storage-help
 import { showModal } from '../../utils/show-modal';
 
 const authSingInHTML = `
-  <h3 class="auth__title">Войдите в свой аккаунт!</h3>
+  <h3 class="auth__title">Вход</h3>
   <label for="email">Ваш email:</label>
-  <input type="email" name="email" id="email" placeholder="example@gmail.com">
+  <input type="email" name="email" id="email" class="auth__input-field" placeholder="example@gmail.com">
   <label for="password">Пароль:</label>
-  <input type="password" name="password" id="password">
+  <input type="password" name="password" id="password" class="auth__input-field">
   <input type="submit" data-mode="signin" value="Войти">
-  <p>Нет аккаунта? Тогда <button id="auth-toggle-btn" class="auth__toggle">зарегистрируйся!</button></p>
-  <button class="auth__close-btn"></button>
+  <p>Нет аккаунта? Тогда <button type="button" id="auth-toggle-btn" class="auth__toggle">зарегистрируйся!</button></p>
   <p id="auth__warn" class="auth__warn"></p>
 `;
 const authRegisterHTML = `
-  <h3 class="auth__title">Создайте свой аккаунт!</h3>
+  <h3 class="auth__title">Регистрация</h3>
   <label for="email">Ваш email:</label>
-  <input type="email" name="email" id="email" placeholder="example@gmail.com">
+  <input type="email" name="email" id="email" class="auth__input-field" placeholder="example@gmail.com">
   <label for="name">Ваше имя:</label>
-  <input type="text" name="name" id="name" placeholder="Anna">
+  <input type="text" name="name" id="name" class="auth__input-field" placeholder="Anna">
   <label for="password">Придумайте пароль:</label>
-  <input type="password" name="password" id="password">
+  <input type="password" name="password" id="password" class="auth__input-field">
   <label for="password-2">Повторите пароль:</label>
-  <input type="password" name="password-2" id="password-2">
+  <input type="password" name="password-2" id="password-2" class="auth__input-field">
   <input type="submit" data-mode="register" value="Зарегистрироваться">
-  <p>Уже есть аккаунт? <button id="auth-toggle-btn" class="auth__toggle">Войти!</button></p>
-  <button class="auth__close-btn"></button>
+  <p>Уже есть аккаунт? <button type="button" id="auth-toggle-btn" class="auth__toggle">Войти!</button></p>
   <p id="auth__warn" class="auth__warn"></p>
 `;
 

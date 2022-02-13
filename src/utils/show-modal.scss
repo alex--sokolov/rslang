@@ -25,11 +25,15 @@
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  background-color: rgba(31, 112, 127, 0.5);
+  font-family: "Neucha";
+  font-size: 1.3em;
+  color: $color-text-modal;
+  background: $color-bg-modal;
   backdrop-filter: blur(4px);
-  border: 1px solid #fff;
-  border-radius: 50px;
+  border: 2px solid $color-second;
+  border-radius: 15px;
   z-index: 1000;
+  box-shadow: 0px 5px 15px 5px rgba(255, 255, 255, 0.418);
 }
 
 
@@ -37,15 +41,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 200px;
-  height: 50px;
-  margin: 15px auto;
-  background-color: $color-main;
-  font-size: 28px;
+  width: calc(100% - 80px);
+  height: 39px;
+  margin: 15px 40px;
+  font-size: 1em;
   color: #fff;
   text-transform: uppercase;
-  outline: 1px solid rgba(255, 255, 255, 0.5);
-  border-radius: 25px;
+  background-color: #3d0505;
+  outline: 2px solid rgba(255, 255, 255, 0.5);
+  border-radius: 7px;
+  border: 0px solid $color-second;
   cursor: pointer;
   transition: all 1250ms cubic-bezier(0.19, 1, 0.22, 1);
 }

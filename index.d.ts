@@ -17,3 +17,5 @@ declare module 'tui-pagination' {
     off(eventType: string): void;
   }
 }
+
+declare module '*.svg';

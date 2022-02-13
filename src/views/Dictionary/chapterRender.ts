@@ -2,18 +2,18 @@ import { addElement } from '../../utils/add-element';
 import wordListRender from './wordListRender';
 import { getWords } from '../../components/api/api';
 import { wordCardRender } from './wordRender';
-import { pagination } from './Dictionary';
+import { getWordsFunc, pagination } from './Dictionary';
+import { setPage, setChapter } from '../../utils/local-storage-helpers';
 
 async function chapterListener(i: number) {
-  const wordsArr = await getWords('0', `${i}`);
-  const wordListWrapper = document.querySelector('.word-list-wrapper') as HTMLDivElement;
-  const wordCardWrapper = document.querySelector('.word-card-wrapper') as HTMLDivElement;
+  const wordsArr = await getWordsFunc(`${i}`, '0');
+  const wordsContainerElement = document.querySelector('.dictionary-words-container') as HTMLDivElement;
 
-  wordListWrapper.innerHTML = '';
-  wordListWrapper.append(wordListRender(wordsArr));
+  setPage('0');
+  setChapter(`${i}`);
 
-  wordCardWrapper.innerHTML = '';
-  wordCardWrapper.append(wordCardRender(wordsArr[0]));
+  wordsContainerElement.innerHTML = '';
+  wordsContainerElement.append(wordCardRender(wordsArr[0]), wordListRender(wordsArr));
 
   pagination.reset(30);
 }
@@ -21,15 +21,15 @@ async function chapterListener(i: number) {
 const chapterRender = (): HTMLDivElement => {
   const chapterList = addElement('div', 'chapter-list') as HTMLDivElement;
 
-  for (let i = 0; i < 6; i++) {
-    const chapterLabel = addElement('label', 'chapter-label') as HTMLLabelElement;
-    chapterLabel.setAttribute('for', `group-${i}`);
-    chapterLabel.textContent = `Часть ${i + 1}`;
+  for (let i = 0; i < 7; i++) {
+    const chapterLabel = addElement('label', `chapter-label color-chapter-${i}`) as HTMLLabelElement;
+    chapterLabel.setAttribute('for', `chapter-${i}`);
+    chapterLabel.textContent = i < 6 ? `Раздел ${i + 1}` : 'Сложные слова';
 
     const chapterRadio = document.createElement('input');
     chapterRadio.type = 'radio';
     chapterRadio.name = 'chapter';
-    chapterRadio.id = `group-${i}`;
+    chapterRadio.id = `chapter-${i}`;
 
     if (i === 0) {
       chapterRadio.checked = true;
@@ -38,7 +38,7 @@ const chapterRender = (): HTMLDivElement => {
     const chapterWordsNums = addElement('p', 'chapter-words-nums') as HTMLSpanElement;
     chapterWordsNums.textContent = `${i * 600 + 1}-${(i + 1) * 600}`;
 
-    chapterLabel.append(chapterWordsNums);
+    if (i < 6) chapterLabel.append(chapterWordsNums);
     chapterList.append(chapterRadio);
     chapterList.append(chapterLabel);
 
