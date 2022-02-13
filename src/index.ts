@@ -7,6 +7,6 @@ const start = () => {
   root.before(Header());
   window.addEventListener('load', navigate);
   window.addEventListener('hashchange', navigate);
-}
+};
 
 start();
