@@ -110,14 +110,18 @@ export interface SprintGameSettings {
   score: number;
   scoreMultiplier: number;
   correctSequence: number;
+  maxCorrectSequence: number;
   rightOrWrong: boolean;
   group: string;
   page: string;
   isFromDictionary: boolean;
   wordsList: WordsList;
   wordsListPlayed: WordExtended[];
+  isUserWord: boolean;
   answersList: string[];
   question: string;
   rightAnswer: string;
   wrongAnswer: string;
+  userAnswers: boolean[];
+  timerInterval: number;
 }
