@@ -1,11 +1,11 @@
 import {
   aggregatedWordsResponse,
-  FetchParam,
   PostUser,
-  ResponseUser,
   SignInParam,
-  Tokens, UserWord, UserWordWithIds,
-  Word
+  Tokens,
+  UserWord,
+  UserWordWithIds,
+  WordExtended,
 } from '../../interfaces';
 import { getToken, setTokens } from '../../utils/local-storage-helpers';
 import { openAuthModal } from '../authorization/authorization';
@@ -13,20 +13,20 @@ import { openAuthModal } from '../authorization/authorization';
 export const baseUrl = 'https://rs-lang-app-server.herokuapp.com/';
 
 //TEXTBOOK
-export const getWords = async (page: string, group: string): Promise<Array<Word>> => {
+export const getWords = async (group: string, page: string): Promise<Array<WordExtended>> => {
   const response: Response = await fetch(`${baseUrl}words?group=${group}&page=${page}`);
-  return await response.json();
+  return response.json();
 };
-export const getWordById = async (id: string): Promise<Word> => {
+export const getWordById = async (id: string): Promise<WordExtended> => {
   const response: Response = await fetch(`${baseUrl}words/${id}`);
-  return await response.json();
+  return response.json();
 };
 
 // USERS
 
 //REGISTRATION NEW USER
 export const createUser = async (user: PostUser): Promise<Response> => {
-  return await fetch(`${baseUrl}users`, {
+  return fetch(`${baseUrl}users`, {
     method: 'POST',
     headers: {
       Accept: 'application/json',
@@ -46,12 +46,20 @@ export const signInApi = async (form: SignInParam): Promise<Response> => {
     },
     body: JSON.stringify(form),
   };
-  return await fetch(`${baseUrl}signin`, param);
+  return fetch(`${baseUrl}signin`, param);
 };
 
 //returns boolean value for check successfully updating
 export const updateTokens = async (userId: string): Promise<boolean> => {
-  const response = await fetch(`${baseUrl}users/${userId}/tokens`);
+  const param = {
+    method: 'GET',
+    withCredentials: true,
+    headers: {
+      Authorization: `Bearer ${getToken('refresh')}`,
+      Accept: 'application/json',
+    },
+  };
+  const response = await fetch(`${baseUrl}users/${userId}/tokens`, param);
   if (response.ok) {
     response.json().then((resp: Tokens) => {
       setTokens(resp);
@@ -70,7 +78,7 @@ export const getUserById = async (userId: string): Promise<Response> => {
       Accept: 'application/json',
     },
   };
-  return await fetch(`${baseUrl}users/${userId}`, param);
+  return fetch(`${baseUrl}users/${userId}`, param);
 };
 
 export const putUser = async (userId: string, form: SignInParam): Promise<Response> => {
@@ -84,7 +92,7 @@ export const putUser = async (userId: string, form: SignInParam): Promise<Respon
     },
     body: JSON.stringify({ email: form.email, password: form.password }),
   };
-  return await fetch(`${baseUrl}users/${userId}`, param);
+  return fetch(`${baseUrl}users/${userId}`, param);
 };
 
 export const deleteUser = async (userId: string): Promise<boolean> => {
@@ -118,7 +126,7 @@ export const getUserWords = async (userId: string): Promise<UserWordWithIds | vo
       return res;
     case 401:
       const status = await updateTokens(userId);
-      if (status) return await getUserWords(userId);
+      if (status) return getUserWords(userId);
       else openAuthModal();
       break;
     default:
@@ -141,9 +149,11 @@ export const createUserWord = async (userId: string, wordId: string, word: UserW
       return response;
     case 401:
       const status = await updateTokens(userId);
-      if (status) return await createUserWord(userId, wordId, word);
+      if (status) return createUserWord(userId, wordId, word);
       else openAuthModal();
       break;
+    case 417:
+      return response;
     default:
       throw new Error('Something went wrong');
   }
@@ -165,7 +175,7 @@ export const getUserWord = async (userId: string, wordId: string): Promise<UserW
       return res;
     case 401:
       const status = await updateTokens(userId);
-      if (status) return await getUserWord(userId, wordId);
+      if (status) return getUserWord(userId, wordId);
       else openAuthModal();
       break;
     default:
@@ -190,7 +200,7 @@ export const updateUserWord = async (userId: string, wordId: string, word: UserW
       return response;
     case 401:
       const status = await updateTokens(userId);
-      if (status) return await updateUserWord(userId, wordId, word);
+      if (status) return updateUserWord(userId, wordId, word);
       else openAuthModal();
       break;
     default:
@@ -213,7 +223,7 @@ export const deleteUserWord = async (userId: string, wordId: string): Promise<Re
       return response;
     case 401:
       const status = await updateTokens(userId);
-      if (status) return await deleteUserWord(userId, wordId);
+      if (status) return deleteUserWord(userId, wordId);
       else openAuthModal();
       break;
     default:
@@ -232,7 +242,7 @@ export const getUserAggregatedWords = async (
   wordsPerPage?: string,
   filter?: string
 ): Promise<aggregatedWordsResponse | void> => {
-  let params = [];
+  const params = [];
   if (group) params.push(`group=${group}`);
   if (page && !filter) params.push(`page=${page}`);
   if (wordsPerPage) params.push(`wordsPerPage=${wordsPerPage}`);
@@ -251,16 +261,16 @@ export const getUserAggregatedWords = async (
   switch (response.status) {
     case 200:
       const res = await response.json();
-      return {wordsList: res[0].paginatedResults, totalWords: res[0].totalCount[0].count}
+      return { wordsList: res[0].paginatedResults, totalWords: res[0].totalCount[0].count };
     case 401:
       const status = await updateTokens(userId);
-      if (status) return await getUserAggregatedWords(userId, group, page, wordsPerPage, filter);
+      if (status) return getUserAggregatedWords(userId, group, page, wordsPerPage, filter);
       else openAuthModal();
       break;
     default:
       throw new Error('Something went wrong');
   }
-}
+};
 
 /* ------------- USERS/STATISTICS -------------- */
 // in this block every request below
@@ -274,7 +284,7 @@ export const getUserStat = async (userId: string): Promise<Response> => {
       Accept: 'application/json',
     },
   };
-  return await fetch(`${baseUrl}users/${userId}/statistics`, param);
+  return fetch(`${baseUrl}users/${userId}/statistics`, param);
 };
 
 //TODO: define stat type!!!
@@ -289,5 +299,5 @@ export const putUserStat = async (userId: string, stat: any): Promise<Response> 
     },
     body: JSON.stringify(stat),
   };
-  return await fetch(`${baseUrl}users/${userId}/statistics`, param);
+  return fetch(`${baseUrl}users/${userId}/statistics`, param);
 };

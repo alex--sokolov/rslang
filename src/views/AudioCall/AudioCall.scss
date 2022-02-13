@@ -1,0 +1,158 @@
+.audio-call-page {
+  height: 90vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+  .audio-call-page__caption {
+    font-size: 2rem;
+  }
+  .audio-call-page__desc {
+    font-size: 1.2rem;
+  }
+}
+
+.difficulty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  .difficulty__caption {
+    font-size: 1rem;
+  }
+  .difficulty__list {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    li {
+      width: 2.5rem;
+      height: 2.5rem;
+      border: 1px black solid;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    li.active {
+      color: red;
+      border: 1px red solid;
+    }
+  }
+  button {
+    padding: 3px 10px;
+    cursor: pointer;
+  }
+}
+
+.audio-call-game {
+  height: 90vh;
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.audio-call-slide.completed {
+  transform: translateX(-100%);
+  transition: all 0.8s;
+}
+.audio-call-slide.hide {
+  transform: translateX(100%);
+  transition: all 0.8s;
+}
+.audio-call-slide.done {
+  transition: all 0.8s;
+  .slide__question {
+    .slide__image {
+      transition: all 0.8s;
+      filter: blur(0);
+    }
+    .slide__sound {
+      span {
+        display: block;
+      }
+    }
+  }
+}
+.audio-call-slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+  transition: all 0.8s;
+  .slide__audio-element {
+    visibility: hidden;
+  }
+  .slide__question {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    .slide__image {
+      filter: blur(20px);
+      width:300px;
+      height: 300px;
+      transition: all 0.8s;
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        box-shadow: 0 0 15px 1px;
+      }
+   }
+    .slide__sound {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      span {
+        display: none;
+        font-size: 2.5rem;
+      }
+      img {
+        width: 50px;
+        height: 50px;
+        cursor: pointer;
+      }
+    }
+  }
+  .slide__answers {
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    .slide__answers-row {
+      gap: 20px;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      .slide__answers__item {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 1.2rem;
+        border: 1px solid black;
+        padding: 5px 12px;
+        border-radius: 3px;
+        cursor: pointer;
+      }
+      .slide__answers__item.right {
+        background-color: rgba(19, 213, 50, 0.79);
+      }
+      .slide__answers__item.wrong {
+        background-color: #ff5f5f;
+      }
+    }
+  }
+  .slide__button {
+    padding: 3px 10px;
+    cursor: pointer;
+  }
+}
