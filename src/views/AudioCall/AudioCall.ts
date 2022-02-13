@@ -1,6 +1,6 @@
 import './AudioCall.scss';
 import { addElement, addTextElement } from '../../utils/add-element';
-import { getGameLevel, getGroup, getPage, setGameLevel } from '../../utils/local-storage-helpers';
+import { getGameLevel, getGroup, getPage, getUserId, setGameLevel } from '../../utils/local-storage-helpers';
 import { getWords, updateTokens } from '../../components/api/api';
 import { getRandom } from '../../utils/get-random';
 import { UserWord, Word, WordExtended } from '../../interfaces';
@@ -71,8 +71,13 @@ function startAudioCall(callPlace?: string) {
 
       currentSlide?.classList.add('completed');
       nextSlide?.classList.remove('hide');
-      document.addEventListener('keydown', checkKeyboardAns);
+      if (counter !== 10) document.addEventListener('keydown', checkKeyboardAns);
       document.removeEventListener('keydown', switchSlide);
+      document.removeEventListener('keydown', switchSlideFinal);
+    }
+    function switchSlideFinal() {
+      switchSlide();
+      showModal(AudioCallResult(gameVars.statistic, targetArr));
     }
     function delCompletedSlide() {
       //find and delete previous slide if it exists
@@ -92,10 +97,6 @@ function startAudioCall(callPlace?: string) {
       ansArea.removeEventListener('click', checkMouseAns);
       document.removeEventListener('keydown', checkKeyboardAns);
 
-      //check optional field
-      //if it empty >>> new word
-      //else
-
       //adding next slide to game
       counter = counter + 1;
       insertSlide('hide');
@@ -103,7 +104,7 @@ function startAudioCall(callPlace?: string) {
       //logic to check right answer
       const currentAns: boolean = target.dataset.id === currentSlide.dataset.id;
       const rightAns = currentSlide.querySelector(`[data-id='${currentSlide.dataset.id}']`) as HTMLSpanElement;
-      updateWord(targetArr[counter - 1], currentAns);
+      if (getUserId()) updateWord(targetArr[counter - 1], currentAns);
 
       gameVars.statistic.push(currentAns);
       if (currentAns) {
@@ -119,14 +120,8 @@ function startAudioCall(callPlace?: string) {
       nextBut.disabled = false;
       if (counter === 10) {
         nextBut.innerText = 'Результаты';
-        nextBut.addEventListener('click', () => {
-          switchSlide();
-          showModal(AudioCallResult(gameVars.statistic, targetArr));
-        });
-        document.addEventListener('keydown', () => {
-          switchSlide();
-          showModal(AudioCallResult(gameVars.statistic, targetArr));
-        });
+        nextBut.addEventListener('click', switchSlideFinal);
+        document.addEventListener('keydown', switchSlideFinal);
       } else {
         nextBut.addEventListener('click', switchSlide);
         document.addEventListener('keydown', switchSlide);
@@ -195,6 +190,11 @@ const AudioCall = (callPlace?: string): HTMLElement => {
   });
   const startBut = addTextElement('button', 'start-audio-call', 'Начать') as HTMLButtonElement;
   startBut.id = 'start-audio-call';
+  const warning = addTextElement(
+    'div',
+    'audio-call-page__warn',
+    'Внимание! Чтобы сохранять прогресс обучения выполните вход в аккаунт.'
+  );
   if (callPlace === 'fromBook') {
     startBut.disabled = false;
   } else {
@@ -208,6 +208,7 @@ const AudioCall = (callPlace?: string): HTMLElement => {
   page.appendChild(pageCaption);
   page.appendChild(pageDesc);
   page.appendChild(levelsBlock);
+  if (!getUserId()) page.appendChild(warning);
 
   if (callPlace === 'fromBook') {
     addListeners(page, 'fromBook');
