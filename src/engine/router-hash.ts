@@ -6,7 +6,7 @@ const router = async (route: string[] = routes['/'], params?: URLSearchParams): 
   const currentView = await import(`../views/${route[0]}/${route[0]}`);
   const root = document.getElementById('root') as HTMLElement;
   const pageContent = await currentView[route[0]](params);
-  if (pageContent){
+  if (pageContent) {
     root.innerText = '';
     root.append(pageContent);
   }
@@ -15,7 +15,7 @@ const router = async (route: string[] = routes['/'], params?: URLSearchParams): 
 const navigate = async () => {
   const url = location.hash.slice(1) || '/';
   const urlParsed = parseUrl(url);
-  let hash: string = urlParsed[0]? urlParsed[0] : '/';
+  let hash: string = urlParsed[0] ? urlParsed[0] : '/';
   if (!routes.hasOwnProperty(hash)) hash = '404';
   setActiveLink(hash);
   if (urlParsed[1]) await router(routes[hash], urlParsed[1]);
