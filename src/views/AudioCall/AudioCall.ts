@@ -8,14 +8,7 @@ import getAnswers from './gameComponents/answers-list';
 import { showModal } from '../../utils/show-modal';
 import { AudioCallResult } from './gameComponents/AudioCall-result';
 import { getEmptySlide, getSlide } from './gameComponents/game-slide';
-import {
-  getChapter,
-  getGameLevel,
-  getPage,
-  getUserId,
-  isPlayingAC,
-  setGameLevel,
-} from '../../utils/local-storage-helpers';
+import { getChapter, getGameLevel, getPage, getUserId, setGameLevel } from '../../utils/local-storage-helpers';
 import gameVars from './gameComponents/game-vars';
 import { levelToGroup, shuffle } from '../../utils/micro-helpers';
 import updateWord from './gameComponents/update-word';
@@ -30,10 +23,10 @@ import updateWord from './gameComponents/update-word';
 function startAudioCall(callPlace?: string) {
   //if call from textbook >>> we need attributes!
   const root = document.getElementById('root') as HTMLDivElement;
+  const logInButton = document.querySelector('.navbar-auth') as HTMLButtonElement;
   const page: string = callPlace === 'fromBook' ? getPage() : String(getRandom(0, gameVars.AMOUNT_PAGES_OF_GROUP));
   const group: string = callPlace === 'fromBook' ? getChapter() : levelToGroup(getGameLevel());
 
-  isPlayingAC('true');
   gameVars.statistic.length = 0;
   let counter = 0;
 
@@ -86,18 +79,35 @@ function startAudioCall(callPlace?: string) {
     function switchSlideFinal() {
       switchSlide();
       showModal(AudioCallResult(gameVars.statistic, targetArr));
-      isPlayingAC('false');
     }
     function delCompletedSlide() {
       //find and delete previous slide if it exists
       const completedSlide = document.querySelector('.audio-call-slide.completed') as HTMLElement;
       completedSlide?.remove();
     }
+    function switchOnLoginMode() {
+      const hideSlide = document.querySelector('.audio-call-slide.hide') as HTMLElement;
+      const slides = document.querySelectorAll('.audio-call-slide') as NodeListOf<HTMLElement>;
+      const emptySlide = getEmptySlide() as HTMLElement;
+
+      if (slides.length === 1) {
+        gameContainer.appendChild(emptySlide);
+        slides[0].classList.add('completed');
+      } else {
+        if (hideSlide) {
+          slides[0].after(emptySlide);
+        } else {
+          slides[1].after(emptySlide);
+        }
+      }
+      switchSlide();
+    }
 
     insertSlide();
     root.innerHTML = '';
     root.appendChild(gameContainer);
     document.addEventListener('keydown', checkKeyboardAns);
+    logInButton.addEventListener('click', switchOnLoginMode);
 
     function checkAnsBasicLogic(target: HTMLElement) {
       //clear unnecessary handler
