@@ -14,7 +14,6 @@ export interface Word {
   textMeaningTranslate: string;
   wordTranslate: string;
 }
-
 export interface GameWordStat {
   right?: number;
   wrong?: number;
@@ -65,7 +64,6 @@ export interface PostUser extends User {
 export interface ResponseUser extends User {
   id: string;
 }
-
 export interface AuthParam {
   message: string;
   token: string;

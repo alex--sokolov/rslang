@@ -1,16 +1,16 @@
 import './AudioCall.scss';
 import { addElement, addTextElement } from '../../utils/add-element';
 import { getGameLevel, getGroup, getPage, getUserId, setGameLevel } from '../../utils/local-storage-helpers';
-import { getWords, updateTokens } from '../../components/api/api';
+import { getWords } from '../../components/api/api';
 import { getRandom } from '../../utils/get-random';
-import { UserWord, Word, WordExtended } from '../../interfaces';
-import { levelToGroup, shuffle } from '../../utils/micro-helpers';
-import { getEmptySlide, getSlide } from './gameComponents/game-slide';
+import { Word, WordExtended } from '../../interfaces';
 import playSound from './gameComponents/play-sound';
 import getAnswers from './gameComponents/answers-list';
-import gameVars from './gameComponents/game-vars';
 import { showModal } from '../../utils/show-modal';
 import { AudioCallResult } from './gameComponents/AudioCall-result';
+import gameVars from './gameComponents/game-vars';
+import { levelToGroup, shuffle } from '../../utils/micro-helpers';
+import { getEmptySlide, getSlide } from './gameComponents/game-slide';
 import updateWord from './gameComponents/update-word';
 
 //for button on dictionary page >>>
