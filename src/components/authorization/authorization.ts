@@ -42,19 +42,6 @@ const Authorization = (type = 'signin') => {
   return element;
 };
 
-const AuthPanel = (): HTMLElement => {
-  const authPanel = addElement('div', 'auth-panel-container');
-  const authUserName = addTextElement('span', 'navbar-name', getUserName());
-  const authLinkText = getToken() ? 'Выйти' : 'Войти';
-  const authLink = addTextElement('button', 'navbar-auth', authLinkText);
-  authPanel.appendChild(authUserName);
-  authPanel.appendChild(authLink);
-
-  authLink.removeEventListener('click', getUserId() ? openAuthModal : signOut);
-  authLink.addEventListener('click', getUserId() ? signOut : openAuthModal);
-  return authPanel;
-};
-
 const openAuthModal = () => {
   if (!document.querySelector('.auth-form')) {
     showModal(Authorization('signin'));
@@ -87,6 +74,19 @@ const openAuthModal = () => {
   const authToggleBtn = document.getElementById('auth-toggle-btn') as HTMLButtonElement;
   authToggleBtn.removeEventListener('click', signOut);
   authToggleBtn.addEventListener('click', openAuthModal);
+};
+
+const AuthPanel = (): HTMLElement => {
+  const authPanel = addElement('div', 'auth-panel-container');
+  const authUserName = addTextElement('span', 'navbar-name', getUserName());
+  const authLinkText = getToken() ? 'Выйти' : 'Войти';
+  const authLink = addTextElement('button', 'navbar-auth', authLinkText);
+  authPanel.appendChild(authUserName);
+  authPanel.appendChild(authLink);
+
+  authLink.removeEventListener('click', getUserId() ? openAuthModal : signOut);
+  authLink.addEventListener('click', getUserId() ? signOut : openAuthModal);
+  return authPanel;
 };
 
 export { Authorization, openAuthModal, AuthPanel };
