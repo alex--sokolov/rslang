@@ -1,5 +1,4 @@
 .sprint-page {
-  height: 90vh;
   color: #fff;
   background-color: darkcyan;
   overflow: hidden;
@@ -87,7 +86,7 @@
   &.active {
     font-size: 1.8rem;
     font-weight: bold;
-    background-color: $color-main;
+    background-color: crimson;
     border: 0;
     box-shadow: 0 0 7px 5px #fff;
     pointer-events: none;

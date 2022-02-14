@@ -19,8 +19,8 @@ export interface Word {
 }
 
 export interface GameWordStat {
-  right?: number;
-  wrong?: number;
+  right: number;
+  wrong: number;
 }
 
 export interface GamesWordStat {
