@@ -45,6 +45,7 @@ export interface UserWordWithIds extends UserWord {
 
 export interface WordExtended extends Word {
   userWord: UserWord;
+  _id: string;
 }
 
 export interface aggregatedWordsResponse {

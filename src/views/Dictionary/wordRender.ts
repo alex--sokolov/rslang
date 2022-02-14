@@ -36,8 +36,9 @@ function playAudioTrigger(word: Word | WordExtended): void {
 }
 
 export const wordCardRender = (word: WordExtended): HTMLDivElement => {
-  const currentChapter = getChapter();
-  const wordId = word.id || word._id;
+  const currentChapter = getChapter() || '0';
+  const wordId: string = word.id || word._id;
+  // const wordId: string = word.id ? word.id : word._id;
 
   const wordCardContainer = addElement('div', `word-card card card--chapter-${currentChapter}`) as HTMLDivElement;
   const wordCardLeftSide = addElement('div', 'card__left-side') as HTMLDivElement;
@@ -95,7 +96,7 @@ export const wordCardRender = (word: WordExtended): HTMLDivElement => {
 
   wordCardLeftSide.insertAdjacentHTML('afterbegin', image);
   btnsContainer.append(voiceBtn);
-  // if (getUserId()) // TODO: Turn on
+  if (getUserId())  // TODO: Turn on
   btnsContainer.append(hardBtn, learnedBtn);
 
   wordCardContainer.append(wordCardLeftSide, wordCardRightSide);

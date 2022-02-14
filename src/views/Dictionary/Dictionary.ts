@@ -43,14 +43,24 @@ const getCurrPage = (): string => {
   return '0';
 };
 
+// ф-ия отмечает стилями выбранную главу
 const getActiveChapter = () => {
-  const currentChapter = getChapter();
+  const currentChapter = getChapter() || '0';
   const targetRadioElement = document.getElementById(`chapter-${currentChapter}`) as HTMLInputElement;
   targetRadioElement.checked = true;
 };
 
 export const getWordsFunc = async (chapter: string, page: string) => {
-  if (getUserId()) {
+  if (chapter === '6') {
+    return (wordsArr = ((await getUserAggregatedWords(
+        getUserId(),
+        undefined,
+        undefined,
+        '20',
+        '{"userWord.difficulty": "hard"}'
+      )) as aggregatedWordsResponse
+    ).wordsList);
+  } else if (getUserId()) {
     const aggregatedWords = (await getUserAggregatedWords(getUserId(), chapter, page, '20')) as aggregatedWordsResponse;
     return (wordsArr = aggregatedWords.wordsList);
   } else {
@@ -86,7 +96,7 @@ export const Dictionary = async (): Promise<HTMLElement> => {
   page.append(pageTitle, chapterRender(), wordsTitle, mainContentContainer, paginationElement);
 
   const currentPage = getCurrPage();
-  const currentChapter = getChapter() ? getChapter() : '0';
+  const currentChapter = getChapter() || '0';
 
   await getWordsFunc(currentChapter, currentPage);
 

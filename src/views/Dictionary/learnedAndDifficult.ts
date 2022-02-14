@@ -12,7 +12,10 @@ export function lestenStateBtns(e: Event, wordId: string, wordState: UserWord) {
 
   const isHardActive = cardElement.classList.contains('hard') && targetState === 'hard';
   const isLearnedActive = cardElement.classList.contains('learned') && targetState === 'learned';
+  const wordListElement = document.querySelector(`.word-item_active`) as HTMLButtonElement;
 
+  wordListElement.classList.remove('word-item_hard', 'word-item_learned', 'word-item_easy');
+  cardElement.classList.remove('learned', 'hard');
 
   function createWord() {
     // console.log('create word');
@@ -29,7 +32,6 @@ export function lestenStateBtns(e: Event, wordId: string, wordState: UserWord) {
   function setDefaultWordState() {
     // console.log('update word default');
     updateUserWord(userId, wordId, { difficulty: 'easy' });
-    cardElement.classList.toggle(targetState);
   }
 
   if (isHardActive || isLearnedActive) {
@@ -37,7 +39,8 @@ export function lestenStateBtns(e: Event, wordId: string, wordState: UserWord) {
   } else {
     const isWordAlreadyAdded = getUserWord(userId, wordId);
     isWordAlreadyAdded.then(updateWord, createWord);
-    cardElement.classList.remove('learned', 'hard');
     cardElement.classList.toggle(targetState);
+    wordListElement.classList.add(`word-item_${targetState}`);
   }
+
 }

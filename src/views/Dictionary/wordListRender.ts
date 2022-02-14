@@ -7,7 +7,7 @@ const wordListRender = (words: WordExtended[]): HTMLDivElement => {
   console.log(words);
 
   const wordListContainer = addElement('div', 'word-list') as HTMLDivElement;
-  const currentChapter = getChapter();
+  const currentChapter = getChapter() || '0';
 
   words.forEach((word, i) => {
     const wordButton = addElement('button', `word-item color-chapter-${currentChapter}`) as HTMLButtonElement;
@@ -15,7 +15,7 @@ const wordListRender = (words: WordExtended[]): HTMLDivElement => {
       wordButton.classList.add('word-item_active');
     }
 
-    wordButton.setAttribute('data-word-id', word.id);
+    wordButton.setAttribute('data-word-id', word.id ? word.id : word._id);
     const wordEng = document.createElement('h3') as HTMLHeadingElement;
     wordEng.textContent = word.word;
     const wordTranslate = document.createElement('p') as HTMLParagraphElement;
