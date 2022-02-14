@@ -34,7 +34,7 @@ export const setChapter = (chapter: string): void => {
   localStorage.setItem('chapter', chapter);
 };
 export const getPage = (): string => {
-  return <string>localStorage.getItem('chapter');
+  return <string>localStorage.getItem('page');
 };
 export const getChapter = (): string => {
   return <string>localStorage.getItem('chapter');

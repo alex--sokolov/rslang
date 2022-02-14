@@ -85,8 +85,8 @@ export const Dictionary = async (): Promise<HTMLElement> => {
 
   page.append(pageTitle, chapterRender(), wordsTitle, mainContentContainer, paginationElement);
 
-  const currentPage = getPage();
-  const currentChapter = getChapter() ? getChapter() : '0';
+  const currentPage = getCurrPage();
+  const currentChapter = getChapter() || '0';
 
   await getWordsFunc(currentChapter, currentPage);
 

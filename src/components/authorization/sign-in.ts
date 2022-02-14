@@ -3,6 +3,8 @@ import { signInApi } from '../api/api';
 import { setTokens, setUserId, setUserName } from '../../utils/local-storage-helpers';
 import { signOut } from './sign-out';
 import { openAuthModal } from './authorization';
+import { showModal } from '../../utils/show-modal';
+import { navigate } from '../../engine/router-hash';
 
 function signIn(event: Event): void {
   event.preventDefault();
@@ -27,24 +29,28 @@ function signIn(event: Event): void {
         break;
       case 200:
         warn.classList.remove('show');
-        response.json().then((response: AuthParam) => {
+        response.json().then(async (resp: AuthParam) => {
           const form = document.querySelector('.auth-form') as HTMLFormElement;
           const headerButton = document.querySelector('.navbar-auth') as HTMLFormElement;
           const headerName = document.querySelector('.navbar-name') as HTMLSpanElement;
           const tokens: Tokens = {
-            token: response.token,
-            refreshToken: response.refreshToken,
+            token: resp.token,
+            refreshToken: resp.refreshToken,
           };
 
           setTokens(tokens);
-          setUserId(response.userId);
-          setUserName(response.name);
+          setUserId(resp.userId);
+          setUserName(resp.name);
           form.remove();
           headerButton.innerText = 'Выйти';
-          headerName.innerText = response.name;
+          headerName.innerText = resp.name;
           headerName.style.color = '';
           headerButton.removeEventListener('click', openAuthModal);
           headerButton.addEventListener('click', signOut);
+
+          document.getElementById('modal-window')?.remove();
+          document.querySelector('.overlay')?.classList.remove('overlay-fadeIn');
+          await navigate();
         });
         break;
       default:
