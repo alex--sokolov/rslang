@@ -21,7 +21,7 @@ import updateWord from './gameComponents/update-word';
 });*/
 
 function startAudioCall(callPlace?: string) {
-  //if call from textbook >>> we need attributes!
+  //if call from textbook >>> we need attribute!
   const root = document.getElementById('root') as HTMLDivElement;
   const logInButton = document.querySelector('.navbar-auth') as HTMLButtonElement;
   const page: string = callPlace === 'fromBook' ? getPage() : String(getRandom(0, gameVars.AMOUNT_PAGES_OF_GROUP));
@@ -86,28 +86,33 @@ function startAudioCall(callPlace?: string) {
       completedSlide?.remove();
     }
     function switchOnLoginMode() {
-      const hideSlide = document.querySelector('.audio-call-slide.hide') as HTMLElement;
-      const slides = document.querySelectorAll('.audio-call-slide') as NodeListOf<HTMLElement>;
-      const emptySlide = getEmptySlide() as HTMLElement;
+      if (!getUserId()) {
+        const hideSlide = document.querySelector('.audio-call-slide.hide') as HTMLElement;
+        const slides = document.querySelectorAll('.audio-call-slide') as NodeListOf<HTMLElement>;
+        const emptySlide = getEmptySlide() as HTMLElement;
 
-      if (slides.length === 1) {
-        gameContainer.appendChild(emptySlide);
-        slides[0].classList.add('completed');
-      } else {
-        if (hideSlide) {
-          slides[0].after(emptySlide);
+        if (slides.length === 1) {
+          gameContainer.appendChild(emptySlide);
+          slides[0].classList.add('completed');
         } else {
-          slides[1].after(emptySlide);
+          if (hideSlide) {
+            slides[0].after(emptySlide);
+          } else {
+            slides[1].after(emptySlide);
+            slides[1].classList.add('completed');
+          }
         }
+        switchSlide();
       }
-      switchSlide();
+      logInButton.removeEventListener('click', switchOnLoginMode);
+      document.removeEventListener('keydown', checkKeyboardAns);
     }
 
     insertSlide();
     root.innerHTML = '';
     root.appendChild(gameContainer);
     document.addEventListener('keydown', checkKeyboardAns);
-    logInButton.addEventListener('click', switchOnLoginMode);
+    logInButton.addEventListener('click', switchOnLoginMode); //remove listeners, when we logining
 
     function checkAnsBasicLogic(target: HTMLElement) {
       //clear unnecessary handler

@@ -37,7 +37,7 @@ function playAudioTrigger(word: Word | WordExtended): void {
 
 export const wordCardRender = (word: WordExtended): HTMLDivElement => {
   const currentChapter = getChapter();
-  const wordId = word.id ? word.id : word._id;
+  const wordId = word.id || word._id;
 
   const wordCardContainer = addElement('div', `word-card card card--chapter-${currentChapter}`) as HTMLDivElement;
   const wordCardLeftSide = addElement('div', 'card__left-side') as HTMLDivElement;
