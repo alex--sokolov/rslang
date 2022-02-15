@@ -14,6 +14,8 @@ import { addElement, addTextElement } from '../../utils/add-element';
 import { WordsList } from '../../types';
 import { shuffledArray } from '../../utils/modify-arrays';
 import { UserWord } from '../../interfaces';
+import { audioPlay } from './sprint-sounds';
+import { showModal } from '../../utils/show-modal';
 
 export const initWordsListDictionary = async () => {
   if (!game.userId) game.wordsList = await getWords(game.group, game.page);
@@ -30,8 +32,10 @@ export const initWordsListDictionary = async () => {
   }
 };
 export const initWordsListMenu = async (group: number) => {
+  console.log('init1');
   game.page = `${getRandom(TOTAL_PAGES_PER_GROUP)}`;
   game.group = `${group}`;
+  console.log('init2');
   if (!game.userId) game.wordsList = await getWords(game.group, game.page);
   else {
     const res = await getUserAggregatedWords(
@@ -42,6 +46,7 @@ export const initWordsListMenu = async (group: number) => {
       `{"$and":[{"group":${game.group}}, {"page":${game.page}}]}`);
     game.wordsList = res ? res.wordsList : [];
   }
+  console.log('init3');
 };
 export const getWrongAnswer = (right: string, answersList: string[]): string => {
   const answers = [...answersList];
@@ -50,29 +55,38 @@ export const getWrongAnswer = (right: string, answersList: string[]): string => 
 };
 
 export const finishSprint = async (): Promise<void> => {
+  const finalContainer = addElement('div', 'sprint-final');
+  showModal(finalContainer);
   clearInterval(game.timerInterval);
+  game.music?.pause();
+  await audioPlay('Finish');
 
 };
 export const addWordsForSprint = async (): Promise<WordsList> => {
   let wordsList: WordsList;
-  if (+game.page === 0) await finishSprint();
-  if (!game.userId) {
-    wordsList = await getWords(`${game.group}`, `${+game.page - 1}`);
-  } else {
-    const filterQuery = game.isFromDictionary
-      ? `{"$and":[{"$or":[{"userWord.difficulty":"easy"}, {"userWord.difficulty":"hard"}, {"userWord":null}]},
+  if (+game.page === 0) {
+    await finishSprint();
+    wordsList = [];
+  }
+  else {
+    if (!game.userId) {
+      wordsList = await getWords(`${game.group}`, `${+game.page - 1}`);
+    } else {
+      const filterQuery = game.isFromDictionary
+        ? `{"$and":[{"$or":[{"userWord.difficulty":"easy"}, {"userWord.difficulty":"hard"}, {"userWord":null}]},
          {"group":${game.group}}, {"page":${+game.page - 1}}]}`
-      : `{"$and":[{"group":${game.group}}, {"page":${+game.page - 1}}]}`;
-    const res = await getUserAggregatedWords(game.userId, undefined, undefined, `${WORDS_PER_PAGE}`, filterQuery);
-    wordsList = res ? res.wordsList : [];
+        : `{"$and":[{"group":${game.group}}, {"page":${+game.page - 1}}]}`;
+      const res = await getUserAggregatedWords(game.userId, undefined, undefined, `${WORDS_PER_PAGE}`, filterQuery);
+      wordsList = res ? res.wordsList : [];
+    }
+    if (wordsList.length === 0) {
+      game.page = `${+game.page - 1}`;
+      wordsList = await addWordsForSprint();
+    }
+    shuffledArray(wordsList);
+    game.answersList = [];
+    wordsList.forEach(word => game.answersList.push(word.wordTranslate));
   }
-  if (wordsList.length === 0) {
-    game.page = `${+game.page - 1}`;
-    wordsList = await addWordsForSprint();
-  }
-  shuffledArray(wordsList);
-  game.answersList = [];
-  wordsList.forEach(word => game.answersList.push(word.wordTranslate));
   return wordsList;
 };
 export const showTimer = (seconds: number): HTMLElement => {
@@ -94,7 +108,7 @@ export const updateScore = (scoreElement: HTMLElement) => {
   game.score += SCORE_ADDITION * game.scoreMultiplier;
   scoreElement.textContent = `${game.score}`;
 };
-export const updateSequence = (
+export const updateSequence = async (
   correctAnswer: boolean,
   sequenceContainer: HTMLDivElement,
   levelElement: HTMLDivElement,
@@ -108,6 +122,7 @@ export const updateSequence = (
     game.maxCorrectSequence = Math.max(game.maxCorrectSequence, game.correctSequence);
     sequenceContainer.append(addElement('div', 'sprint-star'));
     if (game.correctSequence - (MULT_INC_TRIGGER_STEP * (game.scoreMultiplier - 1)) === MULT_INC_TRIGGER) {
+      await audioPlay('LevelUp');
       [...sequenceCollection].forEach(star => {
         setTimeout(() => {
           star.classList.add('sprint-mult-increase');
@@ -121,6 +136,8 @@ export const updateSequence = (
       scoreLevelElement.textContent = `(+${game.scoreMultiplier * SCORE_ADDITION})`;
     }
   } else {
+    if ([...sequenceCollection].length > 3) await audioPlay('LevelLost');
+    else await audioPlay('WrongAnswer');
     game.maxCorrectSequence = Math.max(game.maxCorrectSequence, game.correctSequence);
     game.correctSequence = 0;
     game.scoreMultiplier = 1;

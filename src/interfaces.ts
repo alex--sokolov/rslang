@@ -124,4 +124,9 @@ export interface SprintGameSettings {
   wrongAnswer: string;
   userAnswers: boolean[];
   timerInterval: number;
+  music?: HTMLAudioElement;
+  isVolumeListened: boolean;
+  isVolumeRangeListened: boolean;
+  volume: number;
+  volumeMuted: boolean;
 }

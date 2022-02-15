@@ -1,8 +1,8 @@
 import './Sprint.scss';
-import { addElement, addTextElement, removeDisabled, setDisabled } from '../../utils/add-element';
+import { addElement, addLinkElement, addTextElement, removeDisabled, setDisabled } from '../../utils/add-element';
 import { getRandom } from '../../utils/calc';
 import { shuffledArray } from '../../utils/modify-arrays';
-import { game, initStore } from '../../components/sprint/sprint-store';
+import { game, gameInitial, initStore } from '../../components/sprint/sprint-store';
 import { GAME_TIME, LEVELS, SCORE_ADDITION, TIMEOUT_BEFORE_START } from '../../components/sprint/sprint-vars';
 import {
   addWordsForSprint, formCurrentWordResult,
@@ -10,6 +10,7 @@ import {
   initWordsListDictionary,
   initWordsListMenu, saveCurrentWordResult, showTimer, updateScore, updateSequence
 } from '../../components/sprint/sprint';
+import { audioPlay } from '../../components/sprint/sprint-sounds';
 
 export const Sprint = async (params?: URLSearchParams): Promise<HTMLElement | void> => {
   initStore(params);
@@ -23,13 +24,49 @@ export const Sprint = async (params?: URLSearchParams): Promise<HTMLElement | vo
     : addTextElement('p', 'sprint-level-notes', 'Выберите уровень');
   const button = addTextElement('button', 'sprint-start-button', 'Начать') as HTMLButtonElement;
   output.append(pageTitle, gameDescription, gameLevelAnnotation);
+  const keyHandlerStart = async (e: KeyboardEvent) => {
+    document.removeEventListener('keydown', keyHandlerStart);
+    if (e.key === 'Enter' && !button.disabled) {
+      await audioPlay('Start');
+      await startSprint();
+    }
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+      await audioPlay(e.key);
+      const levelBtns = document.getElementsByClassName('sprint-level') as HTMLCollectionOf<HTMLButtonElement>;
+      let indexActive = -1;
+      const indexLast = levelBtns.length - 1;
+      [...levelBtns].forEach((btn, index) => {
+        if (btn.classList.contains('active')) {
+          indexActive = index;
+          btn.classList.remove('active');
+        }
+      });
+      console.log(indexActive);
+      if (indexActive === -1) indexActive = e.key === 'ArrowLeft' ? 0 : indexLast;
+      else {
+        levelBtns[indexActive].classList.remove('active');
+        indexActive += e.key === 'ArrowLeft' ? -1 : 1;
+        if (indexActive === -1) indexActive = indexLast;
+        if (indexActive === indexLast + 1) indexActive = 0;
 
+      }
+      console.log('frfr2');
+      await initWordsListMenu(indexActive);
+      console.log('frfr3');
+      levelBtns[indexActive].classList.add('active');
+      if (button.disabled) removeDisabled(button);
+      console.log('frfr3');
+      document.addEventListener('keydown', keyHandlerStart);
+    }
+    console.log('frfr4');
+  };
   if (game.group && game.page) await initWordsListDictionary();
   else {
-    const levelWrapper = addElement('div', 'sprint-levels');
+    const levelWrapper = addElement('div', 'sprint-levels', 'sprint-levels');
     const createLevels = (level: string, index: number) => {
       const levelEl = addTextElement('button', 'sprint-level', level) as HTMLButtonElement;
       const chooseLevelHandler = async () => {
+        await audioPlay('ChooseLevelClick');
         const levelBtns = document.getElementsByClassName('sprint-level') as HTMLCollectionOf<HTMLButtonElement>;
         [...levelBtns].forEach(btn => {
           if (btn.classList.contains('active')) btn.classList.remove('active');
@@ -45,34 +82,19 @@ export const Sprint = async (params?: URLSearchParams): Promise<HTMLElement | vo
       levelWrapper.append(levelEl);
     };
     LEVELS.forEach(createLevels);
-    const keyHandlerStart = async (e: KeyboardEvent) => {
-      document.removeEventListener('keydown', keyHandlerStart);
-      if (e.key === 'Enter' && !button.disabled) await startSprint();
-      if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
-        const levelBtns = document.getElementsByClassName('sprint-level') as HTMLCollectionOf<HTMLButtonElement>;
-        let indexActive = -1;
-        const indexLast = levelBtns.length - 1;
-        [...levelBtns].forEach((btn, index) => {
-          if (btn.classList.contains('active')) indexActive = index
-        });
-        if (indexActive === -1) indexActive = e.key === 'ArrowLeft' ? 0 : indexLast;
-        else {
-          levelBtns[indexActive].classList.remove('active');
-          indexActive += e.key === 'ArrowLeft' ? -1 : 1;
-          if (indexActive === -1) indexActive = indexLast;
-          if (indexActive === indexLast + 1) indexActive = 0;
-        }
-        await initWordsListMenu(indexActive);
-        levelBtns[indexActive].classList.add('active');
-        if (button.disabled) removeDisabled(button);
-        document.addEventListener('keydown', keyHandlerStart);
-      }
-    };
+
     document.addEventListener('keydown', keyHandlerStart);
+    const clearKeyHandler = () => {
+      document.removeEventListener('keydown', keyHandlerStart);
+      window.removeEventListener('hashchange', clearKeyHandler);
+    };
+    window.addEventListener('hashchange', clearKeyHandler);
+
     output.append(levelWrapper);
     setDisabled(button);
   }
   const startSprint = async (): Promise<void> => {
+    document.removeEventListener('keydown', keyHandlerStart);
     pageTitle.classList.add('out-left');
     gameDescription.classList.add('out-right');
     gameLevelAnnotation.classList.add('out-left');
@@ -88,10 +110,12 @@ export const Sprint = async (params?: URLSearchParams): Promise<HTMLElement | vo
       game.wordsList.forEach(word => game.answersList.push(word.wordTranslate));
     }
     setTimeout(async () => {
+      await audioPlay('Start2');
       await showQuestion();
     }, TIMEOUT_BEFORE_START);
   };
   const showQuestion = async (): Promise<void> => {
+    game.music = await audioPlay('Game');
     const scoreContainer = addElement('div', 'sprint-score-container');
     const scoreField = addTextElement('div', 'sprint-score-text', 'Ваш Score — ');
     const scoreEl = addTextElement('div', 'sprint-score', `${game.score}`);
@@ -125,24 +149,34 @@ export const Sprint = async (params?: URLSearchParams): Promise<HTMLElement | vo
       answerEl.textContent = game.rightOrWrong ? game.rightAnswer : game.wrongAnswer;
       questionContainer.append(questionEl, equality, answerEl, questionMark);
       document.addEventListener('keydown', keyHandler);
+
+      window.addEventListener('hashchange', clearKeyHandler);
+
     };
-    const nextQuestion = async (userAnswer: boolean) => {
+    const clearKeyHandler = () => {
       document.removeEventListener('keydown', keyHandler);
+      window.removeEventListener('hashchange', clearKeyHandler);
+    };
+    const nextQuestion = async (userAnswer: boolean): Promise<void> => {
+      clearKeyHandler();
       setDisabled(btnNo);
       setDisabled(btnYes);
       questionContainer.innerHTML = '';
       const correct = userAnswer === game.rightOrWrong;
       if (correct) {
+        await audioPlay('CorrectAnswer');
         updateScore(scoreEl);
-        updateSequence(true, sequenceContainer, levelEl, scoreLevelEl);
-      } else updateSequence(false, sequenceContainer, levelEl, scoreLevelEl);
+        await updateSequence(true, sequenceContainer, levelEl, scoreLevelEl);
+      } else await updateSequence(false, sequenceContainer, levelEl, scoreLevelEl);
       formCurrentWordResult(correct);
       if (game.userId) await saveCurrentWordResult();
       if (game.wordsList.length === 1) game.wordsList = await addWordsForSprint();
       else game.wordsList.shift();
+      if (game.wordsList.length > 0){
       changeQuestion();
       removeDisabled(btnNo);
       removeDisabled(btnYes);
+      }
     };
 
     scoreContainer.append(scoreField, scoreEl);
@@ -151,7 +185,13 @@ export const Sprint = async (params?: URLSearchParams): Promise<HTMLElement | vo
     btnNo.addEventListener('click', nextQuestion.bind(null, false));
     btnYes.addEventListener('click', nextQuestion.bind(null, true));
     btnsAnswersContainer.append(btnNo, btnYes);
-    output.innerHTML = '';
+    // output.innerHTML = '';
+    pageTitle.remove();
+    gameDescription.remove();
+    gameLevelAnnotation.remove();
+    const levelWrapper = document.getElementById('sprint-levels');
+    if (levelWrapper) levelWrapper.remove();
+    button.remove();
     output.append(
       showTimer(GAME_TIME),
       scoreContainer,
@@ -160,7 +200,90 @@ export const Sprint = async (params?: URLSearchParams): Promise<HTMLElement | vo
       questionContainer,
       btnsAnswersContainer);
   };
-  button.addEventListener('click', startSprint);
+  button.addEventListener('click', async () => {
+    await audioPlay('Start');
+    await startSprint();
+  });
   output.append(button);
+  const clearGame = () => {
+    game.music?.pause();
+    clearInterval(game.timerInterval);
+    window.removeEventListener('hashchange', clearGame);
+  };
+  window.addEventListener('hashchange', clearGame);
+
+  const settingsMenu = addElement('div', 'settings');
+  const closeGame = addLinkElement('sprint-home-link', '/');
+  const volumeContainer = addElement('div', 'progress-volume-bar');
+  const volume = addElement('div', 'volume');
+  const volumeRange = addElement('input', 'progress-volume') as HTMLInputElement;
+  const gameVolume = game.volume * 100;
+  volumeRange.setAttribute('type', 'range');
+  if (game.volumeMuted) {
+    volumeRange.value = '1';
+    volumeRange.style.background = '#fff';
+    volume.classList.add('mute');
+  }
+  else {
+    volumeRange.style.background = `linear-gradient(to right, goldenrod 0%, goldenrod ${gameVolume}%,
+    #fff ${gameVolume}%, white 100%)`;
+    volumeRange.setAttribute('value', `${gameVolume}`);
+  }
+  volumeRange.setAttribute('min', '0');
+  volumeRange.setAttribute('max', '100');
+  volumeRange.setAttribute('step', '1');
+
+  volumeContainer.append(volume, volumeRange);
+  settingsMenu.append(closeGame, volumeContainer);
+  output.append(settingsMenu);
+
+
+  if (!game.isVolumeRangeListened) {
+    console.log('volumeRange');
+    volumeRange.addEventListener('input', function(e) {
+      const value = this.value;
+      if (+value <= 1) {
+        if (game.music) game.music.muted = true;
+        localStorage.setItem('sprintVolumeMuted', 'true');
+        game.volumeMuted = true;
+        volume.classList.add('mute');
+      } else {
+        if (game.music) game.music.muted = false;
+        volume.classList.remove('mute');
+        localStorage.setItem('sprintVolumeMuted', 'false');
+        game.volumeMuted = false;
+      }
+      if (game.music) game.music.volume = +value / 100;
+      this.style.background = `linear-gradient(to right, goldenrod 0%,
+    goldenrod ${value}%, #fff ${value}%, white 100%)`;
+      localStorage.setItem('sprintVolume', JSON.stringify(game.music?.volume));
+      game.volume = +value / 100;
+    });
+    game.isVolumeRangeListened = true;
+  }
+
+  const muteUnmute = () => {
+    console.log(game);
+    game.volumeMuted = !game.volumeMuted;
+    localStorage.setItem('sprintVolumeMuted', `${game.volumeMuted}`);
+    if (game.music) game.music.muted = !game.music?.muted;
+    if (game.volumeMuted) {
+      volumeRange.value = '1';
+      volumeRange.style.background = '#fff';
+      volume.classList.add('mute');
+    } else {
+      volumeRange.value = `${game.volume * 100}`;
+      volumeRange.style.background = `linear-gradient(to right, goldenrod 0%,
+    goldenrod ${volumeRange.value}%, #fff ${volumeRange.value}%, white 100%)`;
+      volume.classList.remove('mute');
+    }
+  };
+
+  if (!game.isVolumeListened) {
+    volume.addEventListener('click', muteUnmute);
+    game.isVolumeListened = true;
+  }
+
+
   return output;
 };

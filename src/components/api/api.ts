@@ -16,6 +16,8 @@ export const baseUrl = 'https://rs-lang-app-server.herokuapp.com/';
 
 export const getWords = async (group: string, page: string): Promise<Array<WordExtended>> => {
   const response: Response = await fetch(`${baseUrl}words?group=${group}&page=${page}`);
+  console.log(response);
+  console.log('init555');
   return response.json();
 };
 export const getWordById = async (id: string): Promise<WordExtended> => {

@@ -475,11 +475,77 @@
 
 
 .sprint-mult-increase::before {
-  content:"";
+  content:'';
   display: block;
   animation: blinkStar 500ms backwards ease-in-out;
 }
 
 .sprint-mult-delete::before {
   animation: starFadeOut 250ms forwards ease-in-out;
+}
+
+.settings {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  right: 20px;
+  top: 75px;
+  gap: 10px;
+}
+
+.sprint-home-link {
+  width: 20px;
+  height: 20px;
+  background-color: #fff;
+  background-size: cover;
+  mask-image: url('../../assets/svg/close.svg');
+  mask-size: contain;
+  -webkit-mask-image: url('../../assets/svg/close.svg');
+  -webkit-mask-size: contain;
+  cursor: pointer;
+}
+
+.progress-volume-bar{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.volume {
+  width: 24px;
+  height: 20px;
+  background-color: #fff;
+  background-size: cover;
+  mask-image: url('../../assets/svg/volume.svg');
+  mask-size: contain;
+  -webkit-mask-image: url('../../assets/svg/volume.svg');
+  -webkit-mask-size: contain;
+  cursor: pointer;
+}
+
+.mute{
+  mask-image: url('../../assets/svg/mute.svg');
+  -webkit-mask-image: url('../../assets/svg/mute.svg');
+}
+
+.progress-volume {
+  background: linear-gradient(to right, goldenrod 0%,
+    goldenrod 50%, #fff 50%, #fff 100%);
+  border: solid 2px #0498bf;
+  border-radius: 8px;
+  height: 8px;
+  width: 70%;
+  outline: none;
+  transition: background 450ms ease-in;
+  -webkit-appearance: none;
+  padding-right: 0px;
+  cursor:pointer}
+
+.progress-volume::-webkit-slider-thumb {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  -webkit-appearance: none;
+  cursor: ew-resize;
+  background: #fff;
 }
