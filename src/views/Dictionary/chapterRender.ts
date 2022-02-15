@@ -1,10 +1,8 @@
 import { addElement } from '../../utils/add-element';
 import wordListRender from './wordListRender';
-import { getUserAggregatedWords, getWords } from '../../components/api/api';
 import { wordCardRender } from './wordRender';
 import { getWordsFunc, pagination } from './Dictionary';
 import { setPage, setChapter, getUserId } from '../../utils/local-storage-helpers';
-import { aggregatedWordsResponse, WordExtended } from '../../interfaces';
 
 async function chapterListener(i: number) {
   const wordsArr = await getWordsFunc(`${i}`, '0');

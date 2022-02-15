@@ -1,5 +1,4 @@
-import { getUserWords, getUserWord, createUserWord, updateUserWord, deleteUserWord } from '../../components/api/api';
-import { getUserAggregatedWords } from '../../components/api/api';
+import { getUserWord, createUserWord, updateUserWord } from '../../components/api/api';
 import { getUserId } from '../../utils/local-storage-helpers';
 import { UserWord } from '../../interfaces';
 
@@ -18,19 +17,14 @@ export function lestenStateBtns(e: Event, wordId: string, wordState: UserWord) {
   cardElement.classList.remove('learned', 'hard');
 
   function createWord() {
-    // console.log('create word');
-    // console.log(userId, wordId, wordState);
     createUserWord(userId, wordId, wordState);
   }
 
   function updateWord() {
-    // console.log('update word');
     updateUserWord(userId, wordId, wordState);
-    // console.log(getUserWords(userId));
   }
 
   function setDefaultWordState() {
-    // console.log('update word default');
     updateUserWord(userId, wordId, { difficulty: 'easy' });
   }
 
@@ -42,5 +36,4 @@ export function lestenStateBtns(e: Event, wordId: string, wordState: UserWord) {
     cardElement.classList.toggle(targetState);
     wordListElement.classList.add(`word-item_${targetState}`);
   }
-
 }
