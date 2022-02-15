@@ -5,28 +5,29 @@ import { navigate } from '../engine/router-hash';
 export const showModal = (element: HTMLElement): void => {
   const overlay = document.querySelector('.overlay') as HTMLElement;
   const overlayFadeInClass = 'overlay-fadeIn';
-  const removeModal = async (modalEl: HTMLElement, overlayListener?: void) => {
-    modalEl.remove();
-    if (overlay.classList.contains(overlayFadeInClass)) overlay.classList.remove(overlayFadeInClass);
-    if (overlayListener) overlay.removeEventListener('click', overlayListener);
-    await navigate();
-  };
   const modalClass = 'modal-window';
   const modalOld = document.getElementById(modalClass);
-  if (modalOld) removeModal(modalOld);
-
   const activeModalClass = 'modal-active';
   const closeModalClass = 'modal-close';
-
   const modal = addElement('div', modalClass, modalClass);
   const closeModal = addTextElement('button', closeModalClass, 'Закрыть');
   modal.classList.add(activeModalClass);
   overlay.classList.add(overlayFadeInClass);
 
+  const removeModal = async (modalEl: HTMLElement, overlayListener?: void) => {
+    modalEl.remove();
+    if (overlay.classList.contains(overlayFadeInClass)) overlay.classList.remove(overlayFadeInClass);
+    if (overlayListener) overlay.removeEventListener('click', overlayListener);
+    //await navigate();
+  };
+
+  if (modalOld) removeModal(modalOld);
+
   closeModal.addEventListener(
     'click',
-    () => {
+    async () => {
       removeModal(modal);
+      await navigate();
     },
     { once: true }
   );

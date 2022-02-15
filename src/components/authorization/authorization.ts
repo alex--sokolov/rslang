@@ -13,7 +13,7 @@ const authSingInHTML = `
   <label for="password">Пароль:</label>
   <input type="password" name="password" id="password" class="auth__input-field">
   <input type="submit" data-mode="signin" value="Войти">
-  <p>Нет аккаунта? Тогда <button type="button" id="auth-toggle-btn" class="auth__toggle">зарегистрируйся!</button></p>
+  <p>Нет аккаунта? Тогда <button id="auth-toggle-btn" class="auth__toggle">зарегистрируйся!</button></p>
   <p id="auth__warn" class="auth__warn"></p>
 `;
 const authRegisterHTML = `
@@ -27,12 +27,12 @@ const authRegisterHTML = `
   <label for="password-2">Повторите пароль:</label>
   <input type="password" name="password-2" id="password-2" class="auth__input-field">
   <input type="submit" data-mode="register" value="Зарегистрироваться">
-  <p>Уже есть аккаунт? <button type="button" id="auth-toggle-btn" class="auth__toggle">Войти!</button></p>
+  <p>Уже есть аккаунт? <button id="auth-toggle-btn" class="auth__toggle">Войти!</button></p>
   <p id="auth__warn" class="auth__warn"></p>
 `;
 
 const Authorization = (type = 'signin') => {
-  const element = addElement('form', 'auth-form auth', 'auth-form') as HTMLFormElement;
+  const element = addElement('form', 'auth-form auth') as HTMLFormElement;
 
   if (type === 'signin') {
     element.innerHTML = authSingInHTML;
@@ -42,23 +42,10 @@ const Authorization = (type = 'signin') => {
   return element;
 };
 
-const AuthPanel = (): HTMLElement => {
-  const authPanel = addElement('div', 'auth-panel-container');
-  const authUserName = addTextElement('span', 'navbar-name', getUserName());
-  const authLinkText = getToken() ? 'Выйти' : 'Войти';
-  const authLink = addTextElement('button', 'navbar-auth', authLinkText);
-  authPanel.appendChild(authUserName);
-  authPanel.appendChild(authLink);
-
-  authLink.removeEventListener('click', getUserId() ? openAuthModal : signOut);
-  authLink.addEventListener('click', getUserId() ? signOut : openAuthModal);
-  return authPanel;
-};
-
 const openAuthModal = () => {
   if (!document.querySelector('.auth-form')) {
     showModal(Authorization('signin'));
-    const authForm = document.getElementById('auth-form') as HTMLFormElement;
+    const authForm = document.querySelector('.auth-form') as HTMLFormElement;
     authForm.setAttribute('data-type', 'signin');
   } else {
     const authForm = document.querySelector('.auth-form') as HTMLFormElement;
@@ -68,6 +55,8 @@ const openAuthModal = () => {
       authForm.remove();
       showModal(Authorization('register'));
       document.querySelector('.auth-form')?.setAttribute('data-type', 'register');
+      // eslint-disable-next-line no-debugger
+      //debugger;
     } else if (authFormType === 'register') {
       authForm.remove();
       showModal(Authorization('signin'));
@@ -87,6 +76,19 @@ const openAuthModal = () => {
   const authToggleBtn = document.getElementById('auth-toggle-btn') as HTMLButtonElement;
   authToggleBtn.removeEventListener('click', signOut);
   authToggleBtn.addEventListener('click', openAuthModal);
-}
+};
+
+const AuthPanel = (): HTMLElement => {
+  const authPanel = addElement('div', 'auth-panel-container');
+  const authUserName = addTextElement('span', 'navbar-name', getUserName());
+  const authLinkText = getToken() ? 'Выйти' : 'Войти';
+  const authLink = addTextElement('button', 'navbar-auth', authLinkText);
+  authPanel.appendChild(authUserName);
+  authPanel.appendChild(authLink);
+
+  authLink.removeEventListener('click', getUserId() ? openAuthModal : signOut);
+  authLink.addEventListener('click', getUserId() ? signOut : openAuthModal);
+  return authPanel;
+};
 
 export { Authorization, openAuthModal, AuthPanel };

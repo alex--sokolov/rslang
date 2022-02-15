@@ -26,7 +26,6 @@ export const getGameLevel = (): string => {
 export const getUserName = (): string => {
   return <string>localStorage.getItem('username');
 };
-
 export const setPage = (page: string): void => {
   localStorage.setItem('page', page);
 };
