@@ -1,8 +1,8 @@
 import './Dictionary.scss';
 import { addElement, addTextElement } from '../../utils/add-element';
 import { getUserId, getPage, getChapter, setPage, setChapter } from '../../utils/local-storage-helpers';
-import { getWords, getWordById, getUserAggregatedWords } from '../../components/api/api';
-import { aggregatedWordsResponse, Word, WordExtended } from '../../interfaces';
+import { getWords, getUserAggregatedWords } from '../../components/api/api';
+import { aggregatedWordsResponse, WordExtended } from '../../interfaces';
 import { wordCardRender } from './wordRender';
 import chapterRender from './chapterRender';
 import wordListRender from './wordListRender';
@@ -43,15 +43,34 @@ const getCurrPage = (): string => {
   return '0';
 };
 
+// ф-ия отмечает стилями выбранную главу
 const getActiveChapter = () => {
-  const currentChapter = getChapter();
+  const currentChapter = getChapter() || '0';
   const targetRadioElement = document.getElementById(`chapter-${currentChapter}`) as HTMLInputElement;
   targetRadioElement.checked = true;
 };
 
 export const getWordsFunc = async (chapter: string, page: string) => {
-  if (getUserId()) {
+  if (chapter === '6') {
+    wordsArr = (
+      (await getUserAggregatedWords(
+        getUserId(),
+        undefined,
+        undefined,
+        '3600',
+        '{"userWord.difficulty": "hard"}'
+      )) as aggregatedWordsResponse
+    ).wordsList;
+
+    const pageCount = Math.ceil(wordsArr.length / 20);
+    paginationOptions.totalItems = pageCount;
+
+    if (wordsArr.length <= 20) return wordsArr;
+
+    return (wordsArr = wordsArr.slice(+page * 20, +page * 20 + 20));
+  } else if (getUserId()) {
     const aggregatedWords = (await getUserAggregatedWords(getUserId(), chapter, page, '20')) as aggregatedWordsResponse;
+
     return (wordsArr = aggregatedWords.wordsList);
   } else {
     return (wordsArr = await getWords(chapter, page));
@@ -61,11 +80,8 @@ export const getWordsFunc = async (chapter: string, page: string) => {
 async function paginationListener(event: PaginationEvent) {
   const currentPage = event.page - 1;
 
-  const chapterListElement = document.querySelector('.chapter-list') as HTMLUListElement;
-  const chapterCheckedElement = chapterListElement.querySelector('input[type="radio"]:checked') as HTMLInputElement;
-
-  const chapterId = (chapterCheckedElement.getAttribute('id') as string).slice(-1);
-  wordsArr = await getWordsFunc(chapterId, `${currentPage}`);
+  const currentChapter = getChapter();
+  wordsArr = (await getWordsFunc(currentChapter, `${currentPage}`)) as WordExtended[];
 
   const wordsContainerElement = document.querySelector('.dictionary-words-container') as HTMLDivElement;
 
@@ -86,7 +102,7 @@ export const Dictionary = async (): Promise<HTMLElement> => {
   page.append(pageTitle, chapterRender(), wordsTitle, mainContentContainer, paginationElement);
 
   const currentPage = getCurrPage();
-  const currentChapter = getChapter() ? getChapter() : '0';
+  const currentChapter = getChapter() || '0';
 
   await getWordsFunc(currentChapter, currentPage);
 

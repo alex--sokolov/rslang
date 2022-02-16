@@ -261,7 +261,8 @@ export const getUserAggregatedWords = async (
   switch (response.status) {
     case 200:
       const res = await response.json();
-      return { wordsList: res[0].paginatedResults, totalWords: res[0].totalCount[0].count };
+      return { wordsList: res[0].paginatedResults, totalWords: res[0].totalCount[0] };
+      // убрал .count из-за ошибки, всё портящей
     case 401:
       const status = await updateTokens(userId);
       if (status) return getUserAggregatedWords(userId, group, page, wordsPerPage, filter);

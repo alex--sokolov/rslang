@@ -24,10 +24,14 @@ b {
     display: none;
   }
 
-  input:checked + label {
-    color: white;
+  label:hover {
+    box-shadow: 0px 2px 5px 2px rgba(0, 0, 0, 0.3);
   }
 
+  input:checked + label {
+    color: white;
+    box-shadow: 0px 2px 5px 2px rgba(0, 0, 0, 0.3);
+  }
 }
 
 .chapter-label {
@@ -71,9 +75,9 @@ b {
     background-size: contain;
   }
 
-  &.easy::after {
-    display: block;
-  }
+  // &.easy::after {
+  //   display: block;
+  // }
   &.hard::after {
     display: block;
     background-image: url('../../assets/svg/head-red.svg');
@@ -91,6 +95,7 @@ b {
   &__img {
     width: 100%;
     border-radius: 15px;
+    box-shadow: 0px 2px 5px 2px rgba(0, 0, 0, 0.3);
   }
 
   &__word {
@@ -155,10 +160,16 @@ b {
     border: 2px solid $color-second;
   }
 
+  &__voice-btn:hover,
+  &__btn:hover {
+    box-shadow: 0px 2px 5px 2px rgba(0, 0, 0, 0.3);
+  }
+
   &__voice-btn:active,
   &__btn:active {
     transform: scale(1.1);
   }
+
 
 }
 
@@ -172,14 +183,39 @@ b {
 .card--chapter-6 { background: linear-gradient(180deg, #ffffff54,#cf5ffc94); }
 
 .word-list {
+  position: relative;
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
   margin-top: 30px;
+
+  &_hard::after,
+  &_learned::after {
+    position: absolute;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 10rem;
+    transform: rotate(-10deg);
+  }
+  &_hard::after {
+    content: 'difficult';
+    color: $color-special;
+    opacity: 0.2;
+  }
+  &_learned::after {
+    content: 'learned';
+    color: $color-chapter-4;
+    opacity: 0.5;
+  }
 }
 
 .word-item {
   position: relative;
+  z-index: 10;
   width: 180px;
   flex-grow: 1;
   padding: 5px;
@@ -187,6 +223,11 @@ b {
   background-color: transparent;
   border: 2px solid $color-second;
   border-radius: 10px;
+
+  &:hover,
+  &_active {
+    box-shadow: 0px 2px 5px 2px rgba(0, 0, 0, 0.3);
+  }
 
   h3 {
     font-size: 20px;
@@ -209,9 +250,9 @@ b {
     background-size: contain;
   }
 
-  &_easy::after {
-    display: block;
-  }
+  // &_easy::after {
+  //   display: block;
+  // }
   &_hard::after {
     display: block;
     background-image: url('../../assets/svg/head-red.svg');
