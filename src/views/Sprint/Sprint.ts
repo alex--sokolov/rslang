@@ -2,7 +2,7 @@ import './Sprint.scss';
 import { addElement, addLinkElement, addTextElement, removeDisabled, setDisabled } from '../../utils/add-element';
 import { getRandom } from '../../utils/calc';
 import { shuffledArray } from '../../utils/modify-arrays';
-import { game, gameInitial, initStore } from '../../components/sprint/sprint-store';
+import { game, initStore } from '../../components/sprint/sprint-store';
 import { GAME_TIME, LEVELS, SCORE_ADDITION, TIMEOUT_BEFORE_START } from '../../components/sprint/sprint-vars';
 import {
   addWordsForSprint, formCurrentWordResult,
@@ -11,10 +11,11 @@ import {
   initWordsListMenu, saveCurrentWordResult, showTimer, updateScore, updateSequence
 } from '../../components/sprint/sprint';
 import { audioPlay } from '../../components/sprint/sprint-sounds';
+import { toggleFullScreen } from '../../utils/fullscreen';
 
 export const Sprint = async (params?: URLSearchParams): Promise<HTMLElement | void> => {
   initStore(params);
-  const output = addElement('main', 'sprint-page') as HTMLElement;
+  const output = addElement('main', 'sprint-page', 'sprint-page') as HTMLElement;
   const pageTitle = addTextElement('h1', 'sprint-page-title', 'Sprint Page') as HTMLElement;
   const gameDescription = addElement('h2', 'sprint-description') as HTMLElement;
   gameDescription.insertAdjacentHTML('afterbegin',
@@ -25,7 +26,7 @@ export const Sprint = async (params?: URLSearchParams): Promise<HTMLElement | vo
   const button = addTextElement('button', 'sprint-start-button', 'Начать') as HTMLButtonElement;
   output.append(pageTitle, gameDescription, gameLevelAnnotation);
   const keyHandlerStart = async (e: KeyboardEvent) => {
-    document.removeEventListener('keydown', keyHandlerStart);
+    document.removeEventListener('keyup', keyHandlerStart);
     if (e.key === 'Enter' && !button.disabled) {
       await audioPlay('Start');
       await startSprint();
@@ -41,24 +42,18 @@ export const Sprint = async (params?: URLSearchParams): Promise<HTMLElement | vo
           btn.classList.remove('active');
         }
       });
-      console.log(indexActive);
       if (indexActive === -1) indexActive = e.key === 'ArrowLeft' ? 0 : indexLast;
       else {
         levelBtns[indexActive].classList.remove('active');
         indexActive += e.key === 'ArrowLeft' ? -1 : 1;
         if (indexActive === -1) indexActive = indexLast;
         if (indexActive === indexLast + 1) indexActive = 0;
-
       }
-      console.log('frfr2');
       await initWordsListMenu(indexActive);
-      console.log('frfr3');
       levelBtns[indexActive].classList.add('active');
       if (button.disabled) removeDisabled(button);
-      console.log('frfr3');
-      document.addEventListener('keydown', keyHandlerStart);
+      document.addEventListener('keyup', keyHandlerStart);
     }
-    console.log('frfr4');
   };
   if (game.group && game.page) await initWordsListDictionary();
   else {
@@ -83,9 +78,9 @@ export const Sprint = async (params?: URLSearchParams): Promise<HTMLElement | vo
     };
     LEVELS.forEach(createLevels);
 
-    document.addEventListener('keydown', keyHandlerStart);
+    document.addEventListener('keyup', keyHandlerStart);
     const clearKeyHandler = () => {
-      document.removeEventListener('keydown', keyHandlerStart);
+      document.removeEventListener('keyup', keyHandlerStart);
       window.removeEventListener('hashchange', clearKeyHandler);
     };
     window.addEventListener('hashchange', clearKeyHandler);
@@ -94,7 +89,7 @@ export const Sprint = async (params?: URLSearchParams): Promise<HTMLElement | vo
     setDisabled(button);
   }
   const startSprint = async (): Promise<void> => {
-    document.removeEventListener('keydown', keyHandlerStart);
+    document.removeEventListener('keyup', keyHandlerStart);
     pageTitle.classList.add('out-left');
     gameDescription.classList.add('out-right');
     gameLevelAnnotation.classList.add('out-left');
@@ -130,10 +125,13 @@ export const Sprint = async (params?: URLSearchParams): Promise<HTMLElement | vo
     const btnYes = addTextElement('button', 'btn-yes', 'Верно') as HTMLButtonElement;
     const btnNo = addTextElement('button', 'btn-no', 'Неверно') as HTMLButtonElement;
     const keyHandler = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowLeft') nextQuestion(false);
-      if (e.key === 'ArrowRight') nextQuestion(true);
+      if (game.isFinished) removeEventListener('keyup', keyHandler);
+      else {
+        if (e.key === 'ArrowLeft') nextQuestion(false);
+        if (e.key === 'ArrowRight') nextQuestion(true);
+      }
     };
-    const changeQuestion = () => {
+    const changeQuestion = (userAnswer?: boolean) => {
       game.question = game.wordsList[0].word;
       game.rightAnswer = game.wordsList[0].wordTranslate;
       game.wrongAnswer = getWrongAnswer(game.rightAnswer, game.answersList);
@@ -148,13 +146,13 @@ export const Sprint = async (params?: URLSearchParams): Promise<HTMLElement | vo
       game.rightOrWrong = Boolean(getRandom(2));
       answerEl.textContent = game.rightOrWrong ? game.rightAnswer : game.wrongAnswer;
       questionContainer.append(questionEl, equality, answerEl, questionMark);
-      document.addEventListener('keydown', keyHandler);
-
-      window.addEventListener('hashchange', clearKeyHandler);
-
+      setTimeout(() => {
+        document.addEventListener('keyup', keyHandler);
+        window.addEventListener('hashchange', clearKeyHandler);
+      }, 500);
     };
     const clearKeyHandler = () => {
-      document.removeEventListener('keydown', keyHandler);
+      document.removeEventListener('keyup', keyHandler);
       window.removeEventListener('hashchange', clearKeyHandler);
     };
     const nextQuestion = async (userAnswer: boolean): Promise<void> => {
@@ -163,19 +161,21 @@ export const Sprint = async (params?: URLSearchParams): Promise<HTMLElement | vo
       setDisabled(btnYes);
       questionContainer.innerHTML = '';
       const correct = userAnswer === game.rightOrWrong;
-      if (correct) {
+      if (!correct) {
+        await updateSequence(false, sequenceContainer, levelEl, scoreLevelEl);
+      } else {
         await audioPlay('CorrectAnswer');
         updateScore(scoreEl);
         await updateSequence(true, sequenceContainer, levelEl, scoreLevelEl);
-      } else await updateSequence(false, sequenceContainer, levelEl, scoreLevelEl);
+      }
       formCurrentWordResult(correct);
       if (game.userId) await saveCurrentWordResult();
       if (game.wordsList.length === 1) game.wordsList = await addWordsForSprint();
       else game.wordsList.shift();
-      if (game.wordsList.length > 0){
-      changeQuestion();
-      removeDisabled(btnNo);
-      removeDisabled(btnYes);
+      if (game.wordsList.length > 0 && !game.isFinished) {
+        changeQuestion(correct);
+        removeDisabled(btnNo);
+        removeDisabled(btnYes);
       }
     };
 
@@ -214,6 +214,13 @@ export const Sprint = async (params?: URLSearchParams): Promise<HTMLElement | vo
 
   const settingsMenu = addElement('div', 'settings');
   const closeGame = addLinkElement('sprint-home-link', '/');
+
+
+  const fullScreenMode = addElement('div', 'sprint-fullscreen');
+  fullScreenMode.addEventListener('click', () => {
+    toggleFullScreen(output);
+    fullScreenMode.classList.toggle('fullscreen-exit');
+  })
   const volumeContainer = addElement('div', 'progress-volume-bar');
   const volume = addElement('div', 'volume');
   const volumeRange = addElement('input', 'progress-volume') as HTMLInputElement;
@@ -223,8 +230,7 @@ export const Sprint = async (params?: URLSearchParams): Promise<HTMLElement | vo
     volumeRange.value = '1';
     volumeRange.style.background = '#fff';
     volume.classList.add('mute');
-  }
-  else {
+  } else {
     volumeRange.style.background = `linear-gradient(to right, goldenrod 0%, goldenrod ${gameVolume}%,
     #fff ${gameVolume}%, white 100%)`;
     volumeRange.setAttribute('value', `${gameVolume}`);
@@ -234,7 +240,7 @@ export const Sprint = async (params?: URLSearchParams): Promise<HTMLElement | vo
   volumeRange.setAttribute('step', '1');
 
   volumeContainer.append(volume, volumeRange);
-  settingsMenu.append(closeGame, volumeContainer);
+  settingsMenu.append(closeGame, volumeContainer, fullScreenMode);
   output.append(settingsMenu);
 
 

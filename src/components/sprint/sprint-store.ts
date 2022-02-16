@@ -25,6 +25,7 @@ export const gameInitial: SprintGameSettings = {
   isVolumeRangeListened: false,
   volume: 0.5,
   volumeMuted: false,
+  isFinished: false,
 };
 
 export let game: SprintGameSettings = Object.assign({}, gameInitial);

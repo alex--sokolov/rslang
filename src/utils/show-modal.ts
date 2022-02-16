@@ -2,7 +2,7 @@ import './show-modal.scss';
 import { addElement, addTextElement } from './add-element';
 import { navigate } from '../engine/router-hash';
 
-export const showModal = async (element: HTMLElement): Promise<void> => {
+export const showModal = async (element: HTMLElement, behavior?: string): Promise<void> => {
   const overlay = document.querySelector('.overlay') as HTMLElement;
   const overlayFadeInClass = 'overlay-fadeIn';
   const modalClass = 'modal-window';
@@ -10,7 +10,6 @@ export const showModal = async (element: HTMLElement): Promise<void> => {
   const activeModalClass = 'modal-active';
   const closeModalClass = 'modal-close';
   const modal = addElement('div', modalClass, modalClass);
-  const closeModal = addTextElement('button', closeModalClass, 'Закрыть');
   modal.classList.add(activeModalClass);
   overlay.classList.add(overlayFadeInClass);
 
@@ -22,20 +21,41 @@ export const showModal = async (element: HTMLElement): Promise<void> => {
   };
 
   if (modalOld) await removeModal(modalOld);
-
-  closeModal.addEventListener('click', async () => {
-      await removeModal(modal);
-      await navigate();
-    },{ once: true }
-  );
-
   const overlayListener = overlay.addEventListener('click', async () => {
       await removeModal(modal, overlayListener);
-    },{ once: true }
+      if (behavior === 'sprint') await navigate();
+    }, { once: true }
   );
 
   const root = document.getElementById('root') as HTMLDivElement;
   modal.append(element);
-  modal.append(closeModal);
+
+  if (behavior === 'sprint') {
+    const sprintButtons = addElement('div', 'sprint-finish-buttons');
+    const playAgain = addTextElement('button', closeModalClass, 'Сыграть еще');
+    const toDictionary = addTextElement('button', closeModalClass, 'Перейти в словарь');
+
+    playAgain.addEventListener('click', async () => {
+        await removeModal(modal);
+        await navigate();
+      }, { once: true }
+    );
+    toDictionary.addEventListener('click', async () => {
+        await removeModal(modal);
+        location.hash = '#dictionary';
+      }, { once: true }
+    );
+    sprintButtons.append(playAgain, toDictionary);
+    modal.append(sprintButtons);
+  } else {
+    const closeModal = addTextElement('button', closeModalClass, 'Закрыть');
+    closeModal.addEventListener('click', async () => {
+        await removeModal(modal);
+        await navigate();
+      }, { once: true }
+    );
+    modal.append(closeModal);
+  }
+
   root.append(modal);
 };

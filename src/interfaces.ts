@@ -129,4 +129,22 @@ export interface SprintGameSettings {
   isVolumeRangeListened: boolean;
   volume: number;
   volumeMuted: boolean;
+  isFinished: boolean;
+}
+
+export interface IWordsListResult {
+  sound: string;
+  word: string;
+  translate: string;
+}
+
+export interface SprintGameResults {
+  score: number;
+  message: string;
+  right: number;
+  wrong: number;
+  sequence: number;
+  percent: number;
+  wrongAnswers: IWordsListResult[];
+  rightAnswers: IWordsListResult[];
 }

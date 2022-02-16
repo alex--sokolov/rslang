@@ -13,9 +13,10 @@ import { createUserWord, getUserAggregatedWords, getWords, updateUserWord } from
 import { addElement, addTextElement } from '../../utils/add-element';
 import { WordsList } from '../../types';
 import { shuffledArray } from '../../utils/modify-arrays';
-import { UserWord } from '../../interfaces';
-import { audioPlay } from './sprint-sounds';
+import { IWordsListResult, SprintGameResults, UserWord } from '../../interfaces';
+import { audioPlay, wordPlay } from './sprint-sounds';
 import { showModal } from '../../utils/show-modal';
+import { exitFullScreen, isFullScreen } from '../../utils/fullscreen';
 
 export const initWordsListDictionary = async () => {
   if (!game.userId) game.wordsList = await getWords(game.group, game.page);
@@ -54,9 +55,165 @@ export const getWrongAnswer = (right: string, answersList: string[]): string => 
   return answers[getRandom(answers.length)];
 };
 
+const calcFinalResults = (): SprintGameResults => {
+  let right = 0;
+  let wrong = 0;
+  const wrongAnswers: IWordsListResult[] = [];
+  const rightAnswers: IWordsListResult[] = [];
+
+  game.wordsListPlayed.forEach((item, index) => {
+    const word: IWordsListResult = {
+      sound: item.audio,
+      word: item.word,
+      translate: item.wordTranslate
+    };
+    if (game.userAnswers[index]) {
+      right++;
+      rightAnswers.push(word);
+    } else {
+      wrong++;
+      wrongAnswers.push(word);
+    }
+  });
+
+  const message = '';
+  const result = {
+    score: game.score,
+    message: message,
+    right: right,
+    wrong: wrong,
+    sequence: game.maxCorrectSequence,
+    percent: (right / (right + wrong)) * 100,
+    wrongAnswers: wrongAnswers,
+    rightAnswers: rightAnswers
+  };
+  return result;
+};
+
 export const finishSprint = async (): Promise<void> => {
+  console.log('GAME OVER');
+  game.isFinished = true;
+  if (isFullScreen()) exitFullScreen(document);
   const finalContainer = addElement('div', 'sprint-final');
-  showModal(finalContainer);
+  const finalBtnsContainer = addElement('div', 'sprint-final-btns-container');
+  const finalResultsBtn = addTextElement('button', 'btn-sprint-final', 'Результат');
+  finalResultsBtn.classList.add('sprint-active');
+  const finalWordsBtn = addTextElement('button', 'btn-sprint-final', 'Посмотреть слова');
+
+  const finalContainerInfo = addElement('div', 'sprint-final-info');
+  const finalResults = addElement('div', 'sprint-final-results');
+  const finalWords = addElement('div', 'sprint-final-words');
+
+  const finalResultsData: SprintGameResults = calcFinalResults();
+
+  const finalResultsScoreContainer = addTextElement('div', 'sprint-final-score-container', 'Score -');
+  const finalResultsScore = addTextElement('span', 'sprint-final-score', `${finalResultsData.score}`);
+  const finalResultsMessage = addTextElement('div', 'sprint-final-massage', finalResultsData.message);
+
+  const finalResultsWordsRightContainer = addTextElement('div', 'sprint-final-right-container', 'Правильных ответов:');
+  const finalResultsWordsRight = addTextElement('span', 'sprint-final-words-right',`${finalResultsData.right}`);
+  const finalResultsWordsWrongContainer = addTextElement('div', 'sprint-final-right-container', 'Неправильных ответов:');
+  const finalResultsWordsWrong = addTextElement('span', 'sprint-final-words-wrong',`${finalResultsData.wrong}`);
+
+  const finalResultsSequenceContainer = addTextElement('div', 'sprint-final-sequence-container',
+    'Лучшая серия правильных ответов - ');
+  const finalResultsSequence = addTextElement('span', 'sprint-final-sequence', `${finalResultsData.sequence}`);
+  const finalResultsPercentContainer = addElement('div', 'sprint-final-percent-container');
+  const finalResultsPercent = addElement('div', 'global');
+  finalResultsPercent.setAttribute('data-pie', `{ "percent": ${finalResultsData.percent} }`);
+
+  const finalWordsMistakesContainer = addElement('div', 'sprint-final-mistakes-container');
+  const finalWordsMistakesCountContainer = addTextElement('div', 'sprint-final-mistakes-count-container', 'Ошибки: ');
+  const finalWordsMistakesCount = addTextElement('span', 'sprint-final-mistakes-count', `${finalResultsData.wrong}`);
+  const finalWordsMistakes = addElement('div', 'sprint-final-mistakes');
+
+  const finalWordsCorrectContainer = addElement('div', 'sprint-final-correct-container');
+  const finalWordsCorrectCountContainer = addTextElement('div', 'sprint-final-correct-count-container',
+    'Правильные ответы: ');
+  const finalWordsCorrectCount = addTextElement('span', 'sprint-final-correct-count', `${finalResultsData.right}`);
+  const finalWordsCorrect = addElement('div', 'sprint-final-correct');
+  const setActiveFinalResults = () => {
+    if (finalContainerInfo.classList.contains('sprint-final-info-moveRight')) {
+      finalContainerInfo.classList.remove('sprint-final-info-moveRight');
+    }
+    if (!finalResultsBtn.classList.contains('sprint-active')) {
+      finalContainerInfo.classList.add('sprint-final-info-moveLeft');
+      finalResultsBtn.classList.add('sprint-active');
+    }
+    if (finalWordsBtn.classList.contains('sprint-active')) finalWordsBtn.classList.remove('sprint-active');
+  };
+  const setActiveFinalWords = () => {
+    if (finalContainerInfo.classList.contains('sprint-final-info-moveLeft')) {
+      finalContainerInfo.classList.remove('sprint-final-info-moveLeft');
+    }
+    if (!finalWordsBtn.classList.contains('sprint-active')) {
+      finalContainerInfo.classList.add('sprint-final-info-moveRight');
+      finalWordsBtn.classList.add('sprint-active');
+    }
+    if (finalResultsBtn.classList.contains('sprint-active')) finalResultsBtn.classList.remove('sprint-active');
+  };
+  const keyHandlerFinal = (e: KeyboardEvent) => {
+    if (e.key === 'ArrowLeft') setActiveFinalResults();
+    if (e.key === 'ArrowRight') setActiveFinalWords();
+  };
+
+  const formWordList = (container: HTMLElement, wordsList: IWordsListResult[]) => {
+    wordsList.forEach(item => {
+      const itemContainer = addElement('div', 'sprint-item-card');
+      const itemSound = addElement('span', 'sprint-item-sound');
+      itemSound.addEventListener('click', async () => {
+        await wordPlay(`${item.sound}`);
+      })
+      const itemWord = addTextElement('span', 'sprint-item-word', `${item.word}`);
+      const itemTranslate = addTextElement('span', 'sprint-item-translate', `${item.translate}`);
+      itemContainer.append(itemSound, itemWord, itemTranslate);
+      container.append(itemContainer);
+    });
+  };
+  formWordList(finalWordsMistakes, finalResultsData.wrongAnswers);
+  formWordList(finalWordsCorrect, finalResultsData.rightAnswers);
+
+  finalWordsMistakesCountContainer.append(finalWordsMistakesCount);
+  finalWordsMistakesContainer.append(finalWordsMistakesCountContainer, finalWordsMistakes);
+  finalWordsCorrectCountContainer.append(finalWordsCorrectCount);
+  finalWordsCorrectContainer.append(finalWordsCorrectCountContainer, finalWordsCorrect);
+  finalResultsWordsWrongContainer.append(finalResultsWordsWrong);
+  finalResultsWordsRightContainer.append(finalResultsWordsRight);
+  finalResultsScoreContainer.append(finalResultsScore);
+  finalResultsSequenceContainer.append(finalResultsSequence);
+  finalResultsPercentContainer.append(finalResultsPercent);
+  finalResults.append(
+    finalResultsScoreContainer,
+    finalResultsMessage,
+    finalResultsWordsWrongContainer,
+    finalResultsWordsRightContainer,
+    finalResultsSequenceContainer,
+    finalResultsPercentContainer
+  );
+  finalWords.append(finalWordsMistakesContainer, finalWordsCorrectContainer);
+  finalBtnsContainer.append(finalResultsBtn, finalWordsBtn);
+  finalContainerInfo.append(finalResults, finalWords);
+  finalContainer.append(finalBtnsContainer, finalContainerInfo);
+
+  document.addEventListener('keyup', keyHandlerFinal);
+  finalResultsBtn.addEventListener('click', setActiveFinalResults);
+  finalWordsBtn.addEventListener('click', setActiveFinalWords);
+
+  setTimeout(() => {
+    const globalConfig = {
+      "lineargradient": ["yellow","#ff0000"],
+      "round": true,
+      "colorCircle": "#e6e6e6",
+      "speed": 24,
+    }
+
+    // @ts-ignore
+    const global = new CircularProgressBar('global', globalConfig);
+    global.initial();
+  }, 500);
+  // animateProgressBar();
+  console.log(game);
+  await showModal(finalContainer, 'sprint');
   clearInterval(game.timerInterval);
   game.music?.pause();
   await audioPlay('Finish');
@@ -67,8 +224,7 @@ export const addWordsForSprint = async (): Promise<WordsList> => {
   if (+game.page === 0) {
     await finishSprint();
     wordsList = [];
-  }
-  else {
+  } else {
     if (!game.userId) {
       wordsList = await getWords(`${game.group}`, `${+game.page - 1}`);
     } else {
@@ -91,12 +247,12 @@ export const addWordsForSprint = async (): Promise<WordsList> => {
 };
 export const showTimer = (seconds: number): HTMLElement => {
   const timer = addTextElement('h2', 'timer', `${seconds}`) as HTMLElement;
-  game.timerInterval = window.setInterval(() => {
+  game.timerInterval = window.setInterval(async () => {
     if (seconds < 0) {
       timer.textContent = '';
       const timeIsUp = addTextElement('h2', 'time-is-up', 'Время вышло') as HTMLElement;
       timer.append(timeIsUp);
-      finishSprint();
+      await finishSprint();
     } else {
       timer.textContent = `${seconds}`;
       --seconds;
@@ -126,10 +282,10 @@ export const updateSequence = async (
       [...sequenceCollection].forEach(star => {
         setTimeout(() => {
           star.classList.add('sprint-mult-increase');
-        }, 250);
+        }, 200);
         setTimeout(() => {
           star.classList.remove('sprint-mult-increase');
-        }, 750);
+        }, 500);
       });
       game.scoreMultiplier += 1;
       levelElement.textContent = `${game.scoreMultiplier}`;
@@ -144,7 +300,7 @@ export const updateSequence = async (
     levelElement.textContent = `${game.scoreMultiplier}`;
     scoreLevelElement.textContent = `(+${game.scoreMultiplier * SCORE_ADDITION})`;
     [...sequenceCollection].forEach((star, index) => {
-      setTimeout(() => star.classList.add('sprint-mult-delete'), 250 - index * 10);
+      setTimeout(() => star.classList.add('sprint-mult-delete'), index * 10);
       setTimeout(() => star.remove(), 500);
     });
   }

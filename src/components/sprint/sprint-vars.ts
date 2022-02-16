@@ -1,6 +1,6 @@
 export const TOTAL_PAGES_PER_GROUP = 30;
 export const WORDS_PER_PAGE = 20;
-export const GAME_TIME = 30;
+export const GAME_TIME = 3;
 export const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 export const TIMEOUT_BEFORE_START = 2000;
 export const SCORE_ADDITION = 10;

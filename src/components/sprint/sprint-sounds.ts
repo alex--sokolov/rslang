@@ -1,6 +1,7 @@
 import { StringObject } from '../../types';
 import { getRandom } from '../../utils/calc';
 import { game } from './sprint-store';
+import { baseUrl } from '../api/api';
 
 const sounds: StringObject = {
   'Game' : [
@@ -51,7 +52,6 @@ const sounds: StringObject = {
 
 }
 
-
 export const audioPlay = async (sound: string): Promise<HTMLAudioElement> => {
   const audio = new Audio;
   const path = Array.isArray(sounds[sound])
@@ -61,5 +61,12 @@ export const audioPlay = async (sound: string): Promise<HTMLAudioElement> => {
   audio.volume = game.volume;
   await audio.play();
   audio.muted = game.volumeMuted;
+  return audio;
+}
+
+export const wordPlay = async (url: string): Promise<HTMLAudioElement> => {
+  const audio = new Audio;
+  audio.src = `${baseUrl + url}`;
+  await audio.play();
   return audio;
 }

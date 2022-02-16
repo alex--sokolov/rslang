@@ -32,7 +32,18 @@ module.exports = ({develop}) => ({
   module: {
     rules: [
       {
-        test: /\.[tj]s$/,
+        test: /\.lib\.js$/,
+        use: [
+          {
+            loader: 'script-loader',
+            options: {
+              sourceMap: true,
+            },
+          },
+        ]
+      },
+      {
+        test: /\.ts$/,
         use: 'ts-loader',
         exclude: /node_modules/,
       },
