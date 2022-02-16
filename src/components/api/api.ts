@@ -5,17 +5,20 @@ import {
   Tokens,
   UserWord,
   UserWordWithIds,
-  WordExtended
+  WordExtended,
 } from '../../interfaces';
 import { getToken, setTokens } from '../../utils/local-storage-helpers';
 import { openAuthModal } from '../authorization/authorization';
+import { hidePreloader, showPreloader } from '../preloader/preloader';
 
 export const baseUrl = 'https://rs-lang-app-server.herokuapp.com/';
 
 //TEXTBOOK
 
 export const getWords = async (group: string, page: string): Promise<Array<WordExtended>> => {
+  showPreloader();
   const response: Response = await fetch(`${baseUrl}words?group=${group}&page=${page}`);
+  hidePreloader();
   return response.json();
 };
 export const getWordById = async (id: string): Promise<WordExtended> => {
@@ -121,7 +124,9 @@ export const getUserWords = async (userId: string): Promise<UserWordWithIds | vo
     },
   };
   let status401, result;
+  showPreloader();
   const response: Response = await fetch(`${baseUrl}users/${userId}/words`, param);
+  hidePreloader();
   switch (response.status) {
     case 200:
       return response.json();
@@ -130,8 +135,7 @@ export const getUserWords = async (userId: string): Promise<UserWordWithIds | vo
       if (status401) {
         result = await getUserWords(userId);
         return result;
-      }
-      else {
+      } else {
         localStorage.clear();
         await openAuthModal();
       }
@@ -160,8 +164,7 @@ export const createUserWord = async (userId: string, wordId: string, word: UserW
       if (status401) {
         result = await createUserWord(userId, wordId, word);
         return result;
-      }
-      else {
+      } else {
         localStorage.clear();
         await openAuthModal();
       }
@@ -192,8 +195,7 @@ export const getUserWord = async (userId: string, wordId: string): Promise<UserW
       if (status401) {
         result = await getUserWord(userId, wordId);
         return result;
-      }
-      else {
+      } else {
         localStorage.clear();
         await openAuthModal();
       }
@@ -224,8 +226,7 @@ export const updateUserWord = async (userId: string, wordId: string, word: UserW
       if (status401) {
         result = await updateUserWord(userId, wordId, word);
         return result;
-      }
-      else {
+      } else {
         localStorage.clear();
         await openAuthModal();
       }
@@ -254,8 +255,7 @@ export const deleteUserWord = async (userId: string, wordId: string): Promise<Re
       if (status401) {
         result = await deleteUserWord(userId, wordId);
         return result;
-      }
-      else {
+      } else {
         localStorage.clear();
         await openAuthModal();
       }
@@ -291,8 +291,10 @@ export const getUserAggregatedWords = async (
       Accept: 'application/json',
     },
   };
+  showPreloader();
   const response: Response = await fetch(`${baseUrl}users/${userId}/aggregatedWords${filterQuery}`, param);
   let status401, res, result;
+  hidePreloader();
   switch (response.status) {
     case 200:
       res = await response.json();
@@ -302,8 +304,7 @@ export const getUserAggregatedWords = async (
       if (status401) {
         result = await getUserAggregatedWords(userId, group, page, wordsPerPage, filter);
         return result;
-      }
-      else {
+      } else {
         localStorage.clear();
         await openAuthModal();
       }
