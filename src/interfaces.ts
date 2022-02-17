@@ -1,3 +1,5 @@
+import { WordsList } from './types';
+
 export interface Word {
   id: string;
   group: number;
@@ -17,8 +19,8 @@ export interface Word {
 }
 
 export interface GameWordStat {
-  right?: number;
-  wrong?: number;
+  right: number;
+  wrong: number;
 }
 
 export interface GamesWordStat {
@@ -44,8 +46,7 @@ export interface UserWordWithIds extends UserWord {
 }
 
 export interface WordExtended extends Word {
-  userWord: UserWord;
-  _id: string;
+  userWord?: UserWord;
 }
 
 export interface aggregatedWordsResponse {
@@ -88,6 +89,7 @@ export interface FetchParam {
   };
   body?: string;
 }
+
 export interface AudioCallVars {
   AMOUNT_PAGES_OF_GROUP: number;
   AMOUNT_WORDS_IN_GAME: number;
@@ -99,4 +101,50 @@ export interface AudioCallVars {
   mainKeys: Array<number>;
   numKeys: Array<number>;
   diffTimeNewWord: number;
+}
+
+export interface SprintGameSettings {
+  userId: string;
+  questionNumber: number;
+  score: number;
+  scoreMultiplier: number;
+  correctSequence: number;
+  maxCorrectSequence: number;
+  rightOrWrong: boolean;
+  group: string;
+  page: string;
+  isFromDictionary: boolean;
+  wordsList: WordsList;
+  wordsListPlayed: WordExtended[];
+  isUserWord: boolean;
+  answersList: string[];
+  question: string;
+  rightAnswer: string;
+  wrongAnswer: string;
+  userAnswers: boolean[];
+  timerInterval: number;
+  music?: HTMLAudioElement;
+  isVolumeListened: boolean;
+  isVolumeRangeListened: boolean;
+  volume: number;
+  volumeMuted: boolean;
+  isFinished: boolean;
+  keyHandlerQuestions?: any;
+}
+
+export interface IWordsListResult {
+  sound: string;
+  word: string;
+  translate: string;
+}
+
+export interface SprintGameResults {
+  score: number;
+  message: string;
+  right: number;
+  wrong: number;
+  sequence: number;
+  percent: number;
+  wrongAnswers: IWordsListResult[];
+  rightAnswers: IWordsListResult[];
 }

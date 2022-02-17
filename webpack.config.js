@@ -2,6 +2,8 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const {CleanWebpackPlugin} = require('clean-webpack-plugin');
 const ESLintPlugin = require('eslint-webpack-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
+
 
 const devServer = (isDev) => !isDev ? {} : {
   devServer: {
@@ -30,7 +32,18 @@ module.exports = ({develop}) => ({
   module: {
     rules: [
       {
-        test: /\.[tj]s$/,
+        test: /\.lib\.js$/,
+        use: [
+          {
+            loader: 'script-loader',
+            options: {
+              sourceMap: true,
+            },
+          },
+        ]
+      },
+      {
+        test: /\.ts$/,
         use: 'ts-loader',
         exclude: /node_modules/,
       },
@@ -70,6 +83,9 @@ module.exports = ({develop}) => ({
     new HtmlWebpackPlugin({
       template: './src/index.html',
       favicon: './src/assets/favicon.ico',
+    }),
+    new CopyPlugin({
+      patterns: [{ from: './src/assets', to: 'assets' }],
     }),
     new CleanWebpackPlugin({cleanStaleWebpackAssets: false}),
   ],

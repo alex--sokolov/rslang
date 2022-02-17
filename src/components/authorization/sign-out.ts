@@ -1,7 +1,8 @@
 import { openAuthModal } from './authorization';
 import { navigate } from '../../engine/router-hash';
+import { clearLocationHashParams } from '../../utils/parse-url';
 
-function signOut() {
+const signOut = async () => {
   const headerButton = document.querySelector('.navbar-auth') as HTMLFormElement;
   const headerName = document.querySelector('.navbar-name') as HTMLSpanElement;
 
@@ -10,7 +11,8 @@ function signOut() {
   headerName.innerText = '';
   headerButton.removeEventListener('click', signOut);
   headerButton.addEventListener('click', openAuthModal);
-  navigate();
+  await navigate();
+  // location.hash = clearLocationHashParams(location.hash);
 }
 
 export { signOut };
