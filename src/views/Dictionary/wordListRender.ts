@@ -29,7 +29,7 @@ const wordListRender = (words: WordExtended[]): HTMLDivElement => {
     }
 
     if (learnedCount === words.length || hardCount === words.length) {
-      wordListContainer.classList.add(`word-list_${word.userWord.difficulty}`);
+      wordListContainer.classList.add(`word-list_${word.userWord?.difficulty}`);
     }
 
     wordButton.append(wordEng, wordTranslate);
