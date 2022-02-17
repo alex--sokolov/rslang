@@ -5,7 +5,7 @@ import { shuffledArray } from '../../utils/modify-arrays';
 import { game, initStore } from '../../components/sprint/sprint-store';
 import { GAME_TIME, LEVELS, SCORE_ADDITION, TIMEOUT_BEFORE_START } from '../../components/sprint/sprint-vars';
 import {
-  addWordsForSprint, formCurrentWordResult,
+  addWordsForSprint, clearGame, formCurrentWordResult,
   getWrongAnswer,
   initWordsListDictionary,
   initWordsListMenu, saveCurrentWordResult, showTimer, updateScore, updateSequence
@@ -13,7 +13,10 @@ import {
 import { audioPlay } from '../../components/sprint/sprint-sounds';
 import { toggleFullScreen } from '../../utils/fullscreen';
 
+
+
 export const Sprint = async (params?: URLSearchParams): Promise<HTMLElement | void> => {
+  console.log('Start New Game!');
   initStore(params);
   const output = addElement('main', 'sprint-page', 'sprint-page') as HTMLElement;
   const pageTitle = addTextElement('h1', 'sprint-page-title', 'Sprint Page') as HTMLElement;
@@ -24,6 +27,36 @@ export const Sprint = async (params?: URLSearchParams): Promise<HTMLElement | vo
     ? addTextElement('p', 'sprint-level-notes', 'Игра начнется с текущими словами из словаря')
     : addTextElement('p', 'sprint-level-notes', 'Выберите уровень');
   const button = addTextElement('button', 'sprint-start-button', 'Начать') as HTMLButtonElement;
+  const showHints = (hint: string): HTMLDivElement => {
+    let result = addElement('div', '') as HTMLDivElement;
+    switch (hint) {
+      case 'arrows_main':
+        const TOTAL_ARROWS = 3;
+        result.classList.add('arrows-hint');
+        const arrowsLeft = addElement('div', 'arrows-left') as HTMLDivElement;
+        const arrowsRight = addElement('div', 'arrows-right') as HTMLDivElement;
+        for (let i = 0; i < TOTAL_ARROWS; i++) {
+          const arrowLeft = addElement('span', 'arrow-left');
+          const arrowRight = addElement('span', 'arrow-right');
+          arrowsLeft.append(arrowLeft);
+          arrowsRight.append(arrowRight);
+        }
+        const arrowsLeftContainer = addElement('div', 'arrows-left-container');
+        const arrowLeftHint = addTextElement('div', 'arrow-left-hint', '[ ArrowLeft ]');
+        arrowsLeftContainer.append(arrowsLeft, arrowLeftHint);
+        const arrowsRightContainer = addElement('div', 'arrows-right-container');
+        const arrowRightHint = addTextElement('div', 'arrow-right-hint', '[ ArrowRight ]');
+        arrowsRightContainer.append(arrowsRight, arrowRightHint);
+        result.append(arrowsLeftContainer, arrowsRightContainer);
+        return result;
+
+      case 'enter_main':
+        result.classList.add('enter-hint');
+        result.textContent = '[ Enter ]';
+        return result;
+    }
+    return result;
+  };
   output.append(pageTitle, gameDescription, gameLevelAnnotation);
   const keyHandlerStart = async (e: KeyboardEvent) => {
     document.removeEventListener('keyup', keyHandlerStart);
@@ -79,13 +112,13 @@ export const Sprint = async (params?: URLSearchParams): Promise<HTMLElement | vo
     LEVELS.forEach(createLevels);
 
     document.addEventListener('keyup', keyHandlerStart);
-    const clearKeyHandler = () => {
+    const clearKeyHandlerStart = () => {
       document.removeEventListener('keyup', keyHandlerStart);
-      window.removeEventListener('hashchange', clearKeyHandler);
+      window.removeEventListener('hashchange', clearKeyHandlerStart);
     };
-    window.addEventListener('hashchange', clearKeyHandler);
+    window.addEventListener('hashchange', clearKeyHandlerStart);
 
-    output.append(levelWrapper);
+    output.append(levelWrapper, showHints('arrows_main'));
     setDisabled(button);
   }
   const startSprint = async (): Promise<void> => {
@@ -94,6 +127,9 @@ export const Sprint = async (params?: URLSearchParams): Promise<HTMLElement | vo
     gameDescription.classList.add('out-right');
     gameLevelAnnotation.classList.add('out-left');
     button.classList.add('out-down');
+    document.querySelector('.arrows-left-container')?.classList.add('out-direct-left');
+    document.querySelector('.arrows-right-container')?.classList.add('out-direct-right');
+    document.querySelector('.enter-hint')?.classList.add('out-direct-bottom');
     const levelBtns = document.getElementsByClassName('sprint-level') as HTMLCollectionOf<HTMLButtonElement>;
     [...levelBtns].forEach((level, index) => {
       if (level.classList.contains('active')) level.classList.add(`out-active`);
@@ -124,14 +160,14 @@ export const Sprint = async (params?: URLSearchParams): Promise<HTMLElement | vo
     const btnsAnswersContainer = addElement('div', 'btns-answers-container') as HTMLElement;
     const btnYes = addTextElement('button', 'btn-yes', 'Верно') as HTMLButtonElement;
     const btnNo = addTextElement('button', 'btn-no', 'Неверно') as HTMLButtonElement;
-    const keyHandler = (e: KeyboardEvent) => {
-      if (game.isFinished) removeEventListener('keyup', keyHandler);
+    game.keyHandlerQuestions = (e: KeyboardEvent) => {
+      if (game.isFinished) removeEventListener('keyup', game.keyHandlerQuestions);
       else {
         if (e.key === 'ArrowLeft') nextQuestion(false);
         if (e.key === 'ArrowRight') nextQuestion(true);
       }
     };
-    const changeQuestion = (userAnswer?: boolean) => {
+    const changeQuestion = () => {
       game.question = game.wordsList[0].word;
       game.rightAnswer = game.wordsList[0].wordTranslate;
       game.wrongAnswer = getWrongAnswer(game.rightAnswer, game.answersList);
@@ -147,12 +183,14 @@ export const Sprint = async (params?: URLSearchParams): Promise<HTMLElement | vo
       answerEl.textContent = game.rightOrWrong ? game.rightAnswer : game.wrongAnswer;
       questionContainer.append(questionEl, equality, answerEl, questionMark);
       setTimeout(() => {
-        document.addEventListener('keyup', keyHandler);
-        window.addEventListener('hashchange', clearKeyHandler);
+        if (!game.isFinished) {
+          document.addEventListener('keyup', game.keyHandlerQuestions);
+          window.addEventListener('hashchange', clearKeyHandler);
+        }
       }, 500);
     };
     const clearKeyHandler = () => {
-      document.removeEventListener('keyup', keyHandler);
+      document.removeEventListener('keyup', game.keyHandlerQuestions);
       window.removeEventListener('hashchange', clearKeyHandler);
     };
     const nextQuestion = async (userAnswer: boolean): Promise<void> => {
@@ -173,7 +211,7 @@ export const Sprint = async (params?: URLSearchParams): Promise<HTMLElement | vo
       if (game.wordsList.length === 1) game.wordsList = await addWordsForSprint();
       else game.wordsList.shift();
       if (game.wordsList.length > 0 && !game.isFinished) {
-        changeQuestion(correct);
+        changeQuestion();
         removeDisabled(btnNo);
         removeDisabled(btnYes);
       }
@@ -185,7 +223,6 @@ export const Sprint = async (params?: URLSearchParams): Promise<HTMLElement | vo
     btnNo.addEventListener('click', nextQuestion.bind(null, false));
     btnYes.addEventListener('click', nextQuestion.bind(null, true));
     btnsAnswersContainer.append(btnNo, btnYes);
-    // output.innerHTML = '';
     pageTitle.remove();
     gameDescription.remove();
     gameLevelAnnotation.remove();
@@ -200,96 +237,86 @@ export const Sprint = async (params?: URLSearchParams): Promise<HTMLElement | vo
       questionContainer,
       btnsAnswersContainer);
   };
-  button.addEventListener('click', async () => {
-    await audioPlay('Start');
-    await startSprint();
-  });
-  output.append(button);
-  const clearGame = () => {
-    game.music?.pause();
-    clearInterval(game.timerInterval);
-    window.removeEventListener('hashchange', clearGame);
-  };
-  window.addEventListener('hashchange', clearGame);
-
-  const settingsMenu = addElement('div', 'settings');
-  const closeGame = addLinkElement('sprint-home-link', '/');
-
-
-  const fullScreenMode = addElement('div', 'sprint-fullscreen');
-  fullScreenMode.addEventListener('click', () => {
-    toggleFullScreen(output);
-    fullScreenMode.classList.toggle('fullscreen-exit');
-  })
-  const volumeContainer = addElement('div', 'progress-volume-bar');
-  const volume = addElement('div', 'volume');
-  const volumeRange = addElement('input', 'progress-volume') as HTMLInputElement;
-  const gameVolume = game.volume * 100;
-  volumeRange.setAttribute('type', 'range');
-  if (game.volumeMuted) {
-    volumeRange.value = '1';
-    volumeRange.style.background = '#fff';
-    volume.classList.add('mute');
-  } else {
-    volumeRange.style.background = `linear-gradient(to right, goldenrod 0%, goldenrod ${gameVolume}%,
-    #fff ${gameVolume}%, white 100%)`;
-    volumeRange.setAttribute('value', `${gameVolume}`);
-  }
-  volumeRange.setAttribute('min', '0');
-  volumeRange.setAttribute('max', '100');
-  volumeRange.setAttribute('step', '1');
-
-  volumeContainer.append(volume, volumeRange);
-  settingsMenu.append(closeGame, volumeContainer, fullScreenMode);
-  output.append(settingsMenu);
-
-
-  if (!game.isVolumeRangeListened) {
-    console.log('volumeRange');
-    volumeRange.addEventListener('input', function(e) {
-      const value = this.value;
-      if (+value <= 1) {
-        if (game.music) game.music.muted = true;
-        localStorage.setItem('sprintVolumeMuted', 'true');
-        game.volumeMuted = true;
-        volume.classList.add('mute');
-      } else {
-        if (game.music) game.music.muted = false;
-        volume.classList.remove('mute');
-        localStorage.setItem('sprintVolumeMuted', 'false');
-        game.volumeMuted = false;
-      }
-      if (game.music) game.music.volume = +value / 100;
-      this.style.background = `linear-gradient(to right, goldenrod 0%,
-    goldenrod ${value}%, #fff ${value}%, white 100%)`;
-      localStorage.setItem('sprintVolume', JSON.stringify(game.music?.volume));
-      game.volume = +value / 100;
+  const settingsMenu = (): HTMLDivElement => {
+    const settingsContainer = addElement('div', 'settings') as HTMLDivElement;
+    const closeGame = addLinkElement('sprint-home-link', '/') as HTMLLinkElement;
+    const fullScreenMode = addElement('div', 'sprint-fullscreen') as HTMLDivElement;
+    fullScreenMode.addEventListener('click', () => {
+      toggleFullScreen(output);
+      fullScreenMode.classList.toggle('fullscreen-exit');
     });
-    game.isVolumeRangeListened = true;
-  }
-
-  const muteUnmute = () => {
-    console.log(game);
-    game.volumeMuted = !game.volumeMuted;
-    localStorage.setItem('sprintVolumeMuted', `${game.volumeMuted}`);
-    if (game.music) game.music.muted = !game.music?.muted;
+    const volumeContainer = addElement('div', 'progress-volume-bar') as HTMLDivElement;
+    const volume = addElement('div', 'volume') as HTMLDivElement;
+    const volumeRange = addElement('input', 'progress-volume') as HTMLInputElement;
+    const gameVolume = game.volume * 100;
+    volumeRange.setAttribute('type', 'range');
     if (game.volumeMuted) {
       volumeRange.value = '1';
       volumeRange.style.background = '#fff';
       volume.classList.add('mute');
     } else {
-      volumeRange.value = `${game.volume * 100}`;
-      volumeRange.style.background = `linear-gradient(to right, goldenrod 0%,
-    goldenrod ${volumeRange.value}%, #fff ${volumeRange.value}%, white 100%)`;
-      volume.classList.remove('mute');
+      volumeRange.style.background = `linear-gradient(to right, goldenrod 0%, goldenrod ${gameVolume}%,
+    #fff ${gameVolume}%, white 100%)`;
+      volumeRange.setAttribute('value', `${gameVolume}`);
     }
+    volumeRange.setAttribute('min', '0');
+    volumeRange.setAttribute('max', '100');
+    volumeRange.setAttribute('step', '1');
+    volumeContainer.append(volume, volumeRange);
+    settingsContainer.append(closeGame, volumeContainer, fullScreenMode);
+    if (!game.isVolumeRangeListened) {
+      console.log('volumeRange');
+      volumeRange.addEventListener('input', function(e) {
+        const value = this.value;
+        if (+value <= 1) {
+          if (game.music) game.music.muted = true;
+          localStorage.setItem('sprintVolumeMuted', 'true');
+          game.volumeMuted = true;
+          volume.classList.add('mute');
+        } else {
+          if (game.music) game.music.muted = false;
+          volume.classList.remove('mute');
+          localStorage.setItem('sprintVolumeMuted', 'false');
+          game.volumeMuted = false;
+        }
+        if (game.music) game.music.volume = +value / 100;
+        this.style.background = `linear-gradient(to right, goldenrod 0%,
+    goldenrod ${value}%, #fff ${value}%, white 100%)`;
+        localStorage.setItem('sprintVolume', JSON.stringify(game.music?.volume));
+        game.volume = +value / 100;
+      });
+      game.isVolumeRangeListened = true;
+    }
+    const muteUnmute = () => {
+      console.log(game);
+      game.volumeMuted = !game.volumeMuted;
+      localStorage.setItem('sprintVolumeMuted', `${game.volumeMuted}`);
+      if (game.music) game.music.muted = !game.music?.muted;
+      if (game.volumeMuted) {
+        volumeRange.value = '1';
+        volumeRange.style.background = '#fff';
+        volume.classList.add('mute');
+      } else {
+        volumeRange.value = `${game.volume * 100}`;
+        volumeRange.style.background = `linear-gradient(to right, goldenrod 0%,
+    goldenrod ${volumeRange.value}%, #fff ${volumeRange.value}%, white 100%)`;
+        volume.classList.remove('mute');
+      }
+    };
+    if (!game.isVolumeListened) {
+      volume.addEventListener('click', muteUnmute);
+      game.isVolumeListened = true;
+    }
+    return settingsContainer;
   };
 
-  if (!game.isVolumeListened) {
-    volume.addEventListener('click', muteUnmute);
-    game.isVolumeListened = true;
-  }
+  button.addEventListener('click', async () => {
+    await audioPlay('Start');
+    await startSprint();
+  });
 
-
+  output.append(button, showHints('enter_main'));
+  output.append(settingsMenu());
+  window.addEventListener('hashchange', clearGame);
   return output;
 };

@@ -130,6 +130,7 @@ export interface SprintGameSettings {
   volume: number;
   volumeMuted: boolean;
   isFinished: boolean;
+  keyHandlerQuestions?: any;
 }
 
 export interface IWordsListResult {

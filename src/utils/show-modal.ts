@@ -17,15 +17,15 @@ export const showModal = async (element: HTMLElement, behavior?: string): Promis
     modalEl.remove();
     if (overlay.classList.contains(overlayFadeInClass)) overlay.classList.remove(overlayFadeInClass);
     if (overlayListener) overlay.removeEventListener('click', overlayListener);
-    //await navigate();
   };
 
   if (modalOld) await removeModal(modalOld);
-  const overlayListener = overlay.addEventListener('click', async () => {
-      await removeModal(modal, overlayListener);
-      if (behavior === 'sprint') await navigate();
-    }, { once: true }
-  );
+  if (behavior !== 'sprint') {
+    const overlayListener = overlay.addEventListener('click', async () => {
+        await removeModal(modal, overlayListener);
+      }, { once: true }
+    );
+  }
 
   const root = document.getElementById('root') as HTMLDivElement;
   modal.append(element);

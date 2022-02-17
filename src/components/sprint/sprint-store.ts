@@ -1,7 +1,7 @@
 import { SprintGameSettings } from '../../interfaces';
 import { getUserId } from '../../utils/local-storage-helpers';
 
-export const gameInitial: SprintGameSettings = {
+const gameInitial: SprintGameSettings = {
   userId: '',
   questionNumber: 0,
   score: 0,
@@ -30,6 +30,7 @@ export const gameInitial: SprintGameSettings = {
 
 export let game: SprintGameSettings = Object.assign({}, gameInitial);
 
+
 export const initStore = (params?: URLSearchParams) => {
   game = Object.assign({}, gameInitial);
   game.wordsList = [];
@@ -42,6 +43,5 @@ export const initStore = (params?: URLSearchParams) => {
   const sprintVolume = localStorage.getItem('sprintVolume');
   if (sprintVolume && sprintVolume !== 'undefined') game.volume = Number(sprintVolume);
   else localStorage.setItem('sprintVolume', `${game.volume}`);
-  console.log(game);
   game.volumeMuted = localStorage.getItem('sprintVolumeMuted') === 'true';
 }

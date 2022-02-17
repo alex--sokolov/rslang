@@ -1,4 +1,4 @@
-import { game } from './sprint-store';
+import { game, initStore } from './sprint-store';
 import { getRandom } from '../../utils/calc';
 import {
   EASY_SERIES,
@@ -13,11 +13,21 @@ import { createUserWord, getUserAggregatedWords, getWords, updateUserWord } from
 import { addElement, addTextElement } from '../../utils/add-element';
 import { WordsList } from '../../types';
 import { shuffledArray } from '../../utils/modify-arrays';
-import { IWordsListResult, SprintGameResults, UserWord } from '../../interfaces';
+import { IWordsListResult, SprintGameResults, UserWord, WordExtended } from '../../interfaces';
 import { audioPlay, wordPlay } from './sprint-sounds';
 import { showModal } from '../../utils/show-modal';
 import { exitFullScreen, isFullScreen } from '../../utils/fullscreen';
 
+const saveStatistics = () => {
+
+};
+export const clearGame = () => {
+  game.music?.pause();
+  clearInterval(game.timerInterval);
+  window.removeEventListener('hashchange', clearGame);
+  initStore();
+  game.isFinished = true;
+};
 export const initWordsListDictionary = async () => {
   if (!game.userId) game.wordsList = await getWords(game.group, game.page);
   else {
@@ -54,14 +64,13 @@ export const getWrongAnswer = (right: string, answersList: string[]): string => 
   answers.splice(answers.indexOf(right), 1);
   return answers[getRandom(answers.length)];
 };
-
 const calcFinalResults = (): SprintGameResults => {
   let right = 0;
   let wrong = 0;
   const wrongAnswers: IWordsListResult[] = [];
   const rightAnswers: IWordsListResult[] = [];
 
-  game.wordsListPlayed.forEach((item, index) => {
+  game.wordsListPlayed.forEach((item: WordExtended, index: number) => {
     const word: IWordsListResult = {
       sound: item.audio,
       word: item.word,
@@ -83,15 +92,14 @@ const calcFinalResults = (): SprintGameResults => {
     right: right,
     wrong: wrong,
     sequence: game.maxCorrectSequence,
-    percent: (right / (right + wrong)) * 100,
+    percent: (right / (right + wrong)) * 100 || 0,
     wrongAnswers: wrongAnswers,
     rightAnswers: rightAnswers
   };
   return result;
 };
-
 export const finishSprint = async (): Promise<void> => {
-  console.log('GAME OVER');
+  document.removeEventListener('keyup', game.keyHandlerQuestions);
   game.isFinished = true;
   if (isFullScreen()) exitFullScreen(document);
   const finalContainer = addElement('div', 'sprint-final');
@@ -111,9 +119,9 @@ export const finishSprint = async (): Promise<void> => {
   const finalResultsMessage = addTextElement('div', 'sprint-final-massage', finalResultsData.message);
 
   const finalResultsWordsRightContainer = addTextElement('div', 'sprint-final-right-container', 'Правильных ответов:');
-  const finalResultsWordsRight = addTextElement('span', 'sprint-final-words-right',`${finalResultsData.right}`);
-  const finalResultsWordsWrongContainer = addTextElement('div', 'sprint-final-right-container', 'Неправильных ответов:');
-  const finalResultsWordsWrong = addTextElement('span', 'sprint-final-words-wrong',`${finalResultsData.wrong}`);
+  const finalResultsWordsRight = addTextElement('span', 'sprint-final-words-right', `${finalResultsData.right}`);
+  const finalResultsWordsWrongContainer = addTextElement('div', 'sprint-final-wrong-container', 'Неправильных ответов:');
+  const finalResultsWordsWrong = addTextElement('span', 'sprint-final-words-wrong', `${finalResultsData.wrong}`);
 
   const finalResultsSequenceContainer = addTextElement('div', 'sprint-final-sequence-container',
     'Лучшая серия правильных ответов - ');
@@ -163,7 +171,7 @@ export const finishSprint = async (): Promise<void> => {
       const itemSound = addElement('span', 'sprint-item-sound');
       itemSound.addEventListener('click', async () => {
         await wordPlay(`${item.sound}`);
-      })
+      });
       const itemWord = addTextElement('span', 'sprint-item-word', `${item.word}`);
       const itemTranslate = addTextElement('span', 'sprint-item-translate', `${item.translate}`);
       itemContainer.append(itemSound, itemWord, itemTranslate);
@@ -201,23 +209,18 @@ export const finishSprint = async (): Promise<void> => {
 
   setTimeout(() => {
     const globalConfig = {
-      "lineargradient": ["yellow","#ff0000"],
-      "round": true,
-      "colorCircle": "#e6e6e6",
-      "speed": 24,
-    }
-
-    // @ts-ignore
+      'lineargradient': ['yellow', '#ff0000'],
+      'round': true,
+      'colorCircle': '#e6e6e6',
+      'speed': 24
+    };
     const global = new CircularProgressBar('global', globalConfig);
     global.initial();
   }, 500);
-  // animateProgressBar();
-  console.log(game);
   await showModal(finalContainer, 'sprint');
-  clearInterval(game.timerInterval);
-  game.music?.pause();
+  await saveStatistics();
   await audioPlay('Finish');
-
+  clearGame();
 };
 export const addWordsForSprint = async (): Promise<WordsList> => {
   let wordsList: WordsList;
