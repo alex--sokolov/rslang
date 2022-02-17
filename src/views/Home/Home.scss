@@ -1,4 +1,38 @@
 .home-page {
   display: flex;
   justify-content: center;
+  flex-direction: column;
+
+
+  &__logo {
+    font-family: $font-special;
+    font-size: 4em;
+    color: $color-special;
+  }
+
+  &__main-description {
+    margin-bottom: 40px;
+    font-size: 1.5em;
+  }
+
+  &__feature-title {
+    margin-bottom: 10px;
+    font-size: 1.5em;
+    font-weight: bold;
+  }
+
+  &__feature-item{
+    margin-bottom: 10px;
+    font-size: 1.3em;
+  }
+
+  &__link {
+    font-weight: bold;
+    color: inherit;
+    // cursor: ;
+  }
+
+  &__link:hover {
+    color: $color-hover
+  }
 }
