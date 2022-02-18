@@ -1,7 +1,7 @@
 import { addElement } from '../../utils/add-element';
 import wordListRender from './wordListRender';
 import { wordCardRender } from './wordRender';
-import { getWordsFunc, pagination } from './Dictionary';
+import { getWordsFunc, pagination, hardPageCount } from './Dictionary';
 import { setPage, setChapter, getUserId } from '../../utils/local-storage-helpers';
 
 async function chapterListener(i: number) {
@@ -15,7 +15,11 @@ async function chapterListener(i: number) {
   wordsContainerElement.innerHTML = '';
   wordsContainerElement.append(wordCardRender(wordsArr[0]), wordListRender(wordsArr));
 
-  pagination.reset(30);
+  if (i === 6) {
+    pagination.reset(hardPageCount);
+  } else {
+    pagination.reset(30);
+  }
 }
 
 const chapterRender = (): HTMLDivElement => {

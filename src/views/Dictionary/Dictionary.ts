@@ -12,6 +12,7 @@ import './tui-pagination.scss';
 
 let wordsArr: WordExtended[] = [];
 export let pagination: Pagination;
+export let hardPageCount: number;
 
 const paginationOptions = {
   totalItems: 30,
@@ -62,8 +63,8 @@ export const getWordsFunc = async (chapter: string, page: string) => {
       )) as aggregatedWordsResponse
     ).wordsList;
 
-    const pageCount = Math.ceil(wordsArr.length / 20);
-    paginationOptions.totalItems = pageCount;
+    hardPageCount = Math.ceil(wordsArr.length / 20);
+    paginationOptions.totalItems = hardPageCount;
 
     if (wordsArr.length <= 20) return wordsArr;
 
