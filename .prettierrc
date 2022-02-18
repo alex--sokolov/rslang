@@ -4,5 +4,6 @@
     "singleQuote": true,
     "printWidth": 120,
     "proseWrap": "never",
-    "max-len": ["error", 120, 2]
+    "max-len": ["error", 120, 2],
+    "endOfLine": "auto"
 }

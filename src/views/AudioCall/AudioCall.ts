@@ -2,7 +2,7 @@ import './AudioCall.scss';
 import { addElement, addTextElement } from '../../utils/add-element';
 import { getWords } from '../../components/api/api';
 import { getRandom } from '../../utils/get-random';
-import { Word, WordExtended } from '../../interfaces';
+import { AudioCallListenerHandlers, Word, WordExtended } from '../../interfaces';
 import playSound from './gameComponents/play-sound';
 import getAnswers from './gameComponents/answers-list';
 import { showModal } from '../../utils/show-modal';
@@ -12,6 +12,10 @@ import { getChapter, getGameLevel, getPage, getUserId, setGameLevel } from '../.
 import gameVars from './gameComponents/game-vars';
 import { levelToGroup, shuffle } from '../../utils/micro-helpers';
 import updateWord from './gameComponents/update-word';
+
+const handlers: AudioCallListenerHandlers = {
+
+};
 
 //for button on dictionary page >>>
 /*BUTTON_ON_DICTIONARY_PAGE.addEventListener('click', () => {
@@ -41,6 +45,11 @@ function startAudioCall(callPlace?: string) {
     const tempArr: Array<WordExtended> = [...response];
     shuffle(tempArr);
     const targetArr: Array<WordExtended> = tempArr.slice(0, gameVars.AMOUNT_WORDS_IN_GAME);
+    function delCompletedSlide() {
+      //find and delete previous slide if it exists
+      const completedSlide = document.querySelector('.audio-call-slide.completed') as HTMLElement;
+      completedSlide?.remove();
+    }
 
     function insertSlide(type?: string) {
       if (counter !== 10) {
@@ -54,7 +63,7 @@ function startAudioCall(callPlace?: string) {
         const soundBut = slide.querySelector('.audio-game-sound') as HTMLDivElement;
 
         soundBut.addEventListener('click', playSound.bind(null, audio));
-        ansArea.addEventListener('click', checkMouseAns);
+        ansArea.addEventListener('click', handlers.checkMouseAns);
         gameContainer.appendChild(slide);
         if (counter === 0) {
           setTimeout(playSound.bind(null, audio), gameVars.AUDIO_DELAY);
@@ -63,7 +72,6 @@ function startAudioCall(callPlace?: string) {
         gameContainer.appendChild(getEmptySlide());
       }
     }
-
     function switchSlide() {
       const currentSlide = document.querySelector('.audio-call-slide.done') as HTMLElement;
       const nextSlide = document.querySelector('.audio-call-slide.hide') as HTMLElement;
@@ -72,54 +80,16 @@ function startAudioCall(callPlace?: string) {
 
       currentSlide?.classList.add('completed');
       nextSlide?.classList.remove('hide');
-      if (counter !== 10) document.addEventListener('keydown', checkKeyboardAns);
+      if (counter !== 10) document.addEventListener('keydown', handlers.checkKeyboardAns);
       document.removeEventListener('keydown', switchSlide);
-      document.removeEventListener('keydown', switchSlideFinal);
+      document.removeEventListener('keydown', handlers.switchSlideFinal);
     }
-    function switchSlideFinal() {
-      switchSlide();
-      showModal(AudioCallResult(gameVars.statistic, targetArr));
-    }
-    function delCompletedSlide() {
-      //find and delete previous slide if it exists
-      const completedSlide = document.querySelector('.audio-call-slide.completed') as HTMLElement;
-      completedSlide?.remove();
-    }
-    function switchOnLoginMode() {
-      if (!getUserId()) {
-        const hideSlide = document.querySelector('.audio-call-slide.hide') as HTMLElement;
-        const slides = document.querySelectorAll('.audio-call-slide') as NodeListOf<HTMLElement>;
-        const emptySlide = getEmptySlide() as HTMLElement;
-
-        if (slides.length === 1) {
-          gameContainer.appendChild(emptySlide);
-          slides[0].classList.add('completed');
-        } else {
-          if (hideSlide) {
-            slides[0].after(emptySlide);
-          } else {
-            slides[1].after(emptySlide);
-            slides[1].classList.add('completed');
-          }
-        }
-        switchSlide();
-      }
-      logInButton.removeEventListener('click', switchOnLoginMode);
-      document.removeEventListener('keydown', checkKeyboardAns);
-    }
-
-    insertSlide();
-    root.innerHTML = '';
-    root.appendChild(gameContainer);
-    document.addEventListener('keydown', checkKeyboardAns);
-    logInButton.addEventListener('click', switchOnLoginMode); //remove listeners, when we logining
-
     function checkAnsBasicLogic(target: HTMLElement) {
       //clear unnecessary handler
       const currentSlide = document.querySelector('.audio-call-slide') as HTMLElement;
       const ansArea = currentSlide.querySelector('.slide__answers') as HTMLDivElement;
-      ansArea.removeEventListener('click', checkMouseAns);
-      document.removeEventListener('keydown', checkKeyboardAns);
+      ansArea.removeEventListener('click', handlers.checkMouseAns);
+      document.removeEventListener('keydown', handlers.checkKeyboardAns);
 
       //adding next slide to game
       counter = counter + 1;
@@ -144,19 +114,19 @@ function startAudioCall(callPlace?: string) {
       nextBut.disabled = false;
       if (counter === 10) {
         nextBut.innerText = 'Результаты';
-        nextBut.addEventListener('click', switchSlideFinal);
-        document.addEventListener('keydown', switchSlideFinal);
+        nextBut.addEventListener('click', handlers.switchSlideFinal);
+        document.addEventListener('keydown', handlers.switchSlideFinal);
       } else {
         nextBut.addEventListener('click', switchSlide);
         document.addEventListener('keydown', switchSlide);
       }
     }
-    function checkMouseAns(event: MouseEvent): void {
+    handlers.checkMouseAns = (event: MouseEvent): void => {
       delCompletedSlide();
       const target = event.target as HTMLElement;
       if (target.dataset.id) checkAnsBasicLogic(target);
     }
-    function checkKeyboardAns(event: KeyboardEvent): void {
+    handlers.checkKeyboardAns = (event: KeyboardEvent): void => {
       delCompletedSlide();
       if (gameVars.approved_KK.includes(event.keyCode)) {
         //check keyCode for separate pressing the main key from pressing the side keyboard
@@ -167,6 +137,38 @@ function startAudioCall(callPlace?: string) {
         checkAnsBasicLogic(target);
       }
     }
+    handlers.switchSlideFinal = async () => {
+      switchSlide();
+      await showModal(AudioCallResult(gameVars.statistic, targetArr), 'audiocall');
+    }
+    function switchOnLoginMode() {
+      if (!getUserId()) {
+        const hideSlide = document.querySelector('.audio-call-slide.hide') as HTMLElement;
+        const slides = document.querySelectorAll('.audio-call-slide') as NodeListOf<HTMLElement>;
+        const emptySlide = getEmptySlide() as HTMLElement;
+
+        if (slides.length === 1) {
+          gameContainer.appendChild(emptySlide);
+          slides[0].classList.add('completed');
+        } else {
+          if (hideSlide) {
+            slides[0].after(emptySlide);
+          } else {
+            slides[1].after(emptySlide);
+            slides[1].classList.add('completed');
+          }
+        }
+        switchSlide();
+      }
+      logInButton.removeEventListener('click', switchOnLoginMode);
+      document.removeEventListener('keydown', handlers.checkKeyboardAns);
+    }
+
+    insertSlide();
+    root.innerHTML = '';
+    root.appendChild(gameContainer);
+    document.addEventListener('keydown', handlers.checkKeyboardAns);
+    logInButton.addEventListener('click', switchOnLoginMode); //remove listeners, when we logining
   });
 }
 

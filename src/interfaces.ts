@@ -129,6 +129,7 @@ export interface SprintGameSettings {
   volume: number;
   volumeMuted: boolean;
   isFinished: boolean;
+  keyHandlerStart?: any;
   keyHandlerQuestions?: any;
 }
 
@@ -147,4 +148,10 @@ export interface SprintGameResults {
   percent: number;
   wrongAnswers: IWordsListResult[];
   rightAnswers: IWordsListResult[];
+}
+
+export interface AudioCallListenerHandlers {
+  checkMouseAns?: any;
+  checkKeyboardAns?: any;
+  switchSlideFinal?: any;
 }

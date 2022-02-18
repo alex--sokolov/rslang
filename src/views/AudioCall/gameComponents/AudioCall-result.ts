@@ -11,7 +11,7 @@ export const AudioCallResult = (results: Array<boolean>, words: Array<Word>): HT
   const resList = addElement('ul', 'results-box') as HTMLUListElement;
   const percent = (results.filter((res) => res).length / results.length) * 100;
 
-  resList.innerHTML = `<div class="pie" data-pie='{ "percent": ${percent} }'></div>`;
+  resList.innerHTML = `<div class="global" data-pie='{ "percent": ${percent} }'></div>`;
   results.forEach((res, index) => {
     const word: Word = words[index];
     const resItem = addElement('li', 'results-box__item');
@@ -42,9 +42,14 @@ export const AudioCallResult = (results: Array<boolean>, words: Array<Word>): HT
   resWrapper.appendChild(resList);
 
   setTimeout(() => {
-    // @ts-ignore
-    const bar = new CircularProgressBar('pie');
-    bar.initial();
+    const globalConfig = {
+      'lineargradient': ['yellow', '#ff0000'],
+      'round': true,
+      'colorCircle': '#e6e6e6',
+      'speed': 24
+    };
+    const global = new CircularProgressBar('global', globalConfig);
+    global.initial();
   }, 200);
 
   return resWrapper;

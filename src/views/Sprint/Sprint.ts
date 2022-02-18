@@ -14,7 +14,6 @@ import { audioPlay } from '../../components/sprint/sprint-sounds';
 import { toggleFullScreen } from '../../utils/fullscreen';
 
 
-
 export const Sprint = async (params?: URLSearchParams): Promise<HTMLElement | void> => {
   console.log('Start New Game!');
   initStore(params);
@@ -28,66 +27,35 @@ export const Sprint = async (params?: URLSearchParams): Promise<HTMLElement | vo
     : addTextElement('p', 'sprint-level-notes', 'Выберите уровень');
   const button = addTextElement('button', 'sprint-start-button', 'Начать') as HTMLButtonElement;
   const showHints = (hint: string): HTMLDivElement => {
-    let result = addElement('div', '') as HTMLDivElement;
-    switch (hint) {
-      case 'arrows_main':
-        const TOTAL_ARROWS = 3;
-        result.classList.add('arrows-hint');
-        const arrowsLeft = addElement('div', 'arrows-left') as HTMLDivElement;
-        const arrowsRight = addElement('div', 'arrows-right') as HTMLDivElement;
-        for (let i = 0; i < TOTAL_ARROWS; i++) {
-          const arrowLeft = addElement('span', 'arrow-left');
-          const arrowRight = addElement('span', 'arrow-right');
-          arrowsLeft.append(arrowLeft);
-          arrowsRight.append(arrowRight);
-        }
-        const arrowsLeftContainer = addElement('div', 'arrows-left-container');
-        const arrowLeftHint = addTextElement('div', 'arrow-left-hint', '[ ArrowLeft ]');
-        arrowsLeftContainer.append(arrowsLeft, arrowLeftHint);
-        const arrowsRightContainer = addElement('div', 'arrows-right-container');
-        const arrowRightHint = addTextElement('div', 'arrow-right-hint', '[ ArrowRight ]');
-        arrowsRightContainer.append(arrowsRight, arrowRightHint);
-        result.append(arrowsLeftContainer, arrowsRightContainer);
-        return result;
-
-      case 'enter_main':
-        result.classList.add('enter-hint');
-        result.textContent = '[ Enter ]';
-        return result;
+    const result = addElement('div', '') as HTMLDivElement;
+    if (hint === 'arrows_main') {
+      const TOTAL_ARROWS = 3;
+      result.classList.add('arrows-hint');
+      const arrowsLeft = addElement('div', 'arrows-left') as HTMLDivElement;
+      const arrowsRight = addElement('div', 'arrows-right') as HTMLDivElement;
+      for (let i = 0; i < TOTAL_ARROWS; i++) {
+        const arrowLeft = addElement('span', 'arrow-left');
+        const arrowRight = addElement('span', 'arrow-right');
+        arrowsLeft.append(arrowLeft);
+        arrowsRight.append(arrowRight);
+      }
+      const arrowsLeftContainer = addElement('div', 'arrows-left-container');
+      const arrowLeftHint = addTextElement('div', 'arrow-left-hint', '[ ArrowLeft ]');
+      arrowsLeftContainer.append(arrowsLeft, arrowLeftHint);
+      const arrowsRightContainer = addElement('div', 'arrows-right-container');
+      const arrowRightHint = addTextElement('div', 'arrow-right-hint', '[ ArrowRight ]');
+      arrowsRightContainer.append(arrowsRight, arrowRightHint);
+      result.append(arrowsLeftContainer, arrowsRightContainer);
+      return result;
+    } else if (hint === 'enter_main') {
+      result.classList.add('enter-hint');
+      result.textContent = '[ Enter ]';
+      return result;
     }
     return result;
   };
   output.append(pageTitle, gameDescription, gameLevelAnnotation);
-  const keyHandlerStart = async (e: KeyboardEvent) => {
-    document.removeEventListener('keyup', keyHandlerStart);
-    if (e.key === 'Enter' && !button.disabled) {
-      await audioPlay('Start');
-      await startSprint();
-    }
-    if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
-      await audioPlay(e.key);
-      const levelBtns = document.getElementsByClassName('sprint-level') as HTMLCollectionOf<HTMLButtonElement>;
-      let indexActive = -1;
-      const indexLast = levelBtns.length - 1;
-      [...levelBtns].forEach((btn, index) => {
-        if (btn.classList.contains('active')) {
-          indexActive = index;
-          btn.classList.remove('active');
-        }
-      });
-      if (indexActive === -1) indexActive = e.key === 'ArrowLeft' ? 0 : indexLast;
-      else {
-        levelBtns[indexActive].classList.remove('active');
-        indexActive += e.key === 'ArrowLeft' ? -1 : 1;
-        if (indexActive === -1) indexActive = indexLast;
-        if (indexActive === indexLast + 1) indexActive = 0;
-      }
-      await initWordsListMenu(indexActive);
-      levelBtns[indexActive].classList.add('active');
-      if (button.disabled) removeDisabled(button);
-      document.addEventListener('keyup', keyHandlerStart);
-    }
-  };
+
   if (game.group && game.page) await initWordsListDictionary();
   else {
     const levelWrapper = addElement('div', 'sprint-levels', 'sprint-levels');
@@ -111,9 +79,8 @@ export const Sprint = async (params?: URLSearchParams): Promise<HTMLElement | vo
     };
     LEVELS.forEach(createLevels);
 
-    document.addEventListener('keyup', keyHandlerStart);
     const clearKeyHandlerStart = () => {
-      document.removeEventListener('keyup', keyHandlerStart);
+      document.removeEventListener('keyup', game.keyHandlerStart);
       window.removeEventListener('hashchange', clearKeyHandlerStart);
     };
     window.addEventListener('hashchange', clearKeyHandlerStart);
@@ -121,30 +88,6 @@ export const Sprint = async (params?: URLSearchParams): Promise<HTMLElement | vo
     output.append(levelWrapper, showHints('arrows_main'));
     setDisabled(button);
   }
-  const startSprint = async (): Promise<void> => {
-    document.removeEventListener('keyup', keyHandlerStart);
-    pageTitle.classList.add('out-left');
-    gameDescription.classList.add('out-right');
-    gameLevelAnnotation.classList.add('out-left');
-    button.classList.add('out-down');
-    document.querySelector('.arrows-left-container')?.classList.add('out-direct-left');
-    document.querySelector('.arrows-right-container')?.classList.add('out-direct-right');
-    document.querySelector('.enter-hint')?.classList.add('out-direct-bottom');
-    const levelBtns = document.getElementsByClassName('sprint-level') as HTMLCollectionOf<HTMLButtonElement>;
-    [...levelBtns].forEach((level, index) => {
-      if (level.classList.contains('active')) level.classList.add(`out-active`);
-      else level.classList.add(`out-level-${index % 2}`);
-    });
-    if (game.wordsList.length === 0) game.wordsList = await addWordsForSprint();
-    else {
-      shuffledArray(game.wordsList);
-      game.wordsList.forEach(word => game.answersList.push(word.wordTranslate));
-    }
-    setTimeout(async () => {
-      await audioPlay('Start2');
-      await showQuestion();
-    }, TIMEOUT_BEFORE_START);
-  };
   const showQuestion = async (): Promise<void> => {
     game.music = await audioPlay('Game');
     const scoreContainer = addElement('div', 'sprint-score-container');
@@ -160,12 +103,9 @@ export const Sprint = async (params?: URLSearchParams): Promise<HTMLElement | vo
     const btnsAnswersContainer = addElement('div', 'btns-answers-container') as HTMLElement;
     const btnYes = addTextElement('button', 'btn-yes', 'Верно') as HTMLButtonElement;
     const btnNo = addTextElement('button', 'btn-no', 'Неверно') as HTMLButtonElement;
-    game.keyHandlerQuestions = (e: KeyboardEvent) => {
-      if (game.isFinished) removeEventListener('keyup', game.keyHandlerQuestions);
-      else {
-        if (e.key === 'ArrowLeft') nextQuestion(false);
-        if (e.key === 'ArrowRight') nextQuestion(true);
-      }
+    const clearKeyHandler = () => {
+      document.removeEventListener('keyup', game.keyHandlerQuestions);
+      window.removeEventListener('hashchange', clearKeyHandler);
     };
     const changeQuestion = () => {
       game.question = game.wordsList[0].word;
@@ -189,10 +129,7 @@ export const Sprint = async (params?: URLSearchParams): Promise<HTMLElement | vo
         }
       }, 500);
     };
-    const clearKeyHandler = () => {
-      document.removeEventListener('keyup', game.keyHandlerQuestions);
-      window.removeEventListener('hashchange', clearKeyHandler);
-    };
+
     const nextQuestion = async (userAnswer: boolean): Promise<void> => {
       clearKeyHandler();
       setDisabled(btnNo);
@@ -216,7 +153,13 @@ export const Sprint = async (params?: URLSearchParams): Promise<HTMLElement | vo
         removeDisabled(btnYes);
       }
     };
-
+    game.keyHandlerQuestions = (e: KeyboardEvent) => {
+      if (game.isFinished) removeEventListener('keyup', game.keyHandlerQuestions);
+      else {
+        if (e.key === 'ArrowLeft') nextQuestion(false);
+        if (e.key === 'ArrowRight') nextQuestion(true);
+      }
+    };
     scoreContainer.append(scoreField, scoreEl);
     levelContainer.append(levelField, levelEl, scoreLevelEl);
     changeQuestion();
@@ -236,6 +179,30 @@ export const Sprint = async (params?: URLSearchParams): Promise<HTMLElement | vo
       levelContainer,
       questionContainer,
       btnsAnswersContainer);
+  };
+  const startSprint = async (): Promise<void> => {
+    document.removeEventListener('keyup', game.keyHandlerStart);
+    pageTitle.classList.add('out-left');
+    gameDescription.classList.add('out-right');
+    gameLevelAnnotation.classList.add('out-left');
+    button.classList.add('out-down');
+    document.querySelector('.arrows-left-container')?.classList.add('out-direct-left');
+    document.querySelector('.arrows-right-container')?.classList.add('out-direct-right');
+    document.querySelector('.enter-hint')?.classList.add('out-direct-bottom');
+    const levelBtns = document.getElementsByClassName('sprint-level') as HTMLCollectionOf<HTMLButtonElement>;
+    [...levelBtns].forEach((level, index) => {
+      if (level.classList.contains('active')) level.classList.add(`out-active`);
+      else level.classList.add(`out-level-${index % 2}`);
+    });
+    if (game.wordsList.length === 0) game.wordsList = await addWordsForSprint();
+    else {
+      shuffledArray(game.wordsList);
+      game.wordsList.forEach(word => game.answersList.push(word.wordTranslate));
+    }
+    setTimeout(async () => {
+      await audioPlay('Start2');
+      await showQuestion();
+    }, TIMEOUT_BEFORE_START);
   };
   const settingsMenu = (): HTMLDivElement => {
     const settingsContainer = addElement('div', 'settings') as HTMLDivElement;
@@ -309,12 +276,41 @@ export const Sprint = async (params?: URLSearchParams): Promise<HTMLElement | vo
     }
     return settingsContainer;
   };
-
   button.addEventListener('click', async () => {
     await audioPlay('Start');
     await startSprint();
   });
-
+  game.keyHandlerStart = async (e: KeyboardEvent) => {
+    document.removeEventListener('keyup', game.keyHandlerStart);
+    if (e.key === 'Enter' && !button.disabled) {
+      await audioPlay('Start');
+      await startSprint();
+    }
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+      await audioPlay(e.key);
+      const levelBtns = document.getElementsByClassName('sprint-level') as HTMLCollectionOf<HTMLButtonElement>;
+      let indexActive = -1;
+      const indexLast = levelBtns.length - 1;
+      [...levelBtns].forEach((btn, index) => {
+        if (btn.classList.contains('active')) {
+          indexActive = index;
+          btn.classList.remove('active');
+        }
+      });
+      if (indexActive === -1) indexActive = e.key === 'ArrowLeft' ? 0 : indexLast;
+      else {
+        levelBtns[indexActive].classList.remove('active');
+        indexActive += e.key === 'ArrowLeft' ? -1 : 1;
+        if (indexActive === -1) indexActive = indexLast;
+        if (indexActive === indexLast + 1) indexActive = 0;
+      }
+      await initWordsListMenu(indexActive);
+      levelBtns[indexActive].classList.add('active');
+      if (button.disabled) removeDisabled(button);
+      document.addEventListener('keyup', game.keyHandlerStart);
+    }
+  };
+  document.addEventListener('keyup', game.keyHandlerStart);
   output.append(button, showHints('enter_main'));
   output.append(settingsMenu());
   window.addEventListener('hashchange', clearGame);

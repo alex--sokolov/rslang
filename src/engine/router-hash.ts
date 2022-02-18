@@ -15,8 +15,8 @@ const router = async (route: string[] = routes['/'], params?: URLSearchParams): 
 const navigate = async () => {
   const url = location.hash.slice(1) || '/';
   const urlParsed = parseUrl(url);
-  let hash: string = urlParsed[0] ? urlParsed[0] : '/';
-  if (!routes.hasOwnProperty(hash)) hash = '404';
+  let hash: string = urlParsed[0] || '/';
+  if (!routes[hash]) hash = '404';
   setActiveLink(hash);
   if (urlParsed[1]) await router(routes[hash], urlParsed[1]);
   else await router(routes[hash]);

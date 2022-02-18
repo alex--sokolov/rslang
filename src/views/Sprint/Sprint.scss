@@ -5,19 +5,19 @@
   overflow: hidden;
 }
 .sprint-page-title {
-  padding-top: 80px;
+  padding-top: 40px;
   font-size: 3rem;
   color: #fff;
   text-align: center;
 }
 .sprint-description {
-  padding-top: 80px;
+  padding-top: 60px;
   font-size: 2rem;
   color: #fff;
   text-align: center;
 }
 .sprint-level-notes {
-  padding-top: 80px;
+  padding-top: 40px;
   font-size: 1.6rem;
   color: goldenrod;
   text-align: center;
@@ -28,7 +28,7 @@
   justify-content: center;
   width: 200px;
   height: 50px;
-  margin: 75px auto 20px;
+  margin: 40px auto 0px;
   background-color: goldenrod;
   font-size: 2rem;
   color: #fff;
@@ -57,7 +57,7 @@
 .sprint-levels {
   display: flex;
   justify-content: space-evenly;
-  margin: 60px auto;
+  margin: 40px auto 30px;
   width: 500px;
   .sprint-level {
     display: flex;
@@ -293,10 +293,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 40px auto 0;
+  margin: 0 auto;
   text-align: center;
   font-size: 10rem;
-  height: 150px;
+  height: 60px;
   width: 500px;
   .time-is-up {
     animation: appearBigScaleTimeIsUp 500ms;
@@ -846,8 +846,7 @@
       }
     }
     .arrow-left-hint {
-      margin-top: 25px;
-      padding-top: 15px;
+      margin-top: 20px;
       font-size: 2rem;
       color: #999;
       animation: ArrowHint 5s infinite;
@@ -881,8 +880,7 @@
       }
     }
     .arrow-right-hint {
-      margin-top: 25px;
-      padding-top: 15px;
+      margin-top: 20px;
       font-size: 2rem;
       color: #999;
       animation: ArrowHint 5s infinite;

@@ -20,7 +20,7 @@ export const showModal = async (element: HTMLElement, behavior?: string): Promis
   };
 
   if (modalOld) await removeModal(modalOld);
-  if (behavior !== 'sprint') {
+  if (behavior !== 'sprint' && behavior !== 'audiocall') {
     const overlayListener = overlay.addEventListener('click', async () => {
         await removeModal(modal, overlayListener);
       }, { once: true }

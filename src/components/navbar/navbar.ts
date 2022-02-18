@@ -6,7 +6,7 @@ import setActiveLink from '../../utils/set-active-link';
 const NavBar = () => {
   const nav = addElement('nav', 'navbar');
 
-  for (let hash in routes) {
+  for (const hash in routes) {
     if (hash === '404') continue;
     const linkItem = addElement('a', 'navbar-item');
     linkItem.setAttribute('href', `#${hash}`);

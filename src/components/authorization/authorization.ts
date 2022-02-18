@@ -42,9 +42,9 @@ const Authorization = (type = 'signin') => {
   return element;
 };
 
-const openAuthModal = () => {
+const openAuthModal = async () => {
   if (!document.querySelector('.auth-form')) {
-    showModal(Authorization('signin'));
+    await showModal(Authorization('signin'));
     const authForm = document.querySelector('.auth-form') as HTMLFormElement;
     authForm.setAttribute('data-type', 'signin');
   } else {
@@ -53,13 +53,11 @@ const openAuthModal = () => {
 
     if (authFormType === 'signin') {
       authForm.remove();
-      showModal(Authorization('register'));
+      await showModal(Authorization('register'));
       document.querySelector('.auth-form')?.setAttribute('data-type', 'register');
-      // eslint-disable-next-line no-debugger
-      //debugger;
     } else if (authFormType === 'register') {
       authForm.remove();
-      showModal(Authorization('signin'));
+      await showModal(Authorization('signin'));
       document.querySelector('.auth-form')?.setAttribute('data-type', 'signin');
     }
   }
