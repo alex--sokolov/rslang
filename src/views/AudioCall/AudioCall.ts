@@ -1,6 +1,6 @@
 import './AudioCall.scss';
 import { addElement, addTextElement } from '../../utils/add-element';
-import { getWords } from '../../components/api/api';
+import { getWords, updateTokens } from '../../components/api/api';
 import { getRandom } from '../../utils/get-random';
 import { AudioCallListenerHandlers, Word, WordExtended } from '../../interfaces';
 import playSound from './gameComponents/play-sound';

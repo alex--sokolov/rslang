@@ -50,7 +50,10 @@ export const signInApi = async (form: SignInParam): Promise<Response> => {
     },
     body: JSON.stringify(form),
   };
-  return fetch(`${baseUrl}signin`, param);
+  showPreloader();
+  const response = await fetch(`${baseUrl}signin`, param);
+  hidePreloader();
+  return response;
 };
 
 //returns boolean value for check successfully updating
