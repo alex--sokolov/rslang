@@ -216,8 +216,10 @@ export const finishSprint = async (): Promise<void> => {
     };
     const global = new CircularProgressBar('global', globalConfig);
     global.initial();
-  }, 500);
+  }, 1500);
+  setTimeout(async () => {
   await showModal(finalContainer, 'sprint');
+  }, 1000);
   await saveStatistics();
   await audioPlay('Finish');
   clearGame();
@@ -315,7 +317,7 @@ export const formCurrentWordResult = (correct: boolean) => {
   if (game.userId) {
     const curIndex = game.wordsListPlayed.length - 1;
     game.isUserWord = !!game.wordsListPlayed[curIndex].userWord;
-    let userWordPlayed = game.wordsListPlayed[curIndex].userWord || {};
+    const userWordPlayed = game.wordsListPlayed[curIndex].userWord || {};
 
     if (!userWordPlayed.optional) {
       userWordPlayed.optional = {
@@ -371,4 +373,3 @@ export const saveCurrentWordResult = async () => {
   if (game.isUserWord) await updateUserWord(game.userId, id, word);
   else await createUserWord(game.userId, id, word);
 };
-

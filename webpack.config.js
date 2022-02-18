@@ -31,21 +31,18 @@ module.exports = ({develop}) => ({
   },
   module: {
     rules: [
+      // {
+      //   test: /\.lib\.js$/,
+      //   use: [
+      //     {
+      //       loader: 'script-loader',
+      //     },
+      //   ]
+      // },
       {
-        test: /\.lib\.js$/,
-        use: [
-          {
-            loader: 'script-loader',
-            options: {
-              sourceMap: true,
-            },
-          },
-        ]
-      },
-      {
-        test: /\.ts$/,
+        test: /\.[tj]s$/,
         use: 'ts-loader',
-        exclude: /node_modules/,
+        exclude: [/node_modules/, /lib/],
       },
       {
         test: /\.(?:ico|gif|png|jpg|jpeg|svg)$/i,
@@ -85,7 +82,10 @@ module.exports = ({develop}) => ({
       favicon: './src/assets/favicon.ico',
     }),
     new CopyPlugin({
-      patterns: [{ from: './src/assets', to: 'assets' }],
+      patterns: [
+        { from: './src/assets', to: 'assets' },
+        { from: './src/lib', to: 'assets' },
+      ],
     }),
     new CleanWebpackPlugin({cleanStaleWebpackAssets: false}),
   ],

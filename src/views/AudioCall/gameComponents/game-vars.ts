@@ -13,4 +13,6 @@ const gameVars: AudioCallVars = {
   diffTimeNewWord: 86400000,
 };
 
+
+
 export default gameVars;

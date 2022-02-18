@@ -1,5 +1,5 @@
 import './css/styles.scss';
-import './lib/circular.lib.js';
+// import './lib/circular.lib.js';
 import { navigate } from './engine/router-hash';
 import Header from './components/header/header';
 import Footer from './components/footer/footer';
