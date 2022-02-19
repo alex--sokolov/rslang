@@ -1,14 +1,31 @@
+$color-audiocall-bg: #8fb0a5;
+$color-audiocall-yellow: #f7c041;
+$color-audiocall-red: #df362f;
+$color-audiocall-orange: #de693e;
+$color-audiocall-dark-grey: #242833;
+$color-audiocall-grey: #466263;
+$color-audiocall-light-grey: #90b1a6;
+
+
 .audio-call-page {
-  height: 90vh;
+  min-height: calc(100vh - 120px);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: space-evenly;
+  background-color: $color-audiocall-bg;
   .audio-call-page__caption {
-    font-size: 2rem;
+    color: #ffffff;
+    font-size: 3rem;
   }
   .audio-call-page__desc {
-    font-size: 1.2rem;
+    color: #ffffff;
+    font-size: 2rem;
+    padding: 0 2rem;
+    text-align: center;
+  }
+  .audio-call-page__warn {
+    color: #ffffff;
   }
 }
 
@@ -16,38 +33,83 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: 2rem;
   .difficulty__caption {
-    font-size: 1rem;
+    font-size: 1.6rem;
+    color: $color-audiocall-red;
   }
   .difficulty__list {
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: 10px;
+    gap: 1.2rem;
     li {
-      width: 2.5rem;
-      height: 2.5rem;
-      border: 1px black solid;
-      border-radius: 50%;
+      width: 4rem;
+      height: 4rem;
       display: flex;
       align-items: center;
       justify-content: center;
+      color: #fff;
+      font-size: 1.6rem;
+      border: 1px solid $color-audiocall-orange;
+      border-radius: 50%;
+      background-color: $color-audiocall-yellow;
       cursor: pointer;
+      transition: 0.25s;
+      &:hover {
+      font-size: 1.8rem;
+      font-weight: bold;
+      border: 2px solid #fff;
+      box-shadow: 0 0 10px #fff;
+      transition: 0.25s;
+      }
     }
-    li.active {
-      color: red;
-      border: 1px red solid;
+    .active {
+      font-size: 1.8rem;
+      font-weight: bold;
+      background-color: $color-audiocall-red;
+      border: 0;
+      box-shadow: 0 0 7px 5px #fff;
+      pointer-events: none;
+      cursor: inherit;
+      transition: 0.25s;
     }
   }
-  button {
-    padding: 3px 10px;
+  .start-audio-call {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 50px;
+    width: 200px;
+    background-color: $color-audiocall-orange;
+    text-transform: uppercase;
+    color: #fff;
+    font-size: 2rem;
+    border-radius: 25px;
+    outline: 1px solid rgba(255, 255, 255, 0.5);
     cursor: pointer;
+    transition: all 1250ms cubic-bezier(0.19, 1, 0.22, 1);
+    &:hover {
+      outline-color: rgba(255, 255, 255, 0);
+      outline-offset: 15px;
+      transition: 1s;
+    }
+    &:disabled {
+      background-color: #333333;
+      pointer-events: none;
+      cursor: inherit;
+    }
+    &:focus,active {
+      background-color: $color-audiocall-red;
+      box-shadow: 0 0 7px 5px #fff;
+      border: 0;
+      transition: 0.25s;
+    }
   }
 }
 
 .audio-call-game {
-  height: 90vh;
+  min-height: calc(100vh - 120px);
   width: 100%;
   overflow: hidden;
   position: relative;
@@ -93,7 +155,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 5px;
+    gap: 2rem;
     .slide__image {
       filter: blur(20px);
       width:300px;
@@ -114,6 +176,7 @@
       span {
         display: none;
         font-size: 2.5rem;
+        color: black;
       }
       img {
         width: 50px;
@@ -134,25 +197,50 @@
       justify-content: center;
       align-items: center;
       .slide__answers__item {
+        background-color: #ffffff;
         display: flex;
         justify-content: center;
         align-items: center;
-        font-size: 1.2rem;
+        font-size: 2rem;
         border: 1px solid black;
-        padding: 5px 12px;
-        border-radius: 3px;
+        border-radius: 1rem;
+        padding: 0.5rem 1rem;
         cursor: pointer;
       }
       .slide__answers__item.right {
-        background-color: rgba(19, 213, 50, 0.79);
+        background-color: #5fc47d;
+        color: #ffffff;
       }
       .slide__answers__item.wrong {
-        background-color: #ff5f5f;
+        background-color: $color-audiocall-red;
+        color: #ffffff;
       }
     }
   }
   .slide__button {
-    padding: 3px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 180px;
+    height: 50px;
+    background-color: $color-audiocall-orange;
+    text-transform: uppercase;
+    color: #fff;
+    font-size: 1.5rem;
+    border-radius: 25px;
+    outline: 1px solid rgba(255, 255, 255, 0.5);
     cursor: pointer;
+    transition: all 1250ms cubic-bezier(0.19, 1, 0.22, 1);
+    &:hover {
+      outline-color: rgba(255, 255, 255, 0);
+      outline-offset: 15px;
+      transition: 1s;
+      background-color: $color-audiocall-yellow;
+    }
+    &:disabled {
+      background-color: #333333;
+      pointer-events: none;
+      cursor: inherit;
+    }
   }
 }

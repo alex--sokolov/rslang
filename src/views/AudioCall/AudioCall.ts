@@ -1,6 +1,6 @@
 import './AudioCall.scss';
 import { addElement, addTextElement } from '../../utils/add-element';
-import { getWords, updateTokens } from '../../components/api/api';
+import { getWords } from '../../components/api/api';
 import { getRandom } from '../../utils/get-random';
 import { AudioCallListenerHandlers, Word, WordExtended } from '../../interfaces';
 import playSound from './gameComponents/play-sound';
@@ -12,10 +12,9 @@ import { getChapter, getGameLevel, getPage, getUserId, setGameLevel } from '../.
 import gameVars from './gameComponents/game-vars';
 import { levelToGroup, shuffle } from '../../utils/micro-helpers';
 import updateWord from './gameComponents/update-word';
+import { audioPlay } from '../../components/sprint/sprint-sounds';
 
-const handlers: AudioCallListenerHandlers = {
-
-};
+const handlers: AudioCallListenerHandlers = {};
 
 //for button on dictionary page >>>
 /*BUTTON_ON_DICTIONARY_PAGE.addEventListener('click', () => {
@@ -24,8 +23,9 @@ const handlers: AudioCallListenerHandlers = {
   root.appendChild(AudioCall('fromBook'));
 });*/
 
-function startAudioCall(callPlace?: string) {
+const startAudioCall = async (callPlace?: string) => {
   //if call from textbook >>> we need attribute!
+  await audioPlay('Start');
   const root = document.getElementById('root') as HTMLDivElement;
   const logInButton = document.querySelector('.navbar-auth') as HTMLButtonElement;
   const page: string = callPlace === 'fromBook' ? getPage() : String(getRandom(0, gameVars.AMOUNT_PAGES_OF_GROUP));
@@ -72,7 +72,7 @@ function startAudioCall(callPlace?: string) {
         gameContainer.appendChild(getEmptySlide());
       }
     }
-    function switchSlide() {
+    const switchSlide = async () => {
       const currentSlide = document.querySelector('.audio-call-slide.done') as HTMLElement;
       const nextSlide = document.querySelector('.audio-call-slide.hide') as HTMLElement;
       const audio = nextSlide.querySelector('.slide__audio-element') as HTMLAudioElement;
@@ -80,11 +80,14 @@ function startAudioCall(callPlace?: string) {
 
       currentSlide?.classList.add('completed');
       nextSlide?.classList.remove('hide');
-      if (counter !== 10) document.addEventListener('keydown', handlers.checkKeyboardAns);
+      if (counter !== 10) {
+        await audioPlay('NextQuestion');
+        document.addEventListener('keydown', handlers.checkKeyboardAns);
+      }
       document.removeEventListener('keydown', switchSlide);
       document.removeEventListener('keydown', handlers.switchSlideFinal);
-    }
-    function checkAnsBasicLogic(target: HTMLElement) {
+    };
+    const checkAnsBasicLogic = async (target: HTMLElement) => {
       //clear unnecessary handler
       const currentSlide = document.querySelector('.audio-call-slide') as HTMLElement;
       const ansArea = currentSlide.querySelector('.slide__answers') as HTMLDivElement;
@@ -99,6 +102,13 @@ function startAudioCall(callPlace?: string) {
       const currentAns: boolean = target.dataset.id === currentSlide.dataset.id;
       const rightAns = currentSlide.querySelector(`[data-id='${currentSlide.dataset.id}']`) as HTMLSpanElement;
       if (getUserId()) updateWord(targetArr[counter - 1], currentAns);
+
+      //play sound
+      if (currentAns) {
+        await audioPlay('AnswerTrue');
+      } else {
+        await audioPlay('AnswerFalse');
+      }
 
       gameVars.statistic.push(currentAns);
       if (currentAns) {
@@ -120,12 +130,12 @@ function startAudioCall(callPlace?: string) {
         nextBut.addEventListener('click', switchSlide);
         document.addEventListener('keydown', switchSlide);
       }
-    }
+    };
     handlers.checkMouseAns = (event: MouseEvent): void => {
       delCompletedSlide();
       const target = event.target as HTMLElement;
       if (target.dataset.id) checkAnsBasicLogic(target);
-    }
+    };
     handlers.checkKeyboardAns = (event: KeyboardEvent): void => {
       delCompletedSlide();
       if (gameVars.approved_KK.includes(event.keyCode)) {
@@ -136,11 +146,12 @@ function startAudioCall(callPlace?: string) {
             : (document.querySelector(`[data-key='${event.keyCode}']`) as HTMLElement);
         checkAnsBasicLogic(target);
       }
-    }
+    };
     handlers.switchSlideFinal = async () => {
-      switchSlide();
+      await audioPlay('Finish');
+      await switchSlide();
       await showModal(AudioCallResult(gameVars.statistic, targetArr), 'audiocall');
-    }
+    };
     function switchOnLoginMode() {
       if (!getUserId()) {
         const hideSlide = document.querySelector('.audio-call-slide.hide') as HTMLElement;
@@ -170,7 +181,7 @@ function startAudioCall(callPlace?: string) {
     document.addEventListener('keydown', handlers.checkKeyboardAns);
     logInButton.addEventListener('click', switchOnLoginMode); //remove listeners, when we logining
   });
-}
+};
 
 function addListeners(element: HTMLElement, callPlace?: string) {
   const levelsArea = element.querySelector('#audio-call-level') as HTMLUListElement;
@@ -182,16 +193,17 @@ function addListeners(element: HTMLElement, callPlace?: string) {
       item.classList.add('active');
     }
   });
-  function chooseLevel(event: MouseEvent) {
+  const chooseLevel = async (event: MouseEvent) => {
     const target = event.target as HTMLElement;
 
     if (target.dataset.level) {
+      await audioPlay('ChooseLevelClick');
       setGameLevel(target.dataset.level);
       levels.forEach((item: HTMLElement) => item.classList.remove('active'));
       target.classList.add('active');
       startButton.disabled = false;
     }
-  }
+  };
   levelsArea?.addEventListener('click', chooseLevel);
   startButton.addEventListener('click', startAudioCall.bind(null, callPlace));
 }
