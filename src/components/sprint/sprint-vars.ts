@@ -8,3 +8,4 @@ export const MULT_INC_TRIGGER = 4;
 export const MULT_INC_TRIGGER_STEP = 3;
 export const HARD_SERIES = 5;
 export const EASY_SERIES = 3;
+export const DAY_24H = 24 * 60 * 60 * 1000;

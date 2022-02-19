@@ -104,6 +104,9 @@ export interface SprintGameSettings {
   score: number;
   scoreMultiplier: number;
   correctSequence: number;
+  newWordsCount: number;
+  learnedWordsCount: number;
+  forgottenWordsCount: number;
   maxCorrectSequence: number;
   rightOrWrong: boolean;
   group: string;
@@ -185,17 +188,21 @@ export interface GameWordStatExtended extends GameWordStat {
 }
 
 export interface IStatisticsGames {
-  sprint?: GameWordStatExtended;
-  audioCall?: GameWordStatExtended;
+  sprint: GameWordStatExtended;
+  audioCall: GameWordStatExtended;
 }
 
 export interface IStatisticsOptions {
-  date: string;
+  date: Date;
   newWords: number;
   games: IStatisticsGames;
 }
 
 export interface IStatistics {
-  totalWordsPerDay?: number;
-  stats?: IStatisticsOptions[];
+  learnedWords: number;
+  optional: {
+    stat: {
+      stat: IStatisticsOptions[]
+    }
+  };
 }
