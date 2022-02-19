@@ -52,16 +52,15 @@ const openAuthModal = async () => {
     const authFormType = authForm.getAttribute('data-type');
 
     if (authFormType === 'signin') {
-      authForm.remove();
       await showModal(Authorization('register'));
       document.querySelector('.auth-form')?.setAttribute('data-type', 'register');
     } else if (authFormType === 'register') {
-      authForm.remove();
       await showModal(Authorization('signin'));
       document.querySelector('.auth-form')?.setAttribute('data-type', 'signin');
     }
   }
 
+  //обработчик нажатия "Войти"/"Зарегистрироваться"
   const submitForm = document.querySelector('.auth-form [type="submit"]') as HTMLInputElement;
   if (submitForm.dataset.mode === 'register') {
     submitForm.removeEventListener('click', signIn);
@@ -71,6 +70,8 @@ const openAuthModal = async () => {
     submitForm.removeEventListener('click', registration);
     submitForm.addEventListener('click', signIn);
   }
+
+  //обработчик переключения режимов вход/регистрация
   const authToggleBtn = document.getElementById('auth-toggle-btn') as HTMLButtonElement;
   authToggleBtn.removeEventListener('click', signOut);
   authToggleBtn.addEventListener('click', openAuthModal);

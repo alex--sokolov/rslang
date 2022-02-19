@@ -1,6 +1,7 @@
 import { routes } from './routes';
 import setActiveLink from '../utils/set-active-link';
 import { parseUrl } from '../utils/parse-url';
+import { addPreloader, showPreloader } from '../components/preloader/preloader';
 
 const router = async (route: string[] = routes['/'], params?: URLSearchParams): Promise<void> => {
   const currentView = await import(`../views/${route[0]}/${route[0]}`);

@@ -155,3 +155,16 @@ export interface AudioCallListenerHandlers {
   checkKeyboardAns?: any;
   switchSlideFinal?: any;
 }
+export interface Developer {
+  firstName: string;
+  lastName: string;
+  imgRef: string;
+  githubRef: string;
+  position: string;
+  responsibility: string[];
+}
+export interface TeamInfo {
+  sokolov: Developer;
+  kalanda: Developer;
+  grachev: Developer;
+}
