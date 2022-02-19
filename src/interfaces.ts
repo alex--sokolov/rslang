@@ -18,17 +18,6 @@ export interface Word {
   _id: string;
 }
 
-export interface GameWordStat {
-  right: number;
-  wrong: number;
-}
-
-export interface GamesWordStat {
-  sprint?: GameWordStat;
-  audioCall?: GameWordStat;
-  correctAnswerSeries?: number;
-}
-
 export interface WordOptional {
   addTime?: number;
   new?: boolean;
@@ -58,16 +47,20 @@ export interface SignInParam {
   email: string;
   password: string;
 }
+
 export interface User {
   name: string;
   email: string;
 }
+
 export interface PostUser extends User {
   password: string;
 }
+
 export interface ResponseUser extends User {
   id: string;
 }
+
 export interface AuthParam {
   message: string;
   token: string;
@@ -75,10 +68,12 @@ export interface AuthParam {
   userId: string;
   name: string;
 }
+
 export interface Tokens {
   token: string;
   refreshToken: string;
 }
+
 export interface FetchParam {
   method: string;
   withCredentials?: boolean;
@@ -155,6 +150,7 @@ export interface AudioCallListenerHandlers {
   checkKeyboardAns?: any;
   switchSlideFinal?: any;
 }
+
 export interface Developer {
   firstName: string;
   lastName: string;
@@ -163,8 +159,43 @@ export interface Developer {
   position: string;
   responsibility: string[];
 }
+
 export interface TeamInfo {
   sokolov: Developer;
   kalanda: Developer;
   grachev: Developer;
+}
+
+export interface GamesWordStat {
+  sprint?: GameWordStat;
+  audioCall?: GameWordStat;
+  correctAnswerSeries?: number;
+}
+
+export interface GameWordStat {
+  right: number;
+  wrong: number;
+}
+
+export interface GameWordStatExtended extends GameWordStat {
+  newWordsCountPerDay: number;
+  learnedWordsCountPerDay: number;
+  forgottenWordsCountPerDay: number;
+  maxCorrectSeriesPerDay: number;
+}
+
+export interface IStatisticsGames {
+  sprint?: GameWordStatExtended;
+  audioCall?: GameWordStatExtended;
+}
+
+export interface IStatisticsOptions {
+  date: string;
+  newWords: number;
+  games: IStatisticsGames;
+}
+
+export interface IStatistics {
+  totalWordsPerDay?: number;
+  stats?: IStatisticsOptions[];
 }
