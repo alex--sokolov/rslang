@@ -36,7 +36,7 @@ function playAudioTrigger(word: Word | WordExtended): void {
 }
 
 export const wordCardRender = (word: WordExtended): HTMLDivElement => {
-  // console.log(word);
+  console.log(word);
 
   const currentChapter = getChapter() || '0';
   const wordId: string = word.id || word._id;
@@ -66,6 +66,23 @@ export const wordCardRender = (word: WordExtended): HTMLDivElement => {
     'card__text',
     `${word.textExampleTranslate}`
   ) as HTMLParagraphElement;
+
+  const statHeading = addTextElement('h5', 'card__subheading', 'Ответы в играх') as HTMLHeadingElement;
+  const statData = `
+    <table>
+      <tr>
+        <th>Спринт</th>
+        <td>&#10004;: <span id="card__sprint-right-answer">0</span></td>
+        <td>&#10008;: <span id="card__sprint-wrong-answer">0</span></td>
+      </tr>
+      <tr>
+        <th>Аудиовызов</th>
+        <td>&#10004;: <span id="card__audiocall-right-answer">0</span></td>
+        <td>&#10008;: <span id="card__audiocall-wrong-answer">0</span></td>
+      </tr>
+    </table>
+  `;
+
   const voiceBtn = addElement('button', `card__voice-btn color-chapter-${currentChapter}`) as HTMLButtonElement;
   const voiceIcon = addElement('img', 'card__voice-icon') as HTMLImageElement;
   voiceIcon.src = voiceIco;
@@ -97,7 +114,11 @@ export const wordCardRender = (word: WordExtended): HTMLDivElement => {
 
   wordCardLeftSide.insertAdjacentHTML('afterbegin', image);
   btnsContainer.append(voiceBtn);
-  if (getUserId()) btnsContainer.append(hardBtn, learnedBtn);
+  if (getUserId()) {
+    btnsContainer.append(hardBtn, learnedBtn);
+    wordCardRightSide.append(statHeading);
+    wordCardRightSide.insertAdjacentHTML('beforeend', statData);
+  }
 
   wordCardContainer.append(wordCardLeftSide, wordCardRightSide);
 
