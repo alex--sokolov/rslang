@@ -15,6 +15,7 @@ import { toggleFullScreen } from '../../utils/fullscreen';
 
 
 export const Sprint = async (params?: URLSearchParams): Promise<HTMLElement | void> => {
+  clearGame();
   console.log('Start New Game!');
   initStore(params);
   const output = addElement('main', 'sprint-page', 'sprint-page') as HTMLElement;
@@ -190,10 +191,13 @@ export const Sprint = async (params?: URLSearchParams): Promise<HTMLElement | vo
     document.querySelector('.arrows-right-container')?.classList.add('out-direct-right');
     document.querySelector('.enter-hint')?.classList.add('out-direct-bottom');
     const levelBtns = document.getElementsByClassName('sprint-level') as HTMLCollectionOf<HTMLButtonElement>;
-    [...levelBtns].forEach((level, index) => {
-      if (level.classList.contains('active')) level.classList.add(`out-active`);
-      else level.classList.add(`out-level-${index % 2}`);
-    });
+    console.log(location);
+    if (levelBtns) {
+      [...levelBtns].forEach((level, index) => {
+        if (level.classList.contains('active')) level.classList.add(`out-active`);
+        else level.classList.add(`out-level-${index % 2}`);
+      });
+    }
     if (game.wordsList.length === 0) game.wordsList = await addWordsForSprint();
     else {
       shuffledArray(game.wordsList);
@@ -281,12 +285,17 @@ export const Sprint = async (params?: URLSearchParams): Promise<HTMLElement | vo
     await startSprint();
   });
   game.keyHandlerStart = async (e: KeyboardEvent) => {
-    document.removeEventListener('keyup', game.keyHandlerStart);
     if (e.key === 'Enter' && !button.disabled) {
+      document.removeEventListener('keyup', game.keyHandlerStart);
       await audioPlay('Start');
       await startSprint();
     }
-    if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+    console.log(game);
+
+    console.log(params);
+    if (!(params) && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
+      console.log('KEY_HANDLER LEFT RIGHT');
+      document.removeEventListener('keyup', game.keyHandlerStart);
       await audioPlay(e.key);
       const levelBtns = document.getElementsByClassName('sprint-level') as HTMLCollectionOf<HTMLButtonElement>;
       let indexActive = -1;
@@ -310,6 +319,9 @@ export const Sprint = async (params?: URLSearchParams): Promise<HTMLElement | vo
       document.addEventListener('keyup', game.keyHandlerStart);
     }
   };
+  console.log('ASSIGN KEYHANDLER');
+  console.log(location.hash);
+  console.log(location.hash.slice(1, 5));
   document.addEventListener('keyup', game.keyHandlerStart);
   output.append(button, showHints('enter_main'));
   output.append(settingsMenu());

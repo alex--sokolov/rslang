@@ -1,5 +1,5 @@
 import {
-  aggregatedWordsResponse,
+  aggregatedWordsResponse, IStatistics,
   PostUser,
   SignInParam,
   Tokens,
@@ -318,9 +318,8 @@ export const getUserAggregatedWords = async (
 };
 
 /* ------------- USERS/STATISTICS -------------- */
-// in this block every request below
-// if status===401 we need to update tokens
-export const getUserStat = async (userId: string): Promise<Response> => {
+
+export const getUserStat = async (userId: string): Promise<IStatistics | void> => {
   const param = {
     method: 'GET',
     withCredentials: true,
@@ -329,11 +328,31 @@ export const getUserStat = async (userId: string): Promise<Response> => {
       Accept: 'application/json',
     },
   };
-  return fetch(`${baseUrl}users/${userId}/statistics`, param);
+  const response: Response = await fetch(`${baseUrl}users/${userId}/statistics`, param);
+
+  let status401, res, result;
+  switch (response.status) {
+    case 200:
+      res = await response.json();
+      return { totalWordsPerDay: res[0].learnedWords, stats: res[0].optional };
+    case 401:
+      status401 = await updateTokens(userId);
+      if (status401) {
+        result = await getUserStat(userId);
+        return result;
+      }
+      else {
+        localStorage.clear();
+        await openAuthModal();
+      }
+      break;
+    default:
+      throw new Error('Something went wrong');
+  }
+
 };
 
-//TODO: define stat type!!!
-export const putUserStat = async (userId: string, stat: any): Promise<Response> => {
+export const putUserStat = async (userId: string, stat: IStatistics): Promise<Response> => {
   const param = {
     method: 'PUT',
     withCredentials: true,
