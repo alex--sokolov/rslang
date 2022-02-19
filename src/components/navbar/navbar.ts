@@ -8,7 +8,8 @@ const NavBar = () => {
 
   for (const hash in routes) {
     if (hash === '404') continue;
-    const linkItem = addElement('a', 'navbar-item');
+    const linkItem = addElement('a', 'navbar-item') as HTMLLinkElement;
+    if (hash === '/') linkItem.classList.add('navbar-logo');
     linkItem.setAttribute('href', `#${hash}`);
     const linkName = document.createTextNode(routes[hash][1]);
     linkItem.appendChild(linkName);
