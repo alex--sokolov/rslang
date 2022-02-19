@@ -9,10 +9,12 @@ import wordListRender from './wordListRender';
 import Pagination from 'tui-pagination';
 import { PaginationEvent } from '../../types';
 import './tui-pagination.scss';
+import { AudioCall } from '../AudioCall/AudioCall';
+import { Sprint } from '../Sprint/Sprint';
 
 let wordsArr: WordExtended[] = [];
 export let pagination: Pagination;
-export let hardPageCount: number;
+export let hardPageCount: number; // количество страниц для пагинации для раздела со сложными словами
 
 const paginationOptions = {
   totalItems: 30,
@@ -80,17 +82,32 @@ export const getWordsFunc = async (chapter: string, page: string) => {
 
 async function paginationListener(event: PaginationEvent) {
   const currentPage = event.page - 1;
-
   const currentChapter = getChapter();
-  wordsArr = (await getWordsFunc(currentChapter, `${currentPage}`)) as WordExtended[];
-
   const wordsContainerElement = document.querySelector('.dictionary-words-container') as HTMLDivElement;
+
+  wordsArr = (await getWordsFunc(currentChapter, `${currentPage}`)) as WordExtended[];
 
   wordsContainerElement.innerHTML = '';
   wordsContainerElement.append(wordCardRender(wordsArr[0]), wordListRender(wordsArr));
 
   setPage(`${currentPage}`);
   if (!getChapter()) setChapter('0');
+}
+
+async function listenGameBtns() {
+  const audioCallBtn = document.getElementById('gameAudioCallNavBtn') as HTMLLinkElement;
+  const sprintBtn = document.getElementById('gameSprintNavBtn') as HTMLLinkElement;
+
+  audioCallBtn.addEventListener('click', () => {
+    setTimeout(() => {
+      const root = document.getElementById('root') as HTMLElement;
+      root.innerHTML = '';
+      root.appendChild(AudioCall('fromBook'));
+    }, 0);
+  });
+
+  sprintBtn.href = `#gameSprint?group=${getChapter()}&page=${getPage()}`;
+
 }
 
 export const Dictionary = async (): Promise<HTMLElement> => {
@@ -114,6 +131,7 @@ export const Dictionary = async (): Promise<HTMLElement> => {
   pagination = new Pagination(paginationElement, paginationOptions);
   pagination.on('afterMove', async (event) => paginationListener(event));
 
-  setTimeout(getActiveChapter, 0);
+  setTimeout(getActiveChapter, 0); // ф-ия отмечает стилем выбранную главу
+  setTimeout(listenGameBtns, 0);
   return page;
 };

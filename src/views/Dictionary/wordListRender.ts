@@ -5,6 +5,8 @@ import { getChapter } from '../../utils/local-storage-helpers';
 
 const wordListRender = (words: WordExtended[]): HTMLDivElement => {
   const wordListContainer = addElement('div', 'word-list') as HTMLDivElement;
+  const audioCallBtn = document.getElementById('gameAudioCallNavBtn') as HTMLLinkElement;
+  const sprintBtn = document.getElementById('gameSprintNavBtn') as HTMLLinkElement;
   const currentChapter = getChapter() || '0';
   let learnedCount = 0;
   let hardCount = 0;
@@ -30,6 +32,12 @@ const wordListRender = (words: WordExtended[]): HTMLDivElement => {
 
     if (learnedCount === words.length || hardCount === words.length) {
       wordListContainer.classList.add(`word-list_${word.userWord?.difficulty}`);
+
+      audioCallBtn.classList.add('disabled');
+      sprintBtn.classList.add('disabled');
+    } else {
+      audioCallBtn.classList.remove('disabled');
+      sprintBtn.classList.remove('disabled');
     }
 
     wordButton.append(wordEng, wordTranslate);
