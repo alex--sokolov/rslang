@@ -1,7 +1,7 @@
 import { routes } from './routes';
 import setActiveLink from '../utils/set-active-link';
 import { parseUrl } from '../utils/parse-url';
-import { addPreloader, showPreloader } from '../components/preloader/preloader';
+import Footer from '../components/footer/footer';
 
 const router = async (route: string[] = routes['/'], params?: URLSearchParams): Promise<void> => {
   const currentView = await import(`../views/${route[0]}/${route[0]}`);
@@ -11,6 +11,9 @@ const router = async (route: string[] = routes['/'], params?: URLSearchParams): 
     root.innerText = '';
     root.append(pageContent);
   }
+
+  if (location.hash.slice(1, 5) === 'game') document.getElementById('footer')?.remove();
+  else if (!document.getElementById('footer')) root.after(Footer());
 };
 
 const navigate = async () => {

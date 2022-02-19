@@ -24,6 +24,8 @@ const saveStatistics = () => {
 export const clearGame = () => {
   game.music?.pause();
   clearInterval(game.timerInterval);
+  document.removeEventListener('keyup', game.keyHandlerStart);
+  document.removeEventListener('keyup', game.keyHandlerQuestions);
   window.removeEventListener('hashchange', clearGame);
   initStore();
   game.isFinished = true;

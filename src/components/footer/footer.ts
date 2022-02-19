@@ -3,7 +3,7 @@ import { addElement } from '../../utils/add-element';
 import rsicon from '../../assets/svg/rss.svg';
 
 const Footer = () => {
-  const footer = addElement('footer', 'footer');
+  const footer = addElement('footer', 'footer', 'footer');
   const HTMLCode = `
     <div class="container">
       <div class="footer__authors-wrapper">
