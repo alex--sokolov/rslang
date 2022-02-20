@@ -334,7 +334,7 @@ export const getUserStat = async (userId: string): Promise<IStatistics | void> =
   switch (response.status) {
     case 200:
       res = await response.json();
-      return { totalWordsPerDay: res[0].learnedWords, stats: res[0].optional };
+      return { learnedWords: res.learnedWords, optional: res.optional };
     case 401:
       status401 = await updateTokens(userId);
       if (status401) {
@@ -346,13 +346,15 @@ export const getUserStat = async (userId: string): Promise<IStatistics | void> =
         await openAuthModal();
       }
       break;
+    case 404:
+      return undefined;
     default:
       throw new Error('Something went wrong');
   }
 
 };
 
-export const putUserStat = async (userId: string, stat: IStatistics): Promise<Response> => {
+export const putUserStat = async (userId: string, stat: IStatistics): Promise<string | void> => {
   const param = {
     method: 'PUT',
     withCredentials: true,
@@ -363,5 +365,26 @@ export const putUserStat = async (userId: string, stat: IStatistics): Promise<Re
     },
     body: JSON.stringify(stat),
   };
-  return fetch(`${baseUrl}users/${userId}/statistics`, param);
+  const response: Response = await fetch(`${baseUrl}users/${userId}/statistics`, param);
+
+  let status401, result;
+  switch (response.status) {
+    case 200:
+      return `Статистиска Вашей игры сохранена.`;
+    case 401:
+      status401 = await updateTokens(userId);
+      if (status401) {
+        result = await putUserStat(userId, stat);
+        return result;
+      }
+      else {
+        localStorage.clear();
+        await openAuthModal();
+      }
+      break;
+    case 400:
+      return "К сожалению в настоящий момент Ваша статистика не может быть сохранена."
+    default:
+      throw new Error('Something went wrong');
+  }
 };

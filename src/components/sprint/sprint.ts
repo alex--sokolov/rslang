@@ -1,6 +1,7 @@
 import { game, initStore } from './sprint-store';
 import { getRandom } from '../../utils/calc';
 import {
+  DAY_24H,
   EASY_SERIES,
   HARD_SERIES,
   MULT_INC_TRIGGER,
@@ -9,26 +10,87 @@ import {
   TOTAL_PAGES_PER_GROUP,
   WORDS_PER_PAGE
 } from './sprint-vars';
-import { createUserWord, getUserAggregatedWords, getWords, updateUserWord } from '../api/api';
+import { createUserWord, getUserAggregatedWords, getUserStat, getWords, putUserStat, updateUserWord } from '../api/api';
 import { addElement, addTextElement } from '../../utils/add-element';
 import { WordsList } from '../../types';
 import { shuffledArray } from '../../utils/modify-arrays';
-import { IWordsListResult, SprintGameResults, UserWord, WordExtended } from '../../interfaces';
+import { IStatistics, IWordsListResult, SprintGameResults, UserWord, WordExtended } from '../../interfaces';
 import { audioPlay, wordPlay } from './sprint-sounds';
 import { showModal } from '../../utils/show-modal';
 import { exitFullScreen, isFullScreen } from '../../utils/fullscreen';
 
-const saveStatistics = () => {
-
+const formStatistics = (finalResultsData: SprintGameResults, oldStats?: IStatistics): IStatistics => {
+  let stats: IStatistics;
+  const statsObj = {
+    date: new Date(),
+    newWords: game.newWordsCount,
+    games: {
+      sprint: {
+        right: finalResultsData.right,
+        wrong: finalResultsData.wrong,
+        newWordsCountPerDay: game.newWordsCount,
+        learnedWordsCountPerDay: game.learnedWordsCount,
+        forgottenWordsCountPerDay: game.forgottenWordsCount,
+        maxCorrectSeriesPerDay: game.maxCorrectSequence
+      },
+      audioCall: {
+        right: 0,
+        wrong: 0,
+        newWordsCountPerDay: 0,
+        learnedWordsCountPerDay: 0,
+        forgottenWordsCountPerDay: 0,
+        maxCorrectSeriesPerDay: 0
+      }
+    }
+  };
+  if (oldStats) {
+    const oldDate = oldStats?.optional.stat.stat[oldStats?.optional.stat.stat.length - 1].date;
+    if (Date.now() - new Date(oldDate).getTime() <= DAY_24H) {
+      stats = Object.assign({}, oldStats);
+      const statsDay = stats.optional.stat.stat[stats.optional.stat.stat.length - 1];
+      const statsDaySprint = statsDay.games.sprint;
+      stats.learnedWords = oldStats.learnedWords + game.wordsListPlayed.length;
+      statsDay.newWords += game.newWordsCount;
+      statsDaySprint.right += finalResultsData.right;
+      statsDaySprint.wrong += finalResultsData.wrong;
+      statsDaySprint.newWordsCountPerDay += game.newWordsCount;
+      statsDaySprint.learnedWordsCountPerDay += game.learnedWordsCount;
+      statsDaySprint.forgottenWordsCountPerDay += game.forgottenWordsCount;
+      statsDaySprint.maxCorrectSeriesPerDay = Math.max(statsDaySprint.maxCorrectSeriesPerDay, game.maxCorrectSequence);
+    } else {
+      stats = Object.assign({}, oldStats);
+      stats.learnedWords = game.wordsListPlayed.length;
+      stats.optional.stat.stat.push(statsObj);
+    }
+  } else {
+    stats = {
+      learnedWords: game.wordsListPlayed.length,
+      optional: {
+        stat: {
+          stat: [statsObj]
+        }
+      }
+    };
+  }
+  return stats;
 };
-export const clearGame = () => {
+const saveStatistics = async (finalResultsData: SprintGameResults): Promise<void> => {
+  const oldStats = await getUserStat(game.userId);
+  const statistics = oldStats ? formStatistics(finalResultsData, oldStats) : formStatistics(finalResultsData);
+  console.log(statistics);
+  const statSave = await putUserStat(game.userId, statistics);
+  console.log(statSave);
+};
+export const clearGame = (): void => {
   game.music?.pause();
   clearInterval(game.timerInterval);
+  document.removeEventListener('keyup', game.keyHandlerStart);
+  document.removeEventListener('keyup', game.keyHandlerQuestions);
   window.removeEventListener('hashchange', clearGame);
   initStore();
   game.isFinished = true;
 };
-export const initWordsListDictionary = async () => {
+export const initWordsListDictionary = async (): Promise<void> => {
   if (!game.userId) game.wordsList = await getWords(game.group, game.page);
   else {
     game.isFromDictionary = true;
@@ -43,10 +105,8 @@ export const initWordsListDictionary = async () => {
   }
 };
 export const initWordsListMenu = async (group: number) => {
-  console.log('init1');
   game.page = `${getRandom(TOTAL_PAGES_PER_GROUP)}`;
   game.group = `${group}`;
-  console.log('init2');
   if (!game.userId) game.wordsList = await getWords(game.group, game.page);
   else {
     const res = await getUserAggregatedWords(
@@ -57,7 +117,6 @@ export const initWordsListMenu = async (group: number) => {
       `{"$and":[{"group":${game.group}}, {"page":${game.page}}]}`);
     game.wordsList = res ? res.wordsList : [];
   }
-  console.log('init3');
 };
 export const getWrongAnswer = (right: string, answersList: string[]): string => {
   const answers = [...answersList];
@@ -102,6 +161,8 @@ export const finishSprint = async (): Promise<void> => {
   document.removeEventListener('keyup', game.keyHandlerQuestions);
   game.isFinished = true;
   if (isFullScreen()) exitFullScreen(document);
+  const finalResultsData: SprintGameResults = calcFinalResults();
+  if (game.userId) await saveStatistics(finalResultsData);
   const finalContainer = addElement('div', 'sprint-final');
   const finalBtnsContainer = addElement('div', 'sprint-final-btns-container');
   const finalResultsBtn = addTextElement('button', 'btn-sprint-final', 'Результат');
@@ -112,7 +173,6 @@ export const finishSprint = async (): Promise<void> => {
   const finalResults = addElement('div', 'sprint-final-results');
   const finalWords = addElement('div', 'sprint-final-words');
 
-  const finalResultsData: SprintGameResults = calcFinalResults();
 
   const finalResultsScoreContainer = addTextElement('div', 'sprint-final-score-container', 'Score -');
   const finalResultsScore = addTextElement('span', 'sprint-final-score', `${finalResultsData.score}`);
@@ -218,9 +278,8 @@ export const finishSprint = async (): Promise<void> => {
     global.initial();
   }, 1500);
   setTimeout(async () => {
-  await showModal(finalContainer, 'sprint');
+    await showModal(finalContainer, 'sprint');
   }, 1000);
-  await saveStatistics();
   await audioPlay('Finish');
   clearGame();
 };
@@ -310,7 +369,6 @@ export const updateSequence = async (
     });
   }
 };
-
 export const formCurrentWordResult = (correct: boolean) => {
   game.userAnswers.push(correct);
   game.wordsListPlayed.push(game.wordsList[0]);
@@ -332,8 +390,8 @@ export const formCurrentWordResult = (correct: boolean) => {
       };
     }
     if (!userWordPlayed.optional.addTime) userWordPlayed.optional.addTime = Date.now();
-    userWordPlayed.optional.new = Date.now() - userWordPlayed.optional.addTime < 24 * 60 * 60 * 1000;
-
+    userWordPlayed.optional.new = Date.now() - userWordPlayed.optional.addTime <= DAY_24H;
+    if (userWordPlayed.optional.new) game.newWordsCount++;
     const games = userWordPlayed.optional.games || {
       sprint: {
         right: 0,
@@ -354,12 +412,15 @@ export const formCurrentWordResult = (correct: boolean) => {
     switch (userWordPlayed.difficulty) {
       case 'learned':
         if (!correct) userWordPlayed.difficulty = 'hard';
+        game.forgottenWordsCount++;
         break;
       case 'hard':
         if (games.correctAnswerSeries === HARD_SERIES) userWordPlayed.difficulty = 'learned';
+        game.learnedWordsCount++;
         break;
       case 'easy':
         if (games.correctAnswerSeries === EASY_SERIES) userWordPlayed.difficulty = 'learned';
+        game.learnedWordsCount++;
         break;
       default:
         userWordPlayed.difficulty = 'easy';

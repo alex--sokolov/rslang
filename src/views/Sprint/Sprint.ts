@@ -16,7 +16,6 @@ import { toggleFullScreen } from '../../utils/fullscreen';
 
 export const Sprint = async (params?: URLSearchParams): Promise<HTMLElement | void> => {
   clearGame();
-  console.log('Start New Game!');
   initStore(params);
   const output = addElement('main', 'sprint-page', 'sprint-page') as HTMLElement;
   const pageTitle = addTextElement('h1', 'sprint-page-title', 'Sprint Page') as HTMLElement;
@@ -112,10 +111,6 @@ export const Sprint = async (params?: URLSearchParams): Promise<HTMLElement | vo
       game.question = game.wordsList[0].word;
       game.rightAnswer = game.wordsList[0].wordTranslate;
       game.wrongAnswer = getWrongAnswer(game.rightAnswer, game.answersList);
-      console.log(game.wordsList);
-      console.log(game.answersList);
-      console.log('Question: ', game.question, game.rightAnswer, game.wrongAnswer);
-
       const questionEl = addTextElement('div', 'sprint-question', `${game.question}`) as HTMLElement;
       const equality = addTextElement('div', 'sprint-question-equality', ` это `) as HTMLElement;
       const answerEl = addElement('div', 'sprint-question-answer') as HTMLElement;
@@ -191,7 +186,6 @@ export const Sprint = async (params?: URLSearchParams): Promise<HTMLElement | vo
     document.querySelector('.arrows-right-container')?.classList.add('out-direct-right');
     document.querySelector('.enter-hint')?.classList.add('out-direct-bottom');
     const levelBtns = document.getElementsByClassName('sprint-level') as HTMLCollectionOf<HTMLButtonElement>;
-    console.log(location);
     if (levelBtns) {
       [...levelBtns].forEach((level, index) => {
         if (level.classList.contains('active')) level.classList.add(`out-active`);
@@ -236,7 +230,6 @@ export const Sprint = async (params?: URLSearchParams): Promise<HTMLElement | vo
     volumeContainer.append(volume, volumeRange);
     settingsContainer.append(closeGame, volumeContainer, fullScreenMode);
     if (!game.isVolumeRangeListened) {
-      console.log('volumeRange');
       volumeRange.addEventListener('input', function(e) {
         const value = this.value;
         if (+value <= 1) {
@@ -259,7 +252,6 @@ export const Sprint = async (params?: URLSearchParams): Promise<HTMLElement | vo
       game.isVolumeRangeListened = true;
     }
     const muteUnmute = () => {
-      console.log(game);
       game.volumeMuted = !game.volumeMuted;
       localStorage.setItem('sprintVolumeMuted', `${game.volumeMuted}`);
       if (game.music) game.music.muted = !game.music?.muted;
@@ -290,11 +282,7 @@ export const Sprint = async (params?: URLSearchParams): Promise<HTMLElement | vo
       await audioPlay('Start');
       await startSprint();
     }
-    console.log(game);
-
-    console.log(params);
     if (!(params) && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
-      console.log('KEY_HANDLER LEFT RIGHT');
       document.removeEventListener('keyup', game.keyHandlerStart);
       await audioPlay(e.key);
       const levelBtns = document.getElementsByClassName('sprint-level') as HTMLCollectionOf<HTMLButtonElement>;
@@ -319,9 +307,6 @@ export const Sprint = async (params?: URLSearchParams): Promise<HTMLElement | vo
       document.addEventListener('keyup', game.keyHandlerStart);
     }
   };
-  console.log('ASSIGN KEYHANDLER');
-  console.log(location.hash);
-  console.log(location.hash.slice(1, 5));
   document.addEventListener('keyup', game.keyHandlerStart);
   output.append(button, showHints('enter_main'));
   output.append(settingsMenu());

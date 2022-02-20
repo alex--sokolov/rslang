@@ -3,6 +3,7 @@
   color: #fff;
   background-color: darkcyan;
   overflow: hidden;
+  min-height: calc(100vh - 60px);
 }
 .sprint-page-title {
   padding-top: 40px;
@@ -1005,12 +1006,15 @@
   }
   .sprint-question-container {
     flex-direction: column;
-  }
-  .sprint-question-equality {
-    padding: 0;
+    .sprint-question-equality {
+      padding: 0;
+    }
   }
   .btns-answers-container {
-    margin: 10px auto;
+    margin: 0 auto;
+  }
+  .sprint-question-container {
+    min-height: 257px;
   }
 }
 @media(max-width: 600px) {
@@ -1023,9 +1027,10 @@
   }
   .btns-answers-container {
     width: auto;
+    margin-bottom: 20px;
   }
   .timer {
-    margin-top: 120px;
+    margin-top: 60px;
     font-size: 8rem;
     height: 100px;
     width: auto;
