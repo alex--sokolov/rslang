@@ -321,7 +321,7 @@ export const getUserAggregatedWords = async (
 
 /* ------------- USERS/STATISTICS -------------- */
 
-export const getUserStat = async (userId: string): Promise<IStatistics | void> => {
+export const getUserStat = async (userId: string): Promise<IStatistics | void | undefined> => {
   const param = {
     method: 'GET',
     withCredentials: true,
@@ -342,8 +342,7 @@ export const getUserStat = async (userId: string): Promise<IStatistics | void> =
       if (status401) {
         result = await getUserStat(userId);
         return result;
-      }
-      else {
+      } else {
         localStorage.clear();
         await openAuthModal();
       }
@@ -353,7 +352,6 @@ export const getUserStat = async (userId: string): Promise<IStatistics | void> =
     default:
       throw new Error('Something went wrong');
   }
-
 };
 
 export const putUserStat = async (userId: string, stat: IStatistics): Promise<string | void> => {
@@ -378,14 +376,13 @@ export const putUserStat = async (userId: string, stat: IStatistics): Promise<st
       if (status401) {
         result = await putUserStat(userId, stat);
         return result;
-      }
-      else {
+      } else {
         localStorage.clear();
         await openAuthModal();
       }
       break;
     case 400:
-      return "К сожалению в настоящий момент Ваша статистика не может быть сохранена."
+      return 'К сожалению в настоящий момент Ваша статистика не может быть сохранена.';
     default:
       throw new Error('Something went wrong');
   }
@@ -422,7 +419,6 @@ export const getUserSettings = async (userId: string): Promise<ISettings | void>
     default:
       throw new Error('Something went wrong');
   }
-
 };
 
 export const putUserSettings = async (userId: string, settings: ISettings): Promise<Response> => {
