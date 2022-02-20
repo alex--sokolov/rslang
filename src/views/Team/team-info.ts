@@ -1,5 +1,5 @@
 import { TeamInfo } from '../../interfaces';
-import dev1 from '../../assets/img/person1.png';
+import dev1 from '../../assets/img/grachev.jpg';
 import dev2 from '../../assets/img/person2.png';
 import kalanda from '../../assets/img/kalanda.png';
 

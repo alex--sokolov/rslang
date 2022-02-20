@@ -1,5 +1,7 @@
 import {
-  aggregatedWordsResponse, IStatistics,
+  aggregatedWordsResponse,
+  ISettings,
+  IStatistics,
   PostUser,
   SignInParam,
   Tokens,
@@ -387,4 +389,52 @@ export const putUserStat = async (userId: string, stat: IStatistics): Promise<st
     default:
       throw new Error('Something went wrong');
   }
+};
+
+/* ------------- USERS/SETTINGS -------------- */
+
+export const getUserSettings = async (userId: string): Promise<ISettings | void> => {
+  const param = {
+    method: 'GET',
+    withCredentials: true,
+    headers: {
+      Authorization: `Bearer ${getToken()}`,
+      Accept: 'application/json',
+    },
+  };
+  const response: Response = await fetch(`${baseUrl}users/${userId}/settings`, param);
+
+  let status401, res, result;
+  switch (response.status) {
+    case 200:
+      res = await response.json();
+      return { wordsPerDay: res[0].wordsPerDay, optional: res[0].optional };
+    case 401:
+      status401 = await updateTokens(userId);
+      if (status401) {
+        result = await getUserSettings(userId);
+        return result;
+      } else {
+        localStorage.clear();
+        await openAuthModal();
+      }
+      break;
+    default:
+      throw new Error('Something went wrong');
+  }
+
+};
+
+export const putUserSettings = async (userId: string, settings: ISettings): Promise<Response> => {
+  const param = {
+    method: 'PUT',
+    withCredentials: true,
+    headers: {
+      Authorization: `Bearer ${getToken()}`,
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(settings),
+  };
+  return fetch(`${baseUrl}users/${userId}/settings`, param);
 };

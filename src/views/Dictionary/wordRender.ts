@@ -35,6 +35,25 @@ function playAudioTrigger(word: Word | WordExtended): void {
   playAudio(0);
 }
 
+async function setStatistics(word: WordExtended) {
+  const sprintRightElement = document.getElementById('word-sprint-right-answer') as HTMLSpanElement;
+  const sprintWrongElement = document.getElementById('word-sprint-wrong-answer') as HTMLSpanElement;
+  const audioCallRightElement = document.getElementById('word-audiocall-right-answer') as HTMLSpanElement;
+  const audioCallWrongElement = document.getElementById('word-audiocall-wrong-answer') as HTMLSpanElement;
+
+  const sprintRightCount = word.userWord?.optional?.games?.sprint?.right;
+  if (sprintRightCount) sprintRightElement.textContent = `${sprintRightCount}`;
+
+  const sprintWrongCount = word.userWord?.optional?.games?.sprint?.wrong;
+  if (sprintWrongCount) sprintWrongElement.textContent = `${sprintWrongCount}`;
+
+  const audioCallRightCount = word.userWord?.optional?.games?.audioCall?.right;
+  if (audioCallRightCount) audioCallRightElement.textContent = `${audioCallRightCount}`;
+
+  const audioCallWrongCount = word.userWord?.optional?.games?.audioCall?.wrong;
+  if (audioCallWrongCount) audioCallWrongElement.textContent = `${audioCallWrongCount}`;
+}
+
 export const wordCardRender = (word: WordExtended): HTMLDivElement => {
   const currentChapter = getChapter() || '0';
   const wordId: string = word.id || word._id;
@@ -64,6 +83,27 @@ export const wordCardRender = (word: WordExtended): HTMLDivElement => {
     'card__text',
     `${word.textExampleTranslate}`
   ) as HTMLParagraphElement;
+
+  const statHeading = addTextElement('h5', 'card__subheading', 'Ответы в играх') as HTMLHeadingElement;
+  const statData = `
+    <table>
+      <tr>
+        <th>Спринт</th>
+        <td class="card__right-answer" title="Правильных ответов">&#10004;:
+          <span id="word-sprint-right-answer">0</span>
+        </td>
+        <td class="card__wrong-answer" title="Ошибок">&#10008;: <span id="word-sprint-wrong-answer">0</span></td>
+      </tr>
+      <tr>
+        <th>Аудиовызов</th>
+        <td class="card__right-answer" title="Правильных ответов">&#10004;:
+          <span id="word-audiocall-right-answer">0</span>
+        </td>
+        <td class="card__wrong-answer" title="Ошибок">&#10008;: <span id="word-audiocall-wrong-answer">0</span></td>
+      </tr>
+    </table>
+  `;
+
   const voiceBtn = addElement('button', `card__voice-btn color-chapter-${currentChapter}`) as HTMLButtonElement;
   const voiceIcon = addElement('img', 'card__voice-icon') as HTMLImageElement;
   voiceIcon.src = voiceIco;
@@ -89,20 +129,38 @@ export const wordCardRender = (word: WordExtended): HTMLDivElement => {
     textMeaningTranslate,
     subheading2,
     textExample,
-    textExampleTranslate,
-    btnsContainer
+    textExampleTranslate
   );
 
   wordCardLeftSide.insertAdjacentHTML('afterbegin', image);
   btnsContainer.append(voiceBtn);
-  if (getUserId()) btnsContainer.append(hardBtn, learnedBtn);
+  if (getUserId()) {
+    btnsContainer.append(hardBtn, learnedBtn);
+    wordCardRightSide.append(statHeading);
+    wordCardRightSide.insertAdjacentHTML('beforeend', statData);
+  }
 
+  wordCardRightSide.append(btnsContainer);
   wordCardContainer.append(wordCardLeftSide, wordCardRightSide);
 
+  // Проверка состояния слова и присвоения класса для стилизации, если необходимо
   if (word.userWord) {
     wordCardContainer.classList.add(word.userWord.difficulty as string);
-  } else {
-    // wordCardContainer.classList.remove('easy');
+  }
+
+  const wordAddedTime = word.userWord?.optional?.addTime;
+
+  if (wordAddedTime) {
+    const isWordNew = Date.now() - wordAddedTime < 24 * 60 * 60 * 1000;
+
+    if (isWordNew) {
+      const newMarkerContainer = addElement('div', 'card__new-marker') as HTMLDivElement;
+      const newMarkerText = addTextElement('span', 'card__new-text', 'new') as HTMLSpanElement;
+
+      wordCardContainer.classList.add('card_new');
+      newMarkerContainer.append(newMarkerText);
+      wordCardContainer.append(newMarkerContainer);
+    }
   }
 
   voiceBtn.addEventListener('click', () => {
@@ -111,6 +169,10 @@ export const wordCardRender = (word: WordExtended): HTMLDivElement => {
 
   hardBtn.addEventListener('click', (e) => lestenStateBtns(e, wordId, { difficulty: 'hard' }));
   learnedBtn.addEventListener('click', (e) => lestenStateBtns(e, wordId, { difficulty: 'learned' }));
+
+  setTimeout(() => {
+    setStatistics(word);
+  }, 0);
 
   return wordCardContainer;
 };

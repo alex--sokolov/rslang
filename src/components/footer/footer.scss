@@ -60,6 +60,26 @@
   }
 }
 
+@media (max-width: 920px) {
+  .footer .container {
+    grid-template-columns: 1fr 1fr 1fr;
+    padding: 15px 10px;
+  }
+
+  .footer__authors-wrapper {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 510px) {
+  .footer .container {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 20px;
+  }
+}
+
 
 .footer {
   background: linear-gradient(90deg, #b3ffdc, #8ec6f0);

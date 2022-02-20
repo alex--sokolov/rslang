@@ -206,3 +206,14 @@ export interface IStatistics {
     }
   };
 }
+
+export interface ILearnedHardPage {
+  group: number;
+  page: number;
+  type?: string;
+}
+
+export interface ISettings {
+  wordsPerDay?: number;
+  optional?: ILearnedHardPage[];
+}
