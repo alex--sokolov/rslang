@@ -3,42 +3,51 @@ import { addElement, addTextElement } from '../../utils/add-element';
 
 export const Home = (): HTMLElement => {
   const home = addElement('main', 'home-page container') as HTMLElement;
-  const contentBlock = addElement('div', 'home-page__content-block') as HTMLDivElement;
-  const pageTitle = addTextElement('h1', 'page-title home-page__logo', 'RS Lang') as HTMLElement;
+  const pageHeader = addElement('div', 'home-page__top-block') as HTMLDivElement;
+  const pageTitle = addTextElement('h1', 'home-page__logo', 'RS Lang') as HTMLElement;
 
   const mainDescription = addTextElement(
     'p',
     'home-page__main-description',
     'Это приложение поможет вам освоить 3600 наиболее часто употребляемых слов английского языка.'
   );
-  const featureTitle = addTextElement('p', 'home-page__feature-title', 'В наличии:');
+  const featureTitle = addTextElement('p', 'home-page__feature-title', 'Содержание и особенности');
 
   const featureList = `
-    <p class="home-page__feature-item">
-      <a class="home-page__link" href="/dictionary">Учебник</a>,
-      в котором ты можешь просматировать все слова, слушать произношение, и отмечать слова как сложные или изученные.
-    </p>
-    <p class="home-page__feature-item">Игра
-      <a class="home-page__link" href="/gameSprint">Спринт</a>,
-      где необходимо выбрать правильное слово из двух предложенных на время.
-      </p>
-    <p class="home-page__feature-item">Игра
-      <a class="home-page__link" href="/gameAudioCall">Аудиовызов</a>,
-      в которой необходимо выбрать произнесённое слово из шести предложенных вариантов.
-    </p>
-    <p class="home-page__feature-item">
-      <a class="home-page__link" href="/stat">Статистика</a>,
-      в которой ты можешь увидеть прогресс своего обучения.
-    </p>
+    <div class="home-page__feature-list">
+      <a class="home-page__feature-item feature feature_1" href="/#dictionary">
+        <h2 class="feature__title">Учебник</h2>
+        <p class="feature__description">
+          В нём вы можете просматировать все слова, слушать произношение, отмечать слова как сложные или изученные.
+        </p>
+      </a>
+      <a class="home-page__feature-item feature feature_2" href="/#gameSprint">
+        <h2 class="feature__title">Игра Спринт</h2>
+        <p class="feature__description">
+          Игра на время, где необходимо выбрать правильное слово из двух предложенных.
+          Раунд длится 30 секунд, угадайте как можно больше слов за это время.
+        </p>
+      </a>
+      <a class="home-page__feature-item feature feature_3" href="/#gameAudioCall">
+        <h2 class="feature__title">Игра Аудиовызов</h2>
+        <p class="feature__description">
+          Эта игра улучшит ваше восприятие на слух.
+          Каждый раунд содержит 10 слов и вам необходимо выбрать произнесённое слово из шести предложенных вариантов.
+        </p>
+      </a>
+      <a class="home-page__feature-item feature feature_4" href="/#stat">
+        <h2 class="feature__title">Статистика</h2>
+        <p class="feature__description">
+          На странице статистики отображается прогресс обучения.
+          Зарегистрируйтесь, чтобы ваш прогресс соханялся и вы могли отслеживать его.
+        </p>
+      </a>
+    </div>
   `;
 
-  const imageBlock = `<img class="home-page__img" src="../../assets/img/home-page-bg.jpg" alt="Просто картинка">`;
+  pageHeader.append(pageTitle, mainDescription);
 
-
-  contentBlock.append(pageTitle, mainDescription, featureTitle);
-  contentBlock.insertAdjacentHTML('beforeend', featureList);
-
-  home.append(contentBlock);
-  home.insertAdjacentHTML('beforeend', imageBlock);
+  home.append(pageHeader, featureTitle);
+  home.insertAdjacentHTML('beforeend', featureList);
   return home;
 };

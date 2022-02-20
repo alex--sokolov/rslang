@@ -44,6 +44,10 @@ time, mark, audio, video {
   url('../assets/fonts/roboto-v29-latin_cyrillic-regular.svg#Roboto') format('svg'); /* Legacy iOS */
 }
 
+body {
+  min-height: 100%;
+}
+
 .overlay {
   position: fixed;
   visibility: hidden;
@@ -100,7 +104,7 @@ main {
 }
 
 #root {
-  background: linear-gradient(180deg, #f3eac4, #b3ffdc);
+  background: $color-bg;
   background-size: 400% 400%;
 
   -webkit-animation: MainBGAmin 15s ease infinite;
@@ -128,8 +132,4 @@ main {
   0%{background-position:50% 0%}
   50%{background-position:51% 100%}
   100%{background-position:50% 0%}
-}
-
-body {
-  min-height: 100%;
 }
