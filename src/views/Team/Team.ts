@@ -5,6 +5,9 @@ import teamInfo from './team-info';
 import { getUserStat, putUserStat } from '../../components/api/api';
 import { getUserId } from '../../utils/local-storage-helpers';
 import { GameWordStatExtended, IStatistics, IStatisticsGames, IStatisticsOptions } from '../../interfaces';
+import { game } from '../../components/sprint/sprint-store';
+import { bestSeries, getObjectStatistic } from '../AudioCall/gameComponents/game-statistic';
+import gameVars from '../AudioCall/gameComponents/game-vars';
 
 export const Team = (): HTMLElement => {
   const page = addElement('main', 'team-page') as HTMLElement;
@@ -21,73 +24,26 @@ export const Team = (): HTMLElement => {
   xxx.addEventListener('click', async () => {
     /*const stat = await getUserStat(getUserId());
     console.log(stat);*/
-    const now: Date = new Date();
-    console.log(now);
 
-    /*const statisticObj: IStatistics = {
-      learnedWords: 0,
-      optional: {
-        stat: {
-          stat: [
-            {
-              date: now,
-              newWords: 1,
-              games: {
-                sprint: {
-                  right: 3,
-                  wrong: 11,
-                  newWordsCountPerDay: 5,
-                  learnedWordsCountPerDay: 4,
-                  forgottenWordsCountPerDay: 3,
-                  maxCorrectSeriesPerDay: 2,
-                },
-                audioCall: {
-                  right: 1,
-                  wrong: 1,
-                  newWordsCountPerDay: 1,
-                  learnedWordsCountPerDay: 1,
-                  forgottenWordsCountPerDay: 1,
-                  maxCorrectSeriesPerDay: 1,
-                },
-              },
-            },
-            {
-              date: now,
-              newWords: 2,
-              games: {
-                sprint: {
-                  right: 3,
-                  wrong: 11,
-                  newWordsCountPerDay: 5,
-                  learnedWordsCountPerDay: 4,
-                  forgottenWordsCountPerDay: 3,
-                  maxCorrectSeriesPerDay: 2,
-                },
-                audioCall: {
-                  right: 1,
-                  wrong: 1,
-                  newWordsCountPerDay: 1,
-                  learnedWordsCountPerDay: 1,
-                  forgottenWordsCountPerDay: 1,
-                  maxCorrectSeriesPerDay: 1,
-                },
-              },
-            },
-          ],
-        },
-      },
-    };*/
+    const answers: Array<boolean> = [false, false, true, true, false, false, true, true, true, true];
+    const status: Array<string> = [
+      'forgotten',
+      'forgotten',
+      'new',
+      'new',
+      'learned',
+      'new',
+      'new',
+      'learned',
+      'new',
+      'new',
+    ];
 
-    /*const arr: IStatistics[] = [];
-    function computeObj(obj: IStatistics) {
-      if (obj.optional?.next) {
-        computeObj(obj.optional.next);
-      }
-    }*/
+    const ans = await getObjectStatistic(answers, status);
+
+    console.log(ans);
 
     //await putUserStat(getUserId(), statisticObj);
-    const stat = await getUserStat(getUserId());
-    console.log(stat);
   });
 
   return page;

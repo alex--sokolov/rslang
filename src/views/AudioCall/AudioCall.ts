@@ -1,6 +1,6 @@
 import './AudioCall.scss';
 import { addElement, addTextElement } from '../../utils/add-element';
-import { getWords } from '../../components/api/api';
+import { getUserStat, getWords } from '../../components/api/api';
 import { getRandom } from '../../utils/get-random';
 import { AudioCallListenerHandlers, Word, WordExtended } from '../../interfaces';
 import playSound from './gameComponents/play-sound';
@@ -13,6 +13,8 @@ import gameVars from './gameComponents/game-vars';
 import { levelToGroup, shuffle } from '../../utils/micro-helpers';
 import updateWord from './gameComponents/update-word';
 import { audioPlay } from '../../components/sprint/sprint-sounds';
+import { game } from '../../components/sprint/sprint-store';
+import { getObjectStatistic, setStatistic } from './gameComponents/game-statistic';
 
 const handlers: AudioCallListenerHandlers = {};
 
@@ -32,6 +34,7 @@ const startAudioCall = async (callPlace?: string) => {
   const group: string = callPlace === 'fromBook' ? getChapter() : levelToGroup(getGameLevel());
 
   gameVars.statistic.length = 0;
+  gameVars.wordsStatus.length = 0;
   let counter = 0;
 
   //create container for slides
@@ -123,6 +126,10 @@ const startAudioCall = async (callPlace?: string) => {
       const nextBut = document.querySelector('.audio-game-button') as HTMLButtonElement;
       nextBut.disabled = false;
       if (counter === 10) {
+        //update or set game statistic
+        const targetStat = await getObjectStatistic(gameVars.statistic, gameVars.wordsStatus);
+        await setStatistic(targetStat);
+
         nextBut.innerText = 'Результаты';
         nextBut.addEventListener('click', handlers.switchSlideFinal);
         document.addEventListener('keydown', handlers.switchSlideFinal);
