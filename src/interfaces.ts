@@ -92,6 +92,7 @@ export interface AudioCallVars {
   AMOUNT_WORDS_IN_CHUNK: number;
   AUDIO_DELAY: number;
   statistic: Array<boolean>;
+  wordsStatus: Array<string>;
   approved_KK: Array<number>;
   mainKeys: Array<number>;
   numKeys: Array<number>;
@@ -202,8 +203,8 @@ export interface IStatistics {
   learnedWords: number;
   optional: {
     stat: {
-      stat: IStatisticsOptions[]
-    }
+      stat: IStatisticsOptions[];
+    };
   };
 }
 
