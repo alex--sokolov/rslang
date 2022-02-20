@@ -36,6 +36,7 @@ const wordListRender = (words: WordExtended[]): HTMLDivElement => {
     if (learnedCount === words.length || hardCount === words.length) {
       wordListContainer.classList.add(`word-list_${word.userWord?.difficulty}`);
 
+      // TODO: доделать сохранение изученных или сложных страниц
       const optional = [];
       optional.push({ group: +currentChapter, page: +currentPage, type: word.userWord?.difficulty });
       const userSettingObj = {
