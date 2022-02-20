@@ -188,6 +188,7 @@ function addListeners(element: HTMLElement, callPlace?: string) {
   const startButton = element.querySelector('#start-audio-call') as HTMLButtonElement;
   const levels = element.querySelectorAll('.difficulty__item') as NodeListOf<HTMLElement>;
   const activeLevel = getGameLevel();
+
   levels.forEach((item: HTMLElement) => {
     if (item.dataset.level === activeLevel) {
       item.classList.add('active');

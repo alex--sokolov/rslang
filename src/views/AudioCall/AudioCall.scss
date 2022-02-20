@@ -8,7 +8,7 @@ $color-audiocall-light-grey: #90b1a6;
 
 
 .audio-call-page {
-  min-height: calc(100vh - 120px);
+  min-height: calc(100vh - 60px);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -109,7 +109,7 @@ $color-audiocall-light-grey: #90b1a6;
 }
 
 .audio-call-game {
-  min-height: calc(100vh - 120px);
+  min-height: calc(100vh - 60px);
   width: 100%;
   overflow: hidden;
   position: relative;
