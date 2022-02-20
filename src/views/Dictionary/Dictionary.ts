@@ -10,7 +10,6 @@ import Pagination from 'tui-pagination';
 import { PaginationEvent } from '../../types';
 import './tui-pagination.scss';
 import { AudioCall } from '../AudioCall/AudioCall';
-import { Sprint } from '../Sprint/Sprint';
 
 let wordsArr: WordExtended[] = [];
 export let pagination: Pagination;
@@ -107,7 +106,6 @@ async function listenGameBtns() {
   });
 
   sprintBtn.href = `#gameSprint?group=${getChapter()}&page=${getPage()}`;
-
 }
 
 export const Dictionary = async (): Promise<HTMLElement> => {

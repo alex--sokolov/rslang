@@ -55,8 +55,6 @@ async function setStatistics(word: WordExtended) {
 }
 
 export const wordCardRender = (word: WordExtended): HTMLDivElement => {
-  console.log(word);
-
   const currentChapter = getChapter() || '0';
   const wordId: string = word.id || word._id;
 
@@ -131,8 +129,7 @@ export const wordCardRender = (word: WordExtended): HTMLDivElement => {
     textMeaningTranslate,
     subheading2,
     textExample,
-    textExampleTranslate,
-    btnsContainer
+    textExampleTranslate
   );
 
   wordCardLeftSide.insertAdjacentHTML('afterbegin', image);
@@ -143,6 +140,7 @@ export const wordCardRender = (word: WordExtended): HTMLDivElement => {
     wordCardRightSide.insertAdjacentHTML('beforeend', statData);
   }
 
+  wordCardRightSide.append(btnsContainer);
   wordCardContainer.append(wordCardLeftSide, wordCardRightSide);
 
   // Проверка состояния слова и присвоения класса для стилизации, если необходимо

@@ -1,13 +1,16 @@
 import { addElement } from '../../utils/add-element';
 import { WordExtended } from '../../interfaces';
 import { wordCardRender } from './wordRender';
-import { getChapter } from '../../utils/local-storage-helpers';
+import { getChapter, getPage, getUserId } from '../../utils/local-storage-helpers';
+import { putUserSettings } from '../../components/api/api';
 
 const wordListRender = (words: WordExtended[]): HTMLDivElement => {
   const wordListContainer = addElement('div', 'word-list') as HTMLDivElement;
   const audioCallBtn = document.getElementById('gameAudioCallNavBtn') as HTMLLinkElement;
   const sprintBtn = document.getElementById('gameSprintNavBtn') as HTMLLinkElement;
   const currentChapter = getChapter() || '0';
+  const currentPage = getPage() || '0';
+  const userId = getUserId();
   let learnedCount = 0;
   let hardCount = 0;
 
@@ -32,6 +35,15 @@ const wordListRender = (words: WordExtended[]): HTMLDivElement => {
 
     if (learnedCount === words.length || hardCount === words.length) {
       wordListContainer.classList.add(`word-list_${word.userWord?.difficulty}`);
+
+      const optional = [];
+      optional.push({ group: +currentChapter, page: +currentPage, type: word.userWord?.difficulty });
+      const userSettingObj = {
+        optional: optional,
+      };
+      // console.log(userSettingObj);
+
+      // putUserSettings(userId, userSettingObj);
 
       audioCallBtn.classList.add('disabled');
       sprintBtn.classList.add('disabled');
