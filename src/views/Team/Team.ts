@@ -85,7 +85,7 @@ export const Team = (): HTMLElement => {
       }
     }*/
 
-    await putUserStat(getUserId(), statisticObj);
+    //await putUserStat(getUserId(), statisticObj);
     const stat = await getUserStat(getUserId());
     console.log(stat);
   });
