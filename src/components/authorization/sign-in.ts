@@ -57,8 +57,7 @@ function signIn(event: Event): void {
           headerStats.textContent = 'Статистика';
           const navBar = document.getElementById('navbar');
           navBar?.append(headerStats);
-          console.log(navBar);
-          console.log(location.hash);
+
           if (location.hash === '#statistics') location.hash = '#';
           await navigate();
         });

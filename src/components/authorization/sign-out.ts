@@ -7,7 +7,6 @@ const signOut = async () => {
   const headerStats = document.getElementById('statisticsNavBtn') as HTMLLinkElement;
   headerStats.remove();
   if (location.hash === '#statistics') {
-    console.log('Stata');
     location.hash = '#';
   }
   localStorage.clear();

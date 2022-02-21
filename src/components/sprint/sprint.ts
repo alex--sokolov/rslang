@@ -100,7 +100,7 @@ export const initWordsListDictionary = async (): Promise<void> => {
       undefined,
       `${WORDS_PER_PAGE}`,
       `{"$and":[{"$or":[{"userWord.difficulty":"easy"}, {"userWord.difficulty":"hard"}, {"userWord":null}]},
-         {"group":${game.group}}, {"page":${game.page}}]}`);
+        {"group":${game.group}}, {"page":${game.page}}]}`);
     game.wordsList = res ? res.wordsList : [];
   }
 };

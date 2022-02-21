@@ -218,5 +218,9 @@ export interface ILearnedHardPage {
 
 export interface ISettings {
   wordsPerDay?: number;
-  optional?: ILearnedHardPage[];
+  optional?: {
+    memory: {
+      memory: ILearnedHardPage[];
+    };
+  };
 }
