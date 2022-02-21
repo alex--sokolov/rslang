@@ -59,6 +59,7 @@
 
 .stat-field {
   flex-direction: column;
+  margin-bottom: 10px;
 }
 .stat-field-value {
   justify-content: center;
@@ -110,6 +111,8 @@
   margin: 0px auto;
   text-align: center;
   font-size: 2rem;
+}
+
 .words-stats .sprint-stats {
   border-right: none;
 }
@@ -135,7 +138,12 @@
     gap: 8px;
   }
 
+  .stat-field {
+    // margin-bottom: 15px;
+  }
+
   .stat-field,
+  .stat-field-games,
   .stat-field-value {
     font-size: 1rem;
   }
@@ -150,8 +158,10 @@
   }
 }
 
-@media (max-width: 440px) {
+@media (max-width: 520px) {
   .stat-field {
-    margin-bottom: 10px;
+    margin-bottom: 30px;
   }
 }
+
+
