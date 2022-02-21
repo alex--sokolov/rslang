@@ -42,12 +42,17 @@ export const getObjectStatistic = async (answers: boolean[], wordStatus: string[
         maxCorrectSeriesPerDay,
       },
     },
+    newWordsDictionary: 0,
+    learnedWordsDictionary: 0,
   };
 
   if (oldStats) {
     const oldDate = oldStats?.optional.stat.stat[oldStats?.optional.stat.stat.length - 1].date;
 
-    if (Date.now() - new Date(oldDate).getTime() <= gameVars.diffTimeNewWord) {
+    const isNewDate =
+      Math.floor(new Date(oldDate).getTime() / gameVars.diffTimeNewWord) <
+      Math.floor(Date.now() / gameVars.diffTimeNewWord);
+    if (!isNewDate) {
       stats = Object.assign({}, oldStats);
       const statsDay = stats.optional.stat.stat[stats.optional.stat.stat.length - 1];
       const statsDayAudioCall = statsDay.games.audioCall;
@@ -60,6 +65,11 @@ export const getObjectStatistic = async (answers: boolean[], wordStatus: string[
       statsDayAudioCall.learnedWordsCountPerDay += learnedWordsCountPerDay;
       statsDayAudioCall.forgottenWordsCountPerDay += forgottenWordsCountPerDay;
       statsDayAudioCall.maxCorrectSeriesPerDay = maxCorrectSeriesPerDay;
+
+      statsDay.newWordsDictionary =
+        oldStats.optional.stat.stat[oldStats?.optional.stat.stat.length - 1].newWordsDictionary;
+      statsDay.learnedWordsDictionary =
+        oldStats.optional.stat.stat[oldStats?.optional.stat.stat.length - 1].learnedWordsDictionary;
     } else {
       stats = Object.assign({}, oldStats);
       stats.learnedWords = learnedWordsCountPerDay;
