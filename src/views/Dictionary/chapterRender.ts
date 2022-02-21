@@ -3,17 +3,23 @@ import wordListRender from './wordListRender';
 import { wordCardRender } from './wordRender';
 import { getWordsFunc, pagination, hardPageCount } from './Dictionary';
 import { setPage, setChapter, getUserId } from '../../utils/local-storage-helpers';
+import { renderGameLinks } from './gameLinks';
 
 async function chapterListener(i: number) {
   const wordsArr = await getWordsFunc(`${i}`, '0');
 
+  const dictionaryPage = document.querySelector('.dictionary-page') as HTMLDivElement;
   const wordsContainerElement = document.querySelector('.dictionary-words-container') as HTMLDivElement;
+  const gameLinksElement = document.getElementById('game-links-container') as HTMLDivElement;
 
   setPage('0');
   setChapter(`${i}`);
 
   wordsContainerElement.innerHTML = '';
   wordsContainerElement.append(wordCardRender(wordsArr[0]), wordListRender(wordsArr));
+
+  gameLinksElement.remove();
+  dictionaryPage.append(renderGameLinks());
 
   if (i === 6) {
     pagination.reset(hardPageCount);
