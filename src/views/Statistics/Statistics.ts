@@ -37,8 +37,8 @@ export const Statistics = async (): Promise<HTMLElement | void> => {
       const getGamesStat = () => {
         let sprintPercent = stat.games.sprint.right * 100 / (stat.games.sprint.right + stat.games.sprint.wrong);
         sprintPercent = isNaN(sprintPercent) ? 0 : +sprintPercent.toFixed(2);
-        let audioCallPercent = stat.games.audioCall.right * 100 / stat.games.audioCall.right
-          + stat.games.audioCall.wrong;
+        let audioCallPercent = stat.games.audioCall.right * 100 / (stat.games.audioCall.right
+          + stat.games.audioCall.wrong);
         audioCallPercent = isNaN(audioCallPercent) ? 0 : +audioCallPercent.toFixed(2);
 
         const template = `

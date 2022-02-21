@@ -5,6 +5,7 @@ import { signOut } from './sign-out';
 import { openAuthModal } from './authorization';
 import { showModal } from '../../utils/show-modal';
 import { navigate } from '../../engine/router-hash';
+import { addElement } from '../../utils/add-element';
 
 function signIn(event: Event): void {
   event.preventDefault();
@@ -50,6 +51,15 @@ function signIn(event: Event): void {
 
           document.getElementById('modal-window')?.remove();
           document.querySelector('.overlay')?.classList.remove('overlay-fadeIn');
+
+          const headerStats = addElement('a', 'navbar-item', 'statisticsNavBtn') as HTMLLinkElement;
+          headerStats.setAttribute('href', '#statistics');
+          headerStats.textContent = 'Статистика';
+          const navBar = document.getElementById('navbar');
+          navBar?.append(headerStats);
+          console.log(navBar);
+          console.log(location.hash);
+          if (location.hash === '#statistics') location.hash = '#';
           await navigate();
         });
         break;
