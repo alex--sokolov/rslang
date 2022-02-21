@@ -17,13 +17,6 @@ import { getObjectStatistic, setStatistic } from './gameComponents/game-statisti
 
 const handlers: AudioCallListenerHandlers = {};
 
-//for button on dictionary page >>>
-/*BUTTON_ON_DICTIONARY_PAGE.addEventListener('click', () => {
-  const root = document.getElementById('root') as HTMLElement;
-  root.innerHTML = '';
-  root.appendChild(AudioCall('fromBook'));
-});*/
-
 const startAudioCall = async (callPlace?: string) => {
   //if call from textbook >>> we need attribute!
   await audioPlay('Start');

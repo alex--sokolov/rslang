@@ -6,4 +6,4 @@ export const Error404 = (): HTMLElement => {
   const pageTitle =  addTextElement('h1', 'page-title', 'Error 404') as HTMLElement;
   page.append(pageTitle);
   return page;
-}
+};
