@@ -1,13 +1,13 @@
 import { TeamInfo } from '../../interfaces';
 import dev1 from '../../assets/img/grachev.jpg';
-import dev2 from '../../assets/img/person2.png';
+import sokolov from '../../assets/img/sokolov.jpg';
 import kalanda from '../../assets/img/kalanda.png';
 
 const teamInfo: TeamInfo = {
   sokolov: {
     firstName: 'Александр',
     lastName: 'Соколов',
-    imgRef: dev2,
+    imgRef: sokolov,
     githubRef: 'https://github.com/alex--sokolov',
     position: 'Team Leader',
     responsibility: ['Архитектура приложения, роутинг', 'Игра «Спринт»', 'Страница «Статистика»', 'Создание API'],

@@ -4,8 +4,14 @@ import { navigate } from '../../engine/router-hash';
 const signOut = async () => {
   const headerButton = document.querySelector('.navbar-auth') as HTMLFormElement;
   const headerName = document.querySelector('.navbar-name') as HTMLSpanElement;
-
+  const headerStats = document.getElementById('statisticsNavBtn') as HTMLLinkElement;
+  headerStats.remove();
+  if (location.hash === '#statistics') {
+    console.log('Stata');
+    location.hash = '#';
+  }
   localStorage.clear();
+
   headerButton.innerText = 'Войти';
   headerName.innerText = '';
   headerButton.removeEventListener('click', signOut);

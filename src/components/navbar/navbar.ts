@@ -5,7 +5,7 @@ import setActiveLink from '../../utils/set-active-link';
 import { getUserId } from '../../utils/local-storage-helpers';
 
 const NavBar = () => {
-  const nav = addElement('nav', 'navbar');
+  const nav = addElement('nav', 'navbar', 'navbar');
 
   for (const hash in routes) {
     if (hash === '404') continue;
