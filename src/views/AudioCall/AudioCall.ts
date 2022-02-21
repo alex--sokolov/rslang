@@ -8,7 +8,15 @@ import getAnswers from './gameComponents/answers-list';
 import { showModal } from '../../utils/show-modal';
 import { AudioCallResult } from './gameComponents/AudioCall-result';
 import { getEmptySlide, getSlide } from './gameComponents/game-slide';
-import { getChapter, getGameLevel, getPage, getUserId, setGameLevel } from '../../utils/local-storage-helpers';
+import {
+  getChapter,
+  getGameLevel,
+  getPage,
+  getUserId,
+  setChapter,
+  setGameLevel,
+  setPage,
+} from '../../utils/local-storage-helpers';
 import gameVars from './gameComponents/game-vars';
 import { levelToGroup, shuffle } from '../../utils/micro-helpers';
 import updateWord from './gameComponents/update-word';
@@ -22,6 +30,11 @@ const startAudioCall = async (callPlace?: string) => {
   await audioPlay('Start');
   const root = document.getElementById('root') as HTMLDivElement;
   const logInButton = document.querySelector('.navbar-auth') as HTMLButtonElement;
+  if (callPlace === 'fromBook' && !getPage()) {
+    setPage('0');
+    setChapter('0');
+  }
+
   const page: string = callPlace === 'fromBook' ? getPage() : String(getRandom(0, gameVars.AMOUNT_PAGES_OF_GROUP));
   const group: string = callPlace === 'fromBook' ? getChapter() : levelToGroup(getGameLevel());
 
