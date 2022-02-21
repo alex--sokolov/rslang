@@ -114,6 +114,10 @@ export const Dictionary = async (): Promise<HTMLElement> => {
   const wordList = wordListRender(wordsArr);
   mainContentContainer.append(wordList);
 
+  if (currentPage === '0' && paginationOptions.page !== 1) {
+    paginationOptions.page = 1;
+  }
+  
   pagination = new Pagination(paginationElement, paginationOptions);
   pagination.on('afterMove', async (event) => paginationListener(event));
 
