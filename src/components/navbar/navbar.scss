@@ -6,6 +6,32 @@
   display: flex;
   justify-content: space-between;
 }
+@media (max-width: 1024px) {
+  .navbar {
+    min-width: 40%;
+    position: absolute;
+    top: 60px;
+    z-index: 20;
+    flex-direction: column;
+    align-items: center;
+    transform: translateX(calc(-100% - 20px));
+    background-color: $color-second;
+    opacity: 0.95;
+    border-radius: 20px;
+    &.show {
+      transform: translateX(calc(0% - 20px));
+    }
+    &:hover {
+      transform: translateX(calc(0% - 20px));
+    }
+    .navbar-item {
+      line-height: 50px;
+    }
+    .navbar-item:not(:last-child) {
+      border-bottom: 1px black dashed;
+    }
+  }
+}
 
 .navbar-item {
   position: relative;

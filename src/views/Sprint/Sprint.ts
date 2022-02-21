@@ -5,14 +5,19 @@ import { shuffledArray } from '../../utils/modify-arrays';
 import { game, initStore } from '../../components/sprint/sprint-store';
 import { GAME_TIME, LEVELS, SCORE_ADDITION, TIMEOUT_BEFORE_START } from '../../components/sprint/sprint-vars';
 import {
-  addWordsForSprint, clearGame, formCurrentWordResult,
+  addWordsForSprint,
+  clearGame,
+  formCurrentWordResult,
   getWrongAnswer,
   initWordsListDictionary,
-  initWordsListMenu, saveCurrentWordResult, showTimer, updateScore, updateSequence
+  initWordsListMenu,
+  saveCurrentWordResult,
+  showTimer,
+  updateScore,
+  updateSequence,
 } from '../../components/sprint/sprint';
 import { audioPlay } from '../../components/sprint/sprint-sounds';
 import { toggleFullScreen } from '../../utils/fullscreen';
-
 
 export const Sprint = async (params?: URLSearchParams): Promise<HTMLElement | void> => {
   clearGame();
@@ -20,11 +25,14 @@ export const Sprint = async (params?: URLSearchParams): Promise<HTMLElement | vo
   const output = addElement('main', 'sprint-page', 'sprint-page') as HTMLElement;
   const pageTitle = addTextElement('h1', 'sprint-page-title', 'Sprint Page') as HTMLElement;
   const gameDescription = addElement('h2', 'sprint-description') as HTMLElement;
-  gameDescription.insertAdjacentHTML('afterbegin',
-    'Спринт - игра на скорость.<br> Цель - угадать как можно больше слов за 30 секунд.');
-  const gameLevelAnnotation = (game.group && game.page)
-    ? addTextElement('p', 'sprint-level-notes', 'Игра начнется с текущими словами из словаря')
-    : addTextElement('p', 'sprint-level-notes', 'Выберите уровень');
+  gameDescription.insertAdjacentHTML(
+    'afterbegin',
+    'Спринт - игра на скорость.<br> Цель - угадать как можно больше слов за 30 секунд.'
+  );
+  const gameLevelAnnotation =
+    game.group && game.page
+      ? addTextElement('p', 'sprint-level-notes', 'Игра начнется с текущими словами из словаря')
+      : addTextElement('p', 'sprint-level-notes', 'Выберите уровень');
   const button = addTextElement('button', 'sprint-start-button', 'Начать') as HTMLButtonElement;
   const showHints = (hint: string): HTMLDivElement => {
     const result = addElement('div', '') as HTMLDivElement;
@@ -64,13 +72,13 @@ export const Sprint = async (params?: URLSearchParams): Promise<HTMLElement | vo
       const chooseLevelHandler = async () => {
         await audioPlay('ChooseLevelClick');
         const levelBtns = document.getElementsByClassName('sprint-level') as HTMLCollectionOf<HTMLButtonElement>;
-        [...levelBtns].forEach(btn => {
+        [...levelBtns].forEach((btn) => {
           if (btn.classList.contains('active')) btn.classList.remove('active');
           setDisabled(btn);
         });
         if (!levelEl.classList.contains('active')) levelEl.classList.add('active');
         await initWordsListMenu(index);
-        [...levelBtns].forEach(btn => removeDisabled(btn));
+        [...levelBtns].forEach((btn) => removeDisabled(btn));
         removeDisabled(button);
       };
 
@@ -97,8 +105,11 @@ export const Sprint = async (params?: URLSearchParams): Promise<HTMLElement | vo
     const levelContainer = addElement('div', 'sprint-levelInGame-container') as HTMLDivElement;
     const levelField = addTextElement('div', 'sprint-levelInGame-text', 'Level -') as HTMLDivElement;
     const levelEl = addTextElement('div', 'sprint-levelInGame', `${game.scoreMultiplier}`) as HTMLDivElement;
-    const scoreLevelEl = addTextElement('div', 'sprint-score-level',
-      `(+${game.scoreMultiplier * SCORE_ADDITION})`) as HTMLDivElement;
+    const scoreLevelEl = addTextElement(
+      'div',
+      'sprint-score-level',
+      `(+${game.scoreMultiplier * SCORE_ADDITION})`
+    ) as HTMLDivElement;
     const questionContainer = addElement('div', 'sprint-question-container') as HTMLElement;
     const btnsAnswersContainer = addElement('div', 'btns-answers-container') as HTMLElement;
     const btnYes = addTextElement('button', 'btn-yes', 'Верно') as HTMLButtonElement;
@@ -174,7 +185,8 @@ export const Sprint = async (params?: URLSearchParams): Promise<HTMLElement | vo
       sequenceContainer,
       levelContainer,
       questionContainer,
-      btnsAnswersContainer);
+      btnsAnswersContainer
+    );
   };
   const startSprint = async (): Promise<void> => {
     document.removeEventListener('keyup', game.keyHandlerStart);
@@ -195,7 +207,7 @@ export const Sprint = async (params?: URLSearchParams): Promise<HTMLElement | vo
     if (game.wordsList.length === 0) game.wordsList = await addWordsForSprint();
     else {
       shuffledArray(game.wordsList);
-      game.wordsList.forEach(word => game.answersList.push(word.wordTranslate));
+      game.wordsList.forEach((word) => game.answersList.push(word.wordTranslate));
     }
     setTimeout(async () => {
       await audioPlay('Start2');
@@ -230,7 +242,7 @@ export const Sprint = async (params?: URLSearchParams): Promise<HTMLElement | vo
     volumeContainer.append(volume, volumeRange);
     settingsContainer.append(closeGame, volumeContainer, fullScreenMode);
     if (!game.isVolumeRangeListened) {
-      volumeRange.addEventListener('input', function(e) {
+      volumeRange.addEventListener('input', function (e) {
         const value = this.value;
         if (+value <= 1) {
           if (game.music) game.music.muted = true;
@@ -282,7 +294,7 @@ export const Sprint = async (params?: URLSearchParams): Promise<HTMLElement | vo
       await audioPlay('Start');
       await startSprint();
     }
-    if (!(params) && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
+    if (!params && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
       document.removeEventListener('keyup', game.keyHandlerStart);
       await audioPlay(e.key);
       const levelBtns = document.getElementsByClassName('sprint-level') as HTMLCollectionOf<HTMLButtonElement>;

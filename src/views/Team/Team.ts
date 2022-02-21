@@ -12,5 +12,6 @@ export const Team = (): HTMLElement => {
   container.appendChild(Dev(teamInfo.grachev));
   page.appendChild(description);
   page.appendChild(container);
+
   return page;
 };

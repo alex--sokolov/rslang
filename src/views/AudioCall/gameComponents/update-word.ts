@@ -47,10 +47,11 @@ const updateWord = (word: WordExtended, ans: boolean): void => {
   createUserWord(getUserId(), word.id, initOpt).then((response: Response | void) => {
     //status 417 >>> if word already exist
     if (response && response.status === 417) {
-      getUserWord(getUserId(), word.id).then((userWord: UserWordWithIds | void) => {
+      getUserWord(getUserId(), word.id).then(async (userWord: UserWordWithIds | void) => {
         if (userWord) {
           const series: number = userWord.optional?.games?.correctAnswerSeries || 0;
           const diff: string | undefined = getDiff(series, userWord.difficulty);
+
           if (userWord.optional?.addTime) {
             newField = isNew(date.getTime(), userWord.optional?.addTime, gameVars.diffTimeNewWord);
           }
@@ -65,6 +66,13 @@ const updateWord = (word: WordExtended, ans: boolean): void => {
           if (userWord.optional?.games?.correctAnswerSeries) {
             const old: number = userWord.optional?.games?.correctAnswerSeries;
             amount = ans ? old + 1 : 0;
+          }
+
+          if (userWord.difficulty === 'learned' && diff !== 'learned') {
+            gameVars.wordsStatus.push('forgotten');
+          }
+          if (userWord.difficulty !== 'learned' && diff === 'learned') {
+            gameVars.wordsStatus.push('learned');
           }
 
           const updateOpt: UserWord = {
@@ -85,9 +93,11 @@ const updateWord = (word: WordExtended, ans: boolean): void => {
               },
             },
           };
-          updateUserWord(getUserId(), word.id, updateOpt);
+          await updateUserWord(getUserId(), word.id, updateOpt);
         }
       });
+    } else {
+      gameVars.wordsStatus.push('new');
     }
   });
 };
