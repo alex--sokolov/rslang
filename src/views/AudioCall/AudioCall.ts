@@ -1,6 +1,6 @@
 import './AudioCall.scss';
 import { addElement, addTextElement } from '../../utils/add-element';
-import { getUserStat, getWords } from '../../components/api/api';
+import { getWords } from '../../components/api/api';
 import { getRandom } from '../../utils/get-random';
 import { AudioCallListenerHandlers, Word, WordExtended } from '../../interfaces';
 import playSound from './gameComponents/play-sound';
@@ -13,7 +13,6 @@ import gameVars from './gameComponents/game-vars';
 import { levelToGroup, shuffle } from '../../utils/micro-helpers';
 import updateWord from './gameComponents/update-word';
 import { audioPlay } from '../../components/sprint/sprint-sounds';
-import { game } from '../../components/sprint/sprint-store';
 import { getObjectStatistic, setStatistic } from './gameComponents/game-statistic';
 
 const handlers: AudioCallListenerHandlers = {};
@@ -127,8 +126,10 @@ const startAudioCall = async (callPlace?: string) => {
       nextBut.disabled = false;
       if (counter === 10) {
         //update or set game statistic
-        const targetStat = await getObjectStatistic(gameVars.statistic, gameVars.wordsStatus);
-        await setStatistic(targetStat);
+        if (getUserId()) {
+          const targetStat = await getObjectStatistic(gameVars.statistic, gameVars.wordsStatus);
+          await setStatistic(targetStat);
+        }
 
         nextBut.innerText = 'Результаты';
         nextBut.addEventListener('click', handlers.switchSlideFinal);

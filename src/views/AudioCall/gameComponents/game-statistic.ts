@@ -8,6 +8,23 @@ export const setStatistic = async (statData: IStatistics) => {
   await putUserStat(getUserId(), statData);
 };
 
+export const bestSeries = (arr: boolean[]): number => {
+  const series: number[] = [];
+  let counter = 0;
+  for (let i = 0; i < arr.length; i++) {
+    if (arr[i]) {
+      counter += 1;
+      if (i === arr.length - 1) {
+        series.push(counter);
+      }
+    } else {
+      series.push(counter);
+      counter = 0;
+    }
+  }
+  return series.length ? Math.max(...series) : 0;
+};
+
 export const getObjectStatistic = async (answers: boolean[], wordStatus: string[]): Promise<IStatistics> => {
   let oldStats: IStatistics | void | undefined;
   let stats: IStatistics;
@@ -86,21 +103,4 @@ export const getObjectStatistic = async (answers: boolean[], wordStatus: string[
     };
   }
   return stats;
-};
-
-export const bestSeries = (arr: boolean[]): number => {
-  const series: number[] = [];
-  let counter: number = 0;
-  for (let i = 0; i < arr.length; i++) {
-    if (arr[i]) {
-      counter += 1;
-      if (i === arr.length - 1) {
-        series.push(counter);
-      }
-    } else {
-      series.push(counter);
-      counter = 0;
-    }
-  }
-  return series.length ? Math.max(...series) : 0;
 };
