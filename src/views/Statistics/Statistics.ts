@@ -21,12 +21,12 @@ export const Statistics = async (): Promise<HTMLElement | void> => {
     const date = new Date(stat.date);
     if (Date.now() - date.getTime() > DAY_24H) {
       const noStatsDay = addTextElement('div', 'no-stats',
-        'К сожалению, за последние сутки Вы не принимали участие в играх');
+        'К сожалению, сегодня Вы не принимали участие в играх');
       output.append(noStatsDay);
     } else {
 
       const statTitle = addTextElement('div', 'stats-title',
-        'Статистика за последние 24 часа');
+        'Статистика за сегодня');
       const gamesStatsTitle = addTextElement('div', 'games-stats-title',
         'Cтатистикa по мини-играм: ');
       const gamesStats = addElement('div', 'games-stats', 'games-stats');
@@ -44,21 +44,21 @@ export const Statistics = async (): Promise<HTMLElement | void> => {
 
         const template = `
       <div class="games-stats-fields">
-        <div class="stat-field"></div>
-        <div class="stat-field">количество новых слов за день</div>
-        <div class="stat-field">процент правильных ответов</div>
-        <div class="stat-field">самая длинная серия правильных ответов</div>
+        <div class="stat-field-games"></div>
+        <div class="stat-field-games">количество новых слов за день</div>
+        <div class="stat-field-games field-border">процент правильных ответов</div>
+        <div class="stat-field-games">самая длинная серия правильных ответов</div>
       </div>
       <div class="sprint-stats">
         <div class="sprint-stats-title">Спринт</div>
-        <div class="stat-field-value">${stat.games.sprint.newWordsCountPerDay}</div>
-        <div class="stat-field-value">${sprintPercent}</div>
+        <div class="stat-field-value field-border">${stat.games.sprint.newWordsCountPerDay}</div>
+        <div class="stat-field-value field-border">${sprintPercent}</div>
         <div class="stat-field-value">${stat.games.sprint.maxCorrectSeriesPerDay}</div>
       </div>
       <div class="audioCall-stats">
         <div class="audioCall-stats-title">Аудиовызов</div>
-        <div class="stat-field-value">${stat.games.audioCall.newWordsCountPerDay}</div>
-        <div class="stat-field-value">${audioCallPercent}</div>
+        <div class="stat-field-value field-border">${stat.games.audioCall.newWordsCountPerDay}</div>
+        <div class="stat-field-value field-border">${audioCallPercent}</div>
         <div class="stat-field-value">${stat.games.audioCall.maxCorrectSeriesPerDay}</div>
       </div>`;
         return template;
@@ -75,20 +75,25 @@ export const Statistics = async (): Promise<HTMLElement | void> => {
       const percentEl = addElement('div', 'global');
       percentEl.setAttribute('data-pie', `{ "percent": ${percent} }`);
       const percentContainer = addTextElement('div', 'stat-percent',
-        'Процент правильных ответов за день');
+        'Процент правильных ответов в играх');
       percentContainer.append(percentEl);
 
       const getWordsStat = () => {
         const template = `
       <div class="words-stats-fields">
-        <div class="stat-field">количество новых слов за день</div>
-        <div class="stat-field">количество изученных слов за день</div>
-        <div class="stat-field">количество забытых слов за день<br>
-        (потерявших статус "изученное")</div>
+        <div class="stat-field">количество новых слов за день
+          <div class="field-addInfo">(впервые участвовавшие в играх + добавленные из Учебника)</div>
+        </div>
+        <div class="stat-field field-border">количество изученных слов за день
+          <div class="field-addInfo">(правильные ответы в играх + добавленные из Учебника)</div>
+        </div>
+        <div class="stat-field">количество забытых слов за день
+          <div class="field-addInfo">(потерявших статус "изученное" из-за ошибки в игре)</div>
+        </div>
       </div>
       <div class="sprint-stats">
-        <div class="stat-field-value">${newWords}</div>
-        <div class="stat-field-value">${learnedWords}</div>
+        <div class="stat-field-value">${newWords + stat.newWordsDictionary}</div>
+        <div class="stat-field-value field-border">${learnedWords + stat.learnedWordsDictionary}</div>
         <div class="stat-field-value">${forgotten}</div>
       </div>`;
         return template;

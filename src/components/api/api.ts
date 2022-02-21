@@ -145,6 +145,8 @@ export const getUserWords = async (userId: string): Promise<UserWordWithIds | vo
         await openAuthModal();
       }
       break;
+    case 404:
+      return undefined;
     default:
       throw new Error('Something went wrong');
   }
@@ -205,6 +207,8 @@ export const getUserWord = async (userId: string, wordId: string): Promise<UserW
         await openAuthModal();
       }
       break;
+    case 404:
+      return undefined;
     default:
       throw new Error('Something went wrong');
   }

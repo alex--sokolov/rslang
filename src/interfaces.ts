@@ -196,6 +196,8 @@ export interface IStatisticsOptions {
   date: Date;
   newWords: number;
   games: IStatisticsGames;
+  newWordsDictionary: number;
+  learnedWordsDictionary: number;
 }
 
 export interface IStatistics {
