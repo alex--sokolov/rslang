@@ -198,22 +198,34 @@ $color-audiocall-light-grey: #90b1a6;
       align-items: center;
       .slide__answers__item {
         background-color: #ffffff;
-        display: flex;
-        justify-content: center;
-        align-items: center;
+        display: block;
+        text-align: center;
         font-size: 2rem;
-        border: 1px solid black;
-        border-radius: 1rem;
+        border: 2px solid $color-main;
+        border-radius: 1.8rem;
         padding: 0.5rem 1rem;
         cursor: pointer;
       }
+      .slide__answers__item:first-letter {
+        height: 100%;
+        padding-right: 7px;
+        color: $color-chapter-6;
+        border-right: 2px solid $color-main;
+      }
+      .slide__answers__item:hover {
+        box-shadow: 0px 2px 5px 2px rgba(0, 0, 0, 0.3);
+      }
+      .slide__answers__item.right,
+      .slide__answers__item.wrong {
+        color: #ffffff;
+        border-color: #ffffff;
+        box-shadow: 0px 2px 5px 2px rgba(0, 0, 0, 0.3);
+      }
       .slide__answers__item.right {
         background-color: #5fc47d;
-        color: #ffffff;
       }
       .slide__answers__item.wrong {
         background-color: $color-audiocall-red;
-        color: #ffffff;
       }
     }
   }
@@ -242,5 +254,26 @@ $color-audiocall-light-grey: #90b1a6;
       pointer-events: none;
       cursor: inherit;
     }
+  }
+}
+
+@media (max-width: 880px) {
+  .audio-call-slide .slide__answers .slide__answers-row .slide__answers__item  {
+    font-size: 1.3rem;
+    padding: 0.24rem 0.5rem;
+  }
+}
+
+@media (max-width: 560px) {
+  .difficulty .difficulty__list {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+  .audio-call-slide .slide__answers {
+    gap: 10px;
+  }
+  .audio-call-slide .slide__answers .slide__answers-row {
+    flex-direction: column;
+    gap: 10px;
   }
 }

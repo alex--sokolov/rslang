@@ -1028,6 +1028,7 @@
   .btns-answers-container {
     width: auto;
     margin-bottom: 20px;
+    gap: 15px;
   }
   .timer {
     margin-top: 60px;
@@ -1049,5 +1050,20 @@
   }
   .sprint-score {
     font-size: 4rem;
+  }
+  .sprint-levels {
+    justify-content: space-between;
+    gap: 15px;
+    flex-wrap: wrap;
+  }
+  .sprint-sequence-container {
+    width: auto;
+    max-width: 450px;
+  }
+}
+
+@media (max-width: 740px) {
+  .sprint-page {
+    padding: 0 20px;
   }
 }
