@@ -11,7 +11,6 @@ export const Statistics = async (): Promise<HTMLElement | void> => {
   const stats = await getUserStat(userId);
   console.log(stats);
 
-
   if (!stats) {
     const noStats = addTextElement('div', 'no-stats',
       'К сожалению, в настоящий момент статистика недоступна.');
@@ -19,7 +18,7 @@ export const Statistics = async (): Promise<HTMLElement | void> => {
   } else {
     const stat = stats.optional.stat.stat[stats.optional.stat.stat.length - 1];
     const date = new Date(stat.date);
-    if (Date.now() - date.getTime() > DAY_24H) {
+    if (Math.floor(date.getTime() / DAY_24H) < Math.floor(Date.now()  / DAY_24H)) {
       const noStatsDay = addTextElement('div', 'no-stats',
         'К сожалению, сегодня Вы не принимали участие в играх');
       output.append(noStatsDay);

@@ -30,7 +30,7 @@ export async function lestenStateBtns(e: Event, wordId: string, wordState: UserW
   }
 
   const formStats = (newWordCountAdd: number, oldStats?: IStatistics): IStatistics => {
-    console.log("Новое слово: ", newWordCountAdd);
+
     let stats: IStatistics;
     const statsObj = {
       date: new Date(),
@@ -84,10 +84,7 @@ export async function lestenStateBtns(e: Event, wordId: string, wordState: UserW
     await setDefaultWordState();
   } else {
     const isWordAlreadyAdded = await getUserWord(userId, wordId);
-    console.log(' - - - -- -  -');
-    console.log(targetState);
-    console.log(isWordAlreadyAdded);
-    console.log(' - - - -- -  -');
+
     if (isWordAlreadyAdded) {
 
       await updateWord();
