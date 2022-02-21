@@ -6,8 +6,6 @@ import { putUserSettings } from '../../components/api/api';
 
 const wordListRender = (words: WordExtended[]): HTMLDivElement => {
   const wordListContainer = addElement('div', 'word-list') as HTMLDivElement;
-  const audioCallBtn = document.getElementById('gameAudioCallNavBtn') as HTMLLinkElement;
-  const sprintBtn = document.getElementById('gameSprintNavBtn') as HTMLLinkElement;
   const currentChapter = getChapter() || '0';
   const currentPage = getPage() || '0';
   const userId = getUserId();
@@ -33,28 +31,34 @@ const wordListRender = (words: WordExtended[]): HTMLDivElement => {
       if (word.userWord.difficulty === 'hard') hardCount += 1;
     }
 
-    if (learnedCount === words.length || hardCount === words.length) {
-      wordListContainer.classList.add(`word-list_${word.userWord?.difficulty}`);
-
-      // TODO: доделать сохранение изученных или сложных страниц
-      const optional = [];
-      optional.push({ group: +currentChapter, page: +currentPage, type: word.userWord?.difficulty });
-      const userSettingObj = {
-        optional: optional,
-      };
-      // console.log(userSettingObj);
-
-      // putUserSettings(userId, userSettingObj);
-
-      audioCallBtn.classList.add('disabled');
-      sprintBtn.classList.add('disabled');
-    } else {
-      audioCallBtn.classList.remove('disabled');
-      sprintBtn.classList.remove('disabled');
-    }
-
     wordButton.append(wordEng, wordTranslate);
     wordListContainer.append(wordButton);
+
+    function setStateForList() {
+      const audioCallLink = document.getElementById('audioCall-link') as HTMLLinkElement;
+      const sprintLink = document.getElementById('sprint-link') as HTMLLinkElement;
+      if (learnedCount === words.length || hardCount === words.length) {
+        wordListContainer.classList.add(`word-list_${word.userWord?.difficulty}`);
+
+        // TODO: доделать сохранение изученных или сложных страниц
+        const optional = [];
+        optional.push({ group: +currentChapter, page: +currentPage, type: word.userWord?.difficulty });
+        const userSettingObj = {
+          optional: optional,
+        };
+        // console.log(userSettingObj);
+
+        // putUserSettings(userId, userSettingObj);
+
+        audioCallLink.classList.add('disabled');
+        sprintLink.classList.add('disabled');
+      } else {
+        audioCallLink.classList.remove('disabled');
+        sprintLink.classList.remove('disabled');
+      }
+    }
+
+    setTimeout(setStateForList, 0);
 
     wordButton.addEventListener('click', () => {
       const activeWordBtn = wordListContainer.querySelector('.word-item_active') as HTMLButtonElement;

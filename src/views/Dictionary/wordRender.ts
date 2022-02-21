@@ -58,7 +58,7 @@ export const wordCardRender = (word: WordExtended): HTMLDivElement => {
   const currentChapter = getChapter() || '0';
   const wordId: string = word.id || word._id;
 
-  const wordCardContainer = addElement('div', `word-card card card--chapter-${currentChapter}`) as HTMLDivElement;
+  const wordCardContainer = addElement('div', `word-card card card_chapter-${currentChapter}`) as HTMLDivElement;
   const wordCardLeftSide = addElement('div', 'card__left-side') as HTMLDivElement;
   const wordCardRightSide = addElement('div', 'card__right-side') as HTMLDivElement;
   const btnsContainer = addElement('div', 'card__btns-container') as HTMLDivElement;

@@ -10,6 +10,7 @@ import Pagination from 'tui-pagination';
 import { PaginationEvent } from '../../types';
 import './tui-pagination.scss';
 import { AudioCall } from '../AudioCall/AudioCall';
+import { renderGameLinks } from './gameLinks';
 
 let wordsArr: WordExtended[] = [];
 export let pagination: Pagination;
@@ -46,7 +47,7 @@ const getCurrPage = (): string => {
 };
 
 // ф-ия отмечает стилями выбранную главу
-const getActiveChapter = () => {
+const markActiveChapter = () => {
   const currentChapter = getChapter() || '0';
   const targetRadioElement = document.getElementById(`chapter-${currentChapter}`) as HTMLInputElement;
   targetRadioElement.checked = true;
@@ -83,6 +84,7 @@ async function paginationListener(event: PaginationEvent) {
   const currentPage = event.page - 1;
   const currentChapter = getChapter() || '0';
   const wordsContainerElement = document.querySelector('.dictionary-words-container') as HTMLDivElement;
+  const sprintLink = document.getElementById('sprint-link') as HTMLLinkElement;
 
   wordsArr = (await getWordsFunc(currentChapter, `${currentPage}`)) as WordExtended[];
 
@@ -91,21 +93,8 @@ async function paginationListener(event: PaginationEvent) {
 
   setPage(`${currentPage}`);
   if (!getChapter()) setChapter('0');
-}
 
-async function listenGameBtns() {
-  const audioCallBtn = document.getElementById('gameAudioCallNavBtn') as HTMLLinkElement;
-  const sprintBtn = document.getElementById('gameSprintNavBtn') as HTMLLinkElement;
-
-  audioCallBtn.addEventListener('click', () => {
-    setTimeout(() => {
-      const root = document.getElementById('root') as HTMLElement;
-      root.innerHTML = '';
-      root.appendChild(AudioCall('fromBook'));
-    }, 0);
-  });
-
-  sprintBtn.href = `#gameSprint?group=${getChapter()}&page=${getPage()}`;
+  sprintLink.href = `#gameSprint?group=${currentChapter}&page=${currentPage}`;
 }
 
 export const Dictionary = async (): Promise<HTMLElement> => {
@@ -115,7 +104,7 @@ export const Dictionary = async (): Promise<HTMLElement> => {
   const mainContentContainer = addElement('div', 'dictionary-words-container') as HTMLDivElement;
   const paginationElement = addElement('div', 'tui-pagination', 'pagination') as HTMLDivElement;
 
-  page.append(pageTitle, chapterRender(), wordsTitle, mainContentContainer, paginationElement);
+  page.append(pageTitle, chapterRender(), wordsTitle, mainContentContainer, paginationElement, renderGameLinks());
 
   const currentPage = getCurrPage();
   const currentChapter = getChapter() || '0';
@@ -129,7 +118,6 @@ export const Dictionary = async (): Promise<HTMLElement> => {
   pagination = new Pagination(paginationElement, paginationOptions);
   pagination.on('afterMove', async (event) => paginationListener(event));
 
-  setTimeout(getActiveChapter, 0); // ф-ия отмечает стилем выбранную главу
-  setTimeout(listenGameBtns, 0);
+  setTimeout(markActiveChapter, 0); // ф-ия отмечает стилем выбранную главу
   return page;
 };
