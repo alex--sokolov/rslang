@@ -11,7 +11,6 @@ const router = async (route: string[] = routes['/'], params?: URLSearchParams): 
     root.innerText = '';
     root.append(pageContent);
   }
-
   if (location.hash.slice(1, 5) === 'game') document.getElementById('footer')?.remove();
   else if (!document.getElementById('footer')) root.after(Footer());
 };

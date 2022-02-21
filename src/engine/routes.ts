@@ -6,5 +6,6 @@ export const routes: StringsObject = {
   'dictionary' : ['Dictionary', 'Учебник'],
   'gameSprint' : ['Sprint', 'Спринт'],
   'gameAudioCall' : ['AudioCall', 'Аудиовызов'],
-  'team' : ['Team', 'Разработчики']
+  'team' : ['Team', 'Разработчики'],
+  'statistics' : ['Statistics', 'Статистика'],
 };
