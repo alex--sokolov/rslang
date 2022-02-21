@@ -41,11 +41,13 @@ const formStatistics = (finalResultsData: SprintGameResults, oldStats?: IStatist
         forgottenWordsCountPerDay: 0,
         maxCorrectSeriesPerDay: 0
       }
-    }
+    },
+    newWordsDictionary: 0,
+    learnedWordsDictionary: 0
   };
   if (oldStats) {
     const oldDate = oldStats?.optional.stat.stat[oldStats?.optional.stat.stat.length - 1].date;
-    if (Date.now() - new Date(oldDate).getTime() <= DAY_24H) {
+    if (Math.floor(new Date(oldDate).getTime() / DAY_24H) === Math.floor(Date.now()  / DAY_24H)) {
       stats = Object.assign({}, oldStats);
       const statsDay = stats.optional.stat.stat[stats.optional.stat.stat.length - 1];
       const statsDaySprint = statsDay.games.sprint;

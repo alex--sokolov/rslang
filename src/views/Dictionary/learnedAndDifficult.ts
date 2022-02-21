@@ -1,10 +1,11 @@
-import { getUserWord, createUserWord, updateUserWord } from '../../components/api/api';
+import { getUserWord, createUserWord, updateUserWord, getUserStat, putUserStat } from '../../components/api/api';
 import { getUserId } from '../../utils/local-storage-helpers';
-import { UserWord } from '../../interfaces';
+import { IStatistics, UserWord } from '../../interfaces';
+import { DAY_24H } from '../../components/sprint/sprint-vars';
 
 const userId = getUserId();
 
-export function lestenStateBtns(e: Event, wordId: string, wordState: UserWord) {
+export async function lestenStateBtns(e: Event, wordId: string, wordState: UserWord) {
   const targetState = wordState.difficulty as string;
   const btnElement = e.currentTarget as HTMLButtonElement;
   const cardElement = btnElement.parentElement?.parentElement?.parentElement as HTMLDivElement;
@@ -16,23 +17,91 @@ export function lestenStateBtns(e: Event, wordId: string, wordState: UserWord) {
   wordListElement.classList.remove('word-item_hard', 'word-item_learned', 'word-item_easy');
   cardElement.classList.remove('learned', 'hard');
 
-  function createWord() {
-    createUserWord(userId, wordId, wordState);
+  async function createWord() {
+    await createUserWord(userId, wordId, wordState);
   }
 
-  function updateWord() {
-    updateUserWord(userId, wordId, wordState);
+  async function updateWord() {
+    await updateUserWord(userId, wordId, wordState);
   }
 
-  function setDefaultWordState() {
-    updateUserWord(userId, wordId, { difficulty: 'easy' });
+  async function setDefaultWordState() {
+    await updateUserWord(userId, wordId, { difficulty: 'easy' });
   }
+
+  const formStats = (newWordCountAdd: number, oldStats?: IStatistics): IStatistics => {
+
+    let stats: IStatistics;
+    const statsObj = {
+      date: new Date(),
+      newWords: 0,
+      games: {
+        sprint: {
+          right: 0,
+          wrong: 0,
+          newWordsCountPerDay: 0,
+          learnedWordsCountPerDay: 0,
+          forgottenWordsCountPerDay: 0,
+          maxCorrectSeriesPerDay: 0
+        },
+        audioCall: {
+          right: 0,
+          wrong: 0,
+          newWordsCountPerDay: 0,
+          learnedWordsCountPerDay: 0,
+          forgottenWordsCountPerDay: 0,
+          maxCorrectSeriesPerDay: 0
+        }
+      },
+      newWordsDictionary: newWordCountAdd,
+      learnedWordsDictionary: 1
+    };
+    if (oldStats) {
+      const oldDate = oldStats?.optional.stat.stat[oldStats?.optional.stat.stat.length - 1].date;
+      stats = Object.assign({}, oldStats);
+      stats.learnedWords++;
+
+      if (Math.floor(new Date(oldDate).getTime() / DAY_24H) < Math.floor(Date.now()  / DAY_24H)){
+        stats.optional.stat.stat.push(statsObj);
+      } else {
+        stats.optional.stat.stat[stats.optional.stat.stat.length -1].newWordsDictionary += newWordCountAdd;
+        stats.optional.stat.stat[stats.optional.stat.stat.length -1].learnedWordsDictionary++;
+      }
+    } else {
+      stats = {
+        learnedWords: 1,
+        optional: {
+          stat: {
+            stat: [statsObj]
+          }
+        }
+      };
+    }
+    return stats;
+  };
 
   if (isHardActive || isLearnedActive) {
-    setDefaultWordState();
+    await setDefaultWordState();
   } else {
-    const isWordAlreadyAdded = getUserWord(userId, wordId);
-    isWordAlreadyAdded.then(updateWord, createWord);
+    const isWordAlreadyAdded = await getUserWord(userId, wordId);
+
+    if (isWordAlreadyAdded) {
+
+      await updateWord();
+      if (targetState === 'learned'){
+        const oldStats = await getUserStat(userId);
+        const statistics = oldStats ? formStats(0, oldStats) : formStats(0);
+        await putUserStat(userId, statistics);
+      }
+    }
+    else {
+      if (targetState === 'learned'){
+        const oldStats = await getUserStat(userId);
+        const statistics = oldStats ? formStats(1, oldStats) : formStats(1);
+        await putUserStat(userId, statistics);
+      }
+      await createWord();
+    }
     cardElement.classList.toggle(targetState);
     wordListElement.classList.add(`word-item_${targetState}`);
   }

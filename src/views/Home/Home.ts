@@ -35,7 +35,7 @@ export const Home = (): HTMLElement => {
           Каждый раунд содержит 10 слов и вам необходимо выбрать произнесённое слово из шести предложенных вариантов.
         </p>
       </a>
-      <a class="home-page__feature-item feature feature_4" href="/#stat">
+      <a class="home-page__feature-item feature feature_4" href="/#statistics">
         <h2 class="feature__title">Статистика</h2>
         <p class="feature__description">
           На странице статистики отображается прогресс обучения.

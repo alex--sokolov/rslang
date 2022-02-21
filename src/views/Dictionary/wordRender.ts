@@ -170,8 +170,8 @@ export const wordCardRender = (word: WordExtended): HTMLDivElement => {
   hardBtn.addEventListener('click', (e) => lestenStateBtns(e, wordId, { difficulty: 'hard' }));
   learnedBtn.addEventListener('click', (e) => lestenStateBtns(e, wordId, { difficulty: 'learned' }));
 
-  setTimeout(() => {
-    setStatistics(word);
+  setTimeout(async () => {
+    await setStatistics(word);
   }, 0);
 
   return wordCardContainer;

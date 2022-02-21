@@ -38,8 +38,24 @@
 }
 
 .stat-field,
-.stat-field-value {
+.stat-field-value,
+.stat-field-games {
+  display: flex;
+  font-weight: bold;
+  align-items: center;
   height: 40px;
+}
+
+.stat-field {
+  flex-direction: column;
+}
+.stat-field-value {
+  justify-content: center;
+}
+
+.field-addInfo {
+  font-weight: normal;
+  font-style: italic;
 }
 
 .stat-percent {
@@ -48,16 +64,9 @@
   flex-direction: column;
   justify-content: center;
   .global {
+    height: 200px;
     margin: 20px auto 0;
   }
-}
-
-
-
-.stat-field-value {
-  display: flex;
-  justify-content: center;
-  font-weight: bold;
 }
 
 .sprint-stats-title,
@@ -67,4 +76,14 @@
   justify-content: center;
 }
 
+.field-border {
+  border-top: 1px solid #fff;
+  border-bottom: 1px solid #fff;
+}
 
+.no-stats {
+  padding-top: 100px;
+  margin: 0px auto;
+  text-align: center;
+  font-size: 2rem;
+}
