@@ -3,8 +3,8 @@ import { getChapter, getPage } from '../../utils/local-storage-helpers';
 import { AudioCall } from '../AudioCall/AudioCall';
 
 export function renderGameLinks() {
-  const currentChapter = getChapter();
-  const currentPage = getPage();
+  const currentChapter = getChapter() || '0';
+  const currentPage = getPage() || '0';
 
   const container = addElement('div', 'game-links', 'game-links-container') as HTMLDivElement;
   const title = addTextElement('h2', 'game-links__title', 'Игры') as HTMLHeadingElement;
