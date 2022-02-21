@@ -77,9 +77,7 @@ const formStatistics = (finalResultsData: SprintGameResults, oldStats?: IStatist
 const saveStatistics = async (finalResultsData: SprintGameResults): Promise<void> => {
   const oldStats = await getUserStat(game.userId);
   const statistics = oldStats ? formStatistics(finalResultsData, oldStats) : formStatistics(finalResultsData);
-  console.log(statistics);
-  const statSave = await putUserStat(game.userId, statistics);
-  console.log(statSave);
+  await putUserStat(game.userId, statistics);
 };
 export const clearGame = (): void => {
   game.music?.pause();
