@@ -6,7 +6,7 @@ import './Statistics.scss';
 
 
 export const Statistics = async (): Promise<HTMLElement | void> => {
-  const output = addElement('main', 'statistics-page', 'statistics-page') as HTMLElement;
+  const output = addElement('main', 'statistics-page container', 'statistics-page') as HTMLElement;
   const userId = getUserId();
   const stats = await getUserStat(userId);
   console.log(stats);
@@ -24,13 +24,13 @@ export const Statistics = async (): Promise<HTMLElement | void> => {
       output.append(noStatsDay);
     } else {
 
-      const statTitle = addTextElement('div', 'stats-title',
+      const statTitle = addTextElement('h1', 'stats-title',
         'Статистика за сегодня');
-      const gamesStatsTitle = addTextElement('div', 'games-stats-title',
+      const gamesStatsTitle = addTextElement('h2', 'games-stats-title',
         'Cтатистикa по мини-играм: ');
       const gamesStats = addElement('div', 'games-stats', 'games-stats');
 
-      const wordsStatsTitle = addTextElement('div', 'words-stats-title',
+      const wordsStatsTitle = addTextElement('h2', 'words-stats-title',
         'Cтатистикa по словам: ');
       const wordsStats = addElement('div', 'words-stats', 'words-stats');
 
@@ -73,9 +73,9 @@ export const Statistics = async (): Promise<HTMLElement | void> => {
       percent = isNaN(percent) ? 0 : +percent.toFixed(2);
       const percentEl = addElement('div', 'global');
       percentEl.setAttribute('data-pie', `{ "percent": ${percent} }`);
-      const percentContainer = addTextElement('div', 'stat-percent',
-        'Процент правильных ответов в играх');
-      percentContainer.append(percentEl);
+      const percentContainer = addElement('div', 'stat-percent');
+      const percentHeader = addTextElement('h2', 'stat-percent__title', 'Процент правильных ответов за день');
+      percentContainer.append(percentHeader, percentEl);
 
       const getWordsStat = () => {
         const template = `
