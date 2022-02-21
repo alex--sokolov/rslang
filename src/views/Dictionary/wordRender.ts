@@ -63,7 +63,8 @@ export const wordCardRender = (word: WordExtended): HTMLDivElement => {
   const wordCardRightSide = addElement('div', 'card__right-side') as HTMLDivElement;
   const btnsContainer = addElement('div', 'card__btns-container') as HTMLDivElement;
 
-  const image = `<img src="https://rs-lang-app-server.herokuapp.com/${word.image}" class="card__img" alt="Иллюстрация слова">`;
+  const image = `<img src="https://rs-lang-app-server.herokuapp.com/${word.image}"
+                  class="card__img" alt="Иллюстрация слова">`;
   const wordEng = addTextElement('strong', 'card__word', `${word.word} - `) as HTMLHeadingElement;
   const transcription = addTextElement('span', 'card__transcription', `${word.transcription} - `) as HTMLSpanElement;
   const translate = addTextElement('span', 'card__translate', `${word.wordTranslate}`) as HTMLParagraphElement;

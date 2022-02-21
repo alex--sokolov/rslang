@@ -2,13 +2,11 @@ import { addElement } from '../../utils/add-element';
 import { WordExtended } from '../../interfaces';
 import { wordCardRender } from './wordRender';
 import { getChapter, getPage, getUserId } from '../../utils/local-storage-helpers';
-import { putUserSettings } from '../../components/api/api';
 
 const wordListRender = (words: WordExtended[]): HTMLDivElement => {
   const wordListContainer = addElement('div', 'word-list') as HTMLDivElement;
   const currentChapter = getChapter() || '0';
-  const currentPage = getPage() || '0';
-  const userId = getUserId();
+
   let learnedCount = 0;
   let hardCount = 0;
 
@@ -39,17 +37,6 @@ const wordListRender = (words: WordExtended[]): HTMLDivElement => {
       const sprintLink = document.getElementById('sprint-link') as HTMLLinkElement;
       if (learnedCount === words.length || hardCount === words.length) {
         wordListContainer.classList.add(`word-list_${word.userWord?.difficulty}`);
-
-        // TODO: доделать сохранение изученных или сложных страниц
-        const optional = [];
-        optional.push({ group: +currentChapter, page: +currentPage, type: word.userWord?.difficulty });
-        const userSettingObj = {
-          optional: optional,
-        };
-        // console.log(userSettingObj);
-
-        // putUserSettings(userId, userSettingObj);
-
         audioCallLink.classList.add('disabled');
         sprintLink.classList.add('disabled');
       } else {

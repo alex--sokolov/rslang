@@ -9,7 +9,6 @@ import wordListRender from './wordListRender';
 import Pagination from 'tui-pagination';
 import { PaginationEvent } from '../../types';
 import './tui-pagination.scss';
-import { AudioCall } from '../AudioCall/AudioCall';
 import { renderGameLinks } from './gameLinks';
 
 let wordsArr: WordExtended[] = [];

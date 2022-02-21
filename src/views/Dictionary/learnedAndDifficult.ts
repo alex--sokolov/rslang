@@ -3,9 +3,8 @@ import { getUserId } from '../../utils/local-storage-helpers';
 import { IStatistics, UserWord } from '../../interfaces';
 import { DAY_24H } from '../../components/sprint/sprint-vars';
 
-const userId = getUserId();
-
 export async function lestenStateBtns(e: Event, wordId: string, wordState: UserWord) {
+  const userId = getUserId();
   const targetState = wordState.difficulty as string;
   const btnElement = e.currentTarget as HTMLButtonElement;
   const cardElement = btnElement.parentElement?.parentElement?.parentElement as HTMLDivElement;
@@ -72,9 +71,9 @@ export async function lestenStateBtns(e: Event, wordId: string, wordState: UserW
         learnedWords: 1,
         optional: {
           stat: {
-            stat: [statsObj]
-          }
-        }
+            stat: [statsObj],
+          },
+        },
       };
     }
     return stats;
@@ -85,24 +84,26 @@ export async function lestenStateBtns(e: Event, wordId: string, wordState: UserW
   } else {
     const isWordAlreadyAdded = await getUserWord(userId, wordId);
 
+    cardElement.classList.toggle(targetState);
+    wordListElement.classList.add(`word-item_${targetState}`);
+
     if (isWordAlreadyAdded) {
 
       await updateWord();
       if (targetState === 'learned'){
         const oldStats = await getUserStat(userId);
         const statistics = oldStats ? formStats(0, oldStats) : formStats(0);
+
         await putUserStat(userId, statistics);
       }
-    }
-    else {
+    } else {
       if (targetState === 'learned'){
         const oldStats = await getUserStat(userId);
         const statistics = oldStats ? formStats(1, oldStats) : formStats(1);
+
         await putUserStat(userId, statistics);
       }
       await createWord();
     }
-    cardElement.classList.toggle(targetState);
-    wordListElement.classList.add(`word-item_${targetState}`);
   }
 }
