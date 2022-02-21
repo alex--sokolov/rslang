@@ -81,7 +81,7 @@ export const getWordsFunc = async (chapter: string, page: string) => {
 
 async function paginationListener(event: PaginationEvent) {
   const currentPage = event.page - 1;
-  const currentChapter = getChapter();
+  const currentChapter = getChapter() || '0';
   const wordsContainerElement = document.querySelector('.dictionary-words-container') as HTMLDivElement;
 
   wordsArr = (await getWordsFunc(currentChapter, `${currentPage}`)) as WordExtended[];
